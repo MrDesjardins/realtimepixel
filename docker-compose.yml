@@ -44,7 +44,7 @@ services:
     healthcheck:
       test: "${DOCKER_CLIENT_HEALTHCHECK_TEST}"
     volumes:
-      - "./services/frontend:/node/app:delegated"
+      - "./services/frontend:/node/app:delegated" # Delegated = Performance improvement for files on MAC
       - "/node/app/node_modules" # Anonymous volume to hide our local node_modules
 # References:
 ## Multi-stage and target (FROM/AS)
