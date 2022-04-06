@@ -46,9 +46,3 @@ services:
     volumes:
       - "./services/frontend:/node/app:delegated" # Delegated = Performance improvement for files on MAC
       - "/node/app/node_modules" # Anonymous volume to hide our local node_modules
-# References:
-## Multi-stage and target (FROM/AS)
-## https://www.docker.com/blog/speed-up-your-development-flow-with-these-dockerfile-best-practices/
-## https://medium.com/geekculture/dockerizing-a-react-application-with-multi-stage-docker-build-4a5c6ca68166
-## https://dev.to/karanpratapsingh/dockerize-your-react-app-4j2e
-## https://viralganatra.com/docker-nodejs-production-secure-best-practices/
