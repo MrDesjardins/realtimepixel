@@ -1,8 +1,0 @@
-{
-  "scripts": {
-    "copy:env": "copyfiles .env services/realtimeServer -a -V"
-  },
-  "devDependencies": {
-    "copyfiles": "^2.4.1"
-  }
-}

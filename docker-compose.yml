@@ -1,0 +1,55 @@
+x-app: &default-app
+  env_file:
+    - ".env"
+  restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
+  stop_grace_period: "3s"
+  tty: true
+  healthcheck:
+    interval: "60s"
+    timeout: "3s"
+    start_period: "5s"
+    retries: 3
+
+services:
+  backend:
+    <<: *default-app
+    build:
+      context: "./services/backend"
+      dockerfile: Dockerfile
+      target: ${NODE_ENV}
+      args:
+        - "NODE_ENV=${NODE_ENV}"
+    #command: "npm run start:${NODE_ENV}"
+    ports:
+      - "${DOCKER_SERVER_PORT_FORWARD}:${SERVER_PORT}"
+    healthcheck:
+      test: "${DOCKER_SERVER_HEALTHCHECK_TEST}"
+    volumes:
+      - "./services/backend/src:/node/app:delegated"
+      - "/node/app/node_modules" # Anonymous volume to hide our local node_modules
+
+  frontend:
+    <<: *default-app
+    # depends_on:
+    # - "backend"
+    build:
+      context: "./services/frontend"
+      target: ${NODE_ENV}
+      dockerfile: Dockerfile
+      args:
+        - "NODE_ENV=${NODE_ENV}"
+    #command: "npm run start:${NODE_ENV}"
+    ports:
+      #- "${DOCKER_CLIENT_PORT_FORWARD}:${CLIENT_PORT}"
+      - "3000:3000"
+    healthcheck:
+      test: "${DOCKER_CLIENT_HEALTHCHECK_TEST}"
+    volumes:
+      - "./services/frontend:/node/app:delegated"
+      - "/node/app/node_modules" # Anonymous volume to hide our local node_modules
+# References:
+## Multi-stage and target (FROM/AS)
+## https://www.docker.com/blog/speed-up-your-development-flow-with-these-dockerfile-best-practices/
+## https://medium.com/geekculture/dockerizing-a-react-application-with-multi-stage-docker-build-4a5c6ca68166
+## https://dev.to/karanpratapsingh/dockerize-your-react-app-4j2e
+## https://viralganatra.com/docker-nodejs-production-secure-best-practices/
