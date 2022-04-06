@@ -40,8 +40,7 @@ services:
         - "NODE_ENV=${NODE_ENV}"
     #command: "npm run start:${NODE_ENV}"
     ports:
-      #- "${DOCKER_CLIENT_PORT_FORWARD}:${CLIENT_PORT}"
-      - "3000:3000"
+      - "${DOCKER_CLIENT_PORT_FORWARD}:${CLIENT_PORT}"
     healthcheck:
       test: "${DOCKER_CLIENT_HEALTHCHECK_TEST}"
     volumes:
