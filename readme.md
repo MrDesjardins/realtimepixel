@@ -30,3 +30,23 @@ https://viralganatra.com/docker-nodejs-production-secure-best-practices/
 
 ### How to debug Docker build
 https://stackoverflow.com/questions/26220957/how-can-i-inspect-the-file-system-of-a-failed-docker-build
+
+
+# How to Debug Build
+
+Run
+```
+ DOCKER_BUILDKIT=0 docker-compose build  
+```
+This will give some UUID for each step. Use the UUID for the step to debug with this command:
+
+```
+docker run -it <uuid> bash
+```
+
+If the build was successful, we can use the image name.
+
+```
+docker run -it realtimepixel_backend:latest bash 
+docker run -it realtimepixel_frontend:latest bash 
+```

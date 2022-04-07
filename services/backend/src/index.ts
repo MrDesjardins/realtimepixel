@@ -14,7 +14,7 @@ serverApp.use(bodyParser.urlencoded({ extended: true }));
 serverApp.use(cors());
 
 serverApp.get("/health", async (req, res) => {
-  res.send("ok2");
+  res.send("ok:" + process.env.NODE_ENV);
 });
 
 serverApp.listen(SERVER_PORT, () =>
