@@ -6,4 +6,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
+
+  overflow: hidden; /*When dragging the container, we do not want to draw the canvas outside the game area*/
 }

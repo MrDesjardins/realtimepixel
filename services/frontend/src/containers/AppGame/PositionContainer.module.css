@@ -2,4 +2,5 @@
   /* position:relative; */
   padding: 20px;
   background-color: red;
+  pointer-events: none; /*Remove the jitter of coordinate jumping rapidly*/
 }

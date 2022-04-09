@@ -16,7 +16,6 @@ export function GameBoardContainer(
         width={canvasWidth}
         height={canvasHeight}
       />
-      {/* <div class={styles.Canvas}>Test</div> */}
     </div>
   );
 }
