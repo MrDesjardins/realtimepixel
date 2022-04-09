@@ -1,17 +1,17 @@
 import { createEffect, createSignal, JSX } from "solid-js";
+import { Coordinate } from "../../models/game";
 import styles from "./TargetSelector.module.css";
 export interface TargetSelectorProps {
   display: boolean;
-  x: number;
-  y: number;
+  coordinate: Coordinate;
 }
 export function TargetSelector(props: TargetSelectorProps): JSX.Element {
   return (
     <div
       class={styles.TargetSelector}
       style={{
-        left: `${props.x}px`,
-        top: `${props.y}px`,
+        left: `${props.coordinate.x}px`,
+        top: `${props.coordinate.y}px`,
         visibility: props.display ? "visible" : "hidden",
       }}
     ></div>
