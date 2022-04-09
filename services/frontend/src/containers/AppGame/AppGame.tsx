@@ -28,14 +28,6 @@ export function AppGame(props: AppGameProps): JSX.Element {
     props.isPanning(isDragging());
   });
 
-  const getOffset = (): [number, number] => {
-    if (containerRef) {
-      const rect = containerRef.getBoundingClientRect();
-      return [rect.left, rect.top];
-    }
-    return [0, 0];
-  };
-
   return (
     <div
       ref={containerRef}
@@ -48,7 +40,6 @@ export function AppGame(props: AppGameProps): JSX.Element {
           x: e.offsetX - coordinate().x,
           y: e.offsetY - coordinate().y,
         };
-        console.log("Starting:", startingClickCoordinate);
         setIsDragging(true);
       }}
       onMouseMove={(e) => {
