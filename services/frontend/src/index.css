@@ -2,6 +2,9 @@
   /*General variables*/
   --text-color: white;
   --app-bgcolor: #282c34;
+
+  /*Z-index*/
+  --z-index-hud: 100;
 }
 
 body {

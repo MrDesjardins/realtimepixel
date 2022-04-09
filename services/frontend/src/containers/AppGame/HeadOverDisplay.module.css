@@ -1,0 +1,27 @@
+.HeadOverDisplay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 50px;
+  padding: 20px;
+
+  display: flex;
+  justify-content: center;
+
+  z-index: var(--z-index-hud);
+}
+
+.HeadOverDisplayPanel {
+  flex: 0 0 500px;
+  background-color: lightblue;
+  border-radius: 4px;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-items: center;
+}
+
+.HeadOverDisplayPanelContent {
+  flex: 1;
+}
