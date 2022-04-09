@@ -42,8 +42,11 @@ export function PositionContainer(props: PositionContainerProps): JSX.Element {
           });
         } else {
           // No dragging, means a click: action
-          console.log("Click", { x: e.x, y: e.y });
         }
+        control?.setIsDragging(false);
+        control?.setIsClicking(false);
+      }}
+      onMouseLeave={(e) => {
         control?.setIsDragging(false);
         control?.setIsClicking(false);
       }}
