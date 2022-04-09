@@ -1,15 +1,16 @@
 import { batch, createEffect, createSignal, JSX } from "solid-js";
 import { useControl } from "../../context/ControlContext";
+import { useUserData } from "../../context/UserDataContext";
 import { Zoom } from "../../models/enums";
 import { Coordinate } from "../../models/game";
 import styles from "./PixelSelector.module.css";
 import { TargetSelector } from "./TargetSelector";
 export interface PixelSelectorProps {
   children: JSX.Element;
-  onPixelSelected: (coord: Coordinate) => void;
 }
 export function PixelSelector(props: PixelSelectorProps): JSX.Element {
   const control = useControl();
+  const userData = useUserData();
   const [x, setX] = createSignal(0);
   const [y, setY] = createSignal(0);
   return (
@@ -26,14 +27,14 @@ export function PixelSelector(props: PixelSelectorProps): JSX.Element {
               setX(e.offsetX);
               setY(e.offsetY);
             });
-            console.log("Move", e.clientX, e.clientY);
+            userData?.setCoordinate({ x: e.offsetX, y: e.offsetY });
           }
         }
       }}
       onMouseUp={(e) => {
         if (!control?.getIsDragging()) {
           console.log("Up", e.offsetX, e.offsetY);
-          props.onPixelSelected({ x: e.offsetX, y: e.offsetY });
+          userData?.setSelectedCoordinate({ x: e.offsetX, y: e.offsetY });
         }
       }}
     >
