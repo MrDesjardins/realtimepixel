@@ -12,7 +12,7 @@ export function TargetSelector(props: TargetSelectorProps): JSX.Element {
       style={{
         left: `${props.x}px`,
         top: `${props.y}px`,
-        cursor: props.display ? "pointer" : "default",
+        visibility: props.display ? "visible" : "hidden",
       }}
     ></div>
   );

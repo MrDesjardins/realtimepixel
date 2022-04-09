@@ -15,16 +15,19 @@ export function PixelSelector(props: PixelSelectorProps): JSX.Element {
   return (
     <div
       className={styles.PixelSelector}
+      style={{ cursor: control?.getIsDragging() ? "pointer" : "none" }}
       onMouseDown={(e) => {
         console.log("Down", e.offsetX, e.offsetY);
       }}
       onMouseMove={(e) => {
         if (!control?.getIsDragging()) {
-          batch(() => {
-            setX(e.offsetX);
-            setY(e.offsetY);
-          });
-          console.log("Move", e.offsetX, e.offsetY);
+          if (e.offsetX > 0 && e.offsetY > 0) {
+            batch(() => {
+              setX(e.offsetX);
+              setY(e.offsetY);
+            });
+            console.log("Move", e.clientX, e.clientY);
+          }
         }
       }}
       onMouseUp={(e) => {
