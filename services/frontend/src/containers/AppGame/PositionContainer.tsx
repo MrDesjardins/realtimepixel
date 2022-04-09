@@ -4,7 +4,6 @@ import { Coordinate } from "../../models/game";
 import styles from "./PositionContainer.module.css";
 export interface PositionContainerProps {
   children: JSX.Element;
-  coordinate: Coordinate;
 }
 export function PositionContainer(props: PositionContainerProps): JSX.Element {
   const control = useControl();

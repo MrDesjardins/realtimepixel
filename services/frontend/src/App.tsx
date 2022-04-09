@@ -12,31 +12,13 @@ import { CONSTS } from "./models/constants";
 import { Zoom } from "./models/enums";
 import { Coordinate } from "./models/game";
 
-
 export const App: Component = () => {
-  const [coord, setCoord] = createSignal({ x: 0, y: 0 });
   const [zoomValue, setZoomValue] = createSignal(1);
   return (
     <div class={styles.App}>
       <ControlProvider>
-        <AppGame
-          onPanning={(c: Coordinate) => {
-            setCoord(c);
-          }}
-          onZoom={(zoom: Zoom) => {
-            let newValue =
-              zoom === Zoom.In
-                ? zoomValue() + CONSTS.gameBoard.zoomStep
-                : zoomValue() - CONSTS.gameBoard.zoomStep;
-            if (newValue < 0) {
-              newValue = CONSTS.gameBoard.minimumZoom;
-            } else if (newValue > CONSTS.gameBoard.maximumZoom) {
-              newValue = CONSTS.gameBoard.maximumZoom;
-            }
-            setZoomValue(newValue);
-          }}
-        >
-          <PositionContainer coordinate={coord()}>
+        <AppGame>
+          <PositionContainer>
             <ZoomContainer zoomValue={zoomValue()}>
               <GameBoardContainer />
             </ZoomContainer>
