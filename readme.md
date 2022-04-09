@@ -9,7 +9,35 @@ The project goals are:
 ## Services
 The folder contains all the services that will be deployed
 
+# How to Get Started
+1. At the root of this project run:
+```
+docker-compose build  
+```
+2. Run the project:
+```
+docker-compose up
+```
+3. Modify the source code. Look at the `.env` file to know which port is open.
 
+# How to Debug Build
+
+Run
+```
+ DOCKER_BUILDKIT=0 docker-compose build  
+```
+This will give some UUID for each step. Use the UUID for the step to debug with this command:
+
+```
+docker run -it <uuid> bash
+```
+
+If the build was successful, we can use the image name.
+
+```
+docker run -it realtimepixel_backend:latest bash 
+docker run -it realtimepixel_frontend:latest bash 
+```
 # Documentations
 
 ## Docker References
@@ -32,21 +60,3 @@ https://viralganatra.com/docker-nodejs-production-secure-best-practices/
 https://stackoverflow.com/questions/26220957/how-can-i-inspect-the-file-system-of-a-failed-docker-build
 
 
-# How to Debug Build
-
-Run
-```
- DOCKER_BUILDKIT=0 docker-compose build  
-```
-This will give some UUID for each step. Use the UUID for the step to debug with this command:
-
-```
-docker run -it <uuid> bash
-```
-
-If the build was successful, we can use the image name.
-
-```
-docker run -it realtimepixel_backend:latest bash 
-docker run -it realtimepixel_frontend:latest bash 
-```

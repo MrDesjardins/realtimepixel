@@ -12,6 +12,9 @@ export default (conf: any) => {
     },
     server: {
       host: "0.0.0.0",
+      hmr: {
+        clientPort: 3501, //Number(process.env.DOCKER_CLIENT_PORT_FORWARD)
+      },
       port: 3000, //Number(process.env.CLIENT_PORT),
     },
   });

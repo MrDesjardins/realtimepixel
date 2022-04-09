@@ -1,0 +1,8 @@
+.AppControls {
+  /*Position the App Control*/
+  flex: 0 0 200px; /*Reserve a minimum space for the controls*/
+  background-color: red;
+
+  /*App Control is a container as well*/
+  display: flex;
+}
