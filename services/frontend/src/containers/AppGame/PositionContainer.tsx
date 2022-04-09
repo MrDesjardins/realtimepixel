@@ -25,7 +25,7 @@ export function PositionContainer(props: PositionContainerProps): JSX.Element {
         control?.setIsClicking(true);
       }}
       onMouseMove={(e) => {
-        if (control?.getIsClicking()) {
+        if (control?.isClicking()) {
           control?.setIsDragging(true);
           setTranslate({
             x: e.clientX - original().x + lastTanslate().x,
@@ -35,7 +35,7 @@ export function PositionContainer(props: PositionContainerProps): JSX.Element {
       }}
       onMouseUp={(e) => {
         // Notify that we change the coordinate (we are panning)
-        if (control?.getIsDragging()) {
+        if (control?.isDragging()) {
           setLastTranslate({
             x: translate().x,
             y: translate().y,

@@ -16,12 +16,12 @@ export function PixelSelector(props: PixelSelectorProps): JSX.Element {
   return (
     <div
       className={styles.PixelSelector}
-      style={{ cursor: control?.getIsDragging() ? "pointer" : "none" }}
+      style={{ cursor: control?.isDragging() ? "pointer" : "none" }}
       onMouseDown={(e) => {
         console.log("Down", e.offsetX, e.offsetY);
       }}
       onMouseMove={(e) => {
-        if (!control?.getIsDragging()) {
+        if (!control?.isDragging()) {
           if (e.offsetX > 0 && e.offsetY > 0) {
             batch(() => {
               setX(e.offsetX);
@@ -32,13 +32,13 @@ export function PixelSelector(props: PixelSelectorProps): JSX.Element {
         }
       }}
       onMouseUp={(e) => {
-        if (!control?.getIsDragging()) {
-          console.log("Up", e.offsetX, e.offsetY);
+        console.log("Up", e.offsetX, e.offsetY);
+        if (!control?.isDragging()) {
           userData?.setSelectedCoordinate({ x: e.offsetX, y: e.offsetY });
         }
       }}
     >
-      <TargetSelector display={!control?.getIsDragging()} x={x()} y={y()} />
+      <TargetSelector display={!control?.isDragging()} x={x()} y={y()} />
       {props.children}
     </div>
   );

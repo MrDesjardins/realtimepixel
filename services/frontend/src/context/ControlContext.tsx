@@ -1,15 +1,21 @@
-import { JSX, createContext, createSignal, useContext } from "solid-js";
+import {
+  JSX,
+  createContext,
+  createSignal,
+  useContext,
+  Accessor,
+} from "solid-js";
 
-export interface ControlContextModel extends ControlContextActions {}
+export interface ControlContextModel
+  extends ControlContextValues,
+    ControlContextActions {}
 export interface ControlContextValues {
-  isDragging: boolean;
-  isClicking: boolean;
+  isDragging: Accessor<boolean>;
+  isClicking: Accessor<boolean>;
 }
 export interface ControlContextActions {
   setIsDragging: (isDragging: boolean) => void;
   setIsClicking: (isClicking: boolean) => void;
-  getIsDragging: () => boolean;
-  getIsClicking: () => boolean;
 }
 
 export interface ControlContextProps {
@@ -19,28 +25,18 @@ export interface ControlContextProps {
 export const ControlContext = createContext<ControlContextModel>();
 
 export function ControlProvider(props: ControlContextProps) {
-  const [model, setModel] = createSignal<ControlContextValues>({
-    isClicking: false,
-    isDragging: false,
-  });
+  const [isDragging, setIsDragging] = createSignal<boolean>(false);
+  const [isClicking, setIsClicking] = createSignal<boolean>(false);
 
-  const actions: ControlContextActions = {
+  const actions: ControlContextModel = {
     setIsClicking: (isClicking: boolean) => {
-      setModel((prev) => {
-        return { ...prev, isClicking };
-      });
+      setIsClicking(isClicking);
     },
     setIsDragging: (isDragging: boolean) => {
-      setModel((prev) => {
-        return { ...prev, isDragging };
-      });
+      setIsDragging(isDragging);
     },
-    getIsClicking: () => {
-      return model().isClicking;
-    },
-    getIsDragging: () => {
-      return model().isDragging;
-    },
+    isClicking,
+    isDragging,
   };
 
   return (
