@@ -1,10 +1,11 @@
 export const CONSTS = {
   gameBoard: {
-    pixelWidth: 1000,
-    pixelHeight: 1000,
+    pixelWidth: 500,
+    pixelHeight: 500,
     zoomStep: 0.5,
     minimumZoom: 0.5,
     maximumZoom: 10,
+    fps: 30,
   },
   gameRules: {
     pixelValueOnClick: 10,
