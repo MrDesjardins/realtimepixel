@@ -1,4 +1,5 @@
 .TargetSelector {
+  pointer-events: none; /*Pass through the mouseHover; otherise, the selector goes in the way*/
   position: absolute;
   box-shadow: black 1px 1px 1px, black -1px -1px 1px, black -1px 1px 1px,
     black 1px -1px 1px;

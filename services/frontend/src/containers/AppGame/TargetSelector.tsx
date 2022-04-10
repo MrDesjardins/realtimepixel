@@ -1,15 +1,16 @@
 import { createMemo, JSX } from "solid-js";
+import { useUserData } from "../../context/UserDataContext";
 import { getClosestPixel } from "../../logics/pixel";
 import { CONSTS } from "../../models/constants";
 import { Coordinate } from "../../models/game";
 import styles from "./TargetSelector.module.css";
-export interface TargetSelectorProps {
-  display: boolean;
-  coordinate: Coordinate;
-}
+export interface TargetSelectorProps {}
 export function TargetSelector(props: TargetSelectorProps): JSX.Element {
+  const userData = useUserData();
+  
   const coordinateAdjusted = createMemo(() => {
-    const adjusted = getClosestPixel(props.coordinate);
+    console.log("target", userData?.coordinate());
+    const adjusted = getClosestPixel(userData?.coordinate() ?? { x: 0, y: 0 });
     adjusted.x -= CONSTS.gameBoard.borderTarget;
     adjusted.y -= CONSTS.gameBoard.borderTarget;
     return adjusted;
@@ -29,4 +30,3 @@ export function TargetSelector(props: TargetSelectorProps): JSX.Element {
     ></div>
   );
 }
-

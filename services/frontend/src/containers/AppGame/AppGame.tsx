@@ -8,7 +8,6 @@ export interface AppGameProps {
 }
 export function AppGame(props: AppGameProps): JSX.Element {
   let containerRef: HTMLDivElement | undefined = undefined;
-  const control = useControl();
   return (
     <div
       ref={containerRef}
