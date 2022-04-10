@@ -44,6 +44,7 @@ export function UserDataProvider(props: UserDataContextProps) {
     },
     selectedCoordinate,
     setSelectedCoordinate: (coord: Coordinate | undefined) => {
+      console.log("Saving the selection", coord);
       setSelectedCoordinate(coord);
     },
   };

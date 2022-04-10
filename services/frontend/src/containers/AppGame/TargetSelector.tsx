@@ -8,10 +8,9 @@ export function TargetSelector(props: TargetSelectorProps): JSX.Element {
   const userData = useUserData();
   
   const coordinateAdjusted = createMemo(() => {
-    console.log("target", userData?.coordinate());
     const adjusted = getClosestPixel(userData?.coordinate() ?? { x: 0, y: 0 });
-    adjusted.x -= CONSTS.gameBoard.borderTarget;
-    adjusted.y -= CONSTS.gameBoard.borderTarget;
+    adjusted.x -= CONSTS.gameBoard.borderTargetPx;
+    adjusted.y -= CONSTS.gameBoard.borderTargetPx;
     return adjusted;
   });
 
@@ -21,9 +20,9 @@ export function TargetSelector(props: TargetSelectorProps): JSX.Element {
       style={{
         left: `${coordinateAdjusted().x}px`,
         top: `${coordinateAdjusted().y}px`,
-        width: `${CONSTS.gameBoard.pixelSize}px`,
-        height: `${CONSTS.gameBoard.pixelSize}px`,
-        border: `${CONSTS.gameBoard.borderTarget}px solid red`,
+        width: `${CONSTS.gameBoard.pixelSizePx}px`,
+        height: `${CONSTS.gameBoard.pixelSizePx}px`,
+        border: `${CONSTS.gameBoard.borderTargetPx}px solid red`,
       }}
     ></div>
   );

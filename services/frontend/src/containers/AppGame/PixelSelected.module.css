@@ -1,0 +1,25 @@
+.PixelSelected {
+  position: absolute;
+  margin: 0;
+  padding: 0;
+}
+
+.svg {
+  top: 0;
+  left: 0;
+  position: absolute;
+}
+.svgSelection {
+  stroke-dasharray: 3;
+  stroke-dashoffset: 10;
+  animation: dash 1200ms linear alternate infinite;
+}
+
+@keyframes dash {
+  from {
+    stroke-dashoffset: 10;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}

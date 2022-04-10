@@ -22,7 +22,7 @@ export function GameBoardContainer(
     b: number,
     a: number = 255
   ): void => {
-    const index = (x + y * CONSTS.gameBoard.pixelWidth) * 4;
+    const index = (x + y * CONSTS.gameBoard.boardWidthPx) * 4;
 
     canvasData.data[index + 0] = r;
     canvasData.data[index + 1] = g;
@@ -36,25 +36,25 @@ export function GameBoardContainer(
         ctx.clearRect(
           0,
           0,
-          CONSTS.gameBoard.pixelWidth,
-          CONSTS.gameBoard.pixelHeight
+          CONSTS.gameBoard.boardWidthPx,
+          CONSTS.gameBoard.boardHeightPx
         );
         const canvasData = ctx.getImageData(
           0,
           0,
-          CONSTS.gameBoard.pixelWidth,
-          CONSTS.gameBoard.pixelHeight
+          CONSTS.gameBoard.boardWidthPx,
+          CONSTS.gameBoard.boardHeightPx
         );
         let i = 0;
         for (
           let x = 0;
-          x < CONSTS.gameBoard.pixelWidth;
-          x += CONSTS.gameBoard.pixelSize
+          x < CONSTS.gameBoard.boardWidthPx;
+          x += CONSTS.gameBoard.pixelSizePx
         ) {
           for (
             let y = 0;
-            y < CONSTS.gameBoard.pixelHeight;
-            y += CONSTS.gameBoard.pixelSize
+            y < CONSTS.gameBoard.boardHeightPx;
+            y += CONSTS.gameBoard.pixelSizePx
           ) {
             const color = COLORS[Math.floor(Math.random() * COLORS.length)];
             //drawPixel(canvasData, x, y, color.r, color.g, color.b);
@@ -62,8 +62,8 @@ export function GameBoardContainer(
             ctx.fillRect(
               x,
               y,
-              CONSTS.gameBoard.pixelSize,
-              CONSTS.gameBoard.pixelSize
+              CONSTS.gameBoard.pixelSizePx,
+              CONSTS.gameBoard.pixelSizePx
             );
           }
         }
@@ -79,8 +79,8 @@ export function GameBoardContainer(
       <canvas
         ref={canvasRef}
         class={styles.Canvas}
-        width={CONSTS.gameBoard.pixelWidth}
-        height={CONSTS.gameBoard.pixelHeight}
+        width={CONSTS.gameBoard.boardWidthPx}
+        height={CONSTS.gameBoard.boardHeightPx}
       />
     </div>
   );

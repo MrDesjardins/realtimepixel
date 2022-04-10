@@ -1,9 +1,9 @@
 export const CONSTS = {
   gameBoard: {
-    pixelWidth: 500,
-    pixelHeight: 500,
-    pixelSize: 10,
-    borderTarget: 2,
+    boardWidthPx: 500,
+    boardHeightPx: 500,
+    pixelSizePx: 10,
+    borderTargetPx: 2,
     zoomStep: 0.5,
     minimumZoom: 0.5,
     maximumZoom: 10,
