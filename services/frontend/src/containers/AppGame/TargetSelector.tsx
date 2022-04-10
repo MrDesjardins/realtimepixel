@@ -1,4 +1,5 @@
-import { createEffect, createMemo, createSignal, JSX } from "solid-js";
+import { createMemo, JSX } from "solid-js";
+import { getClosestPixel } from "../../logics/pixel";
 import { CONSTS } from "../../models/constants";
 import { Coordinate } from "../../models/game";
 import styles from "./TargetSelector.module.css";
@@ -29,12 +30,3 @@ export function TargetSelector(props: TargetSelectorProps): JSX.Element {
   );
 }
 
-export function getClosestPixel(coordinate: Coordinate): Coordinate {
-  const x =
-    Math.floor(coordinate.x / CONSTS.gameBoard.pixelSize) *
-    CONSTS.gameBoard.pixelSize;
-  const y =
-    Math.floor(coordinate.y / CONSTS.gameBoard.pixelSize) *
-    CONSTS.gameBoard.pixelSize;
-  return { x, y };
-}
