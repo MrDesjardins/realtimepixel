@@ -2,12 +2,8 @@ import { CONSTS } from "../models/constants";
 import { Coordinate } from "../models/game";
 
 export function getClosestPixel(coordinate: Coordinate): Coordinate {
-  const x =
-    Math.floor(coordinate.x / CONSTS.gameBoard.pixelSizePx) *
-    CONSTS.gameBoard.pixelSizePx;
-  const y =
-    Math.floor(coordinate.y / CONSTS.gameBoard.pixelSizePx) *
-    CONSTS.gameBoard.pixelSizePx;
+  const x = Math.floor(coordinate.x / CONSTS.gameBoard.pixelSizePx) * CONSTS.gameBoard.pixelSizePx;
+  const y = Math.floor(coordinate.y / CONSTS.gameBoard.pixelSizePx) * CONSTS.gameBoard.pixelSizePx;
   return { x, y };
 }
 

@@ -1,14 +1,6 @@
-import {
-  JSX,
-  createContext,
-  createSignal,
-  useContext,
-  Accessor,
-} from "solid-js";
+import { JSX, createContext, createSignal, useContext, Accessor } from "solid-js";
 
-export interface ControlContextModel
-  extends ControlContextValues,
-    ControlContextActions {}
+export interface ControlContextModel extends ControlContextValues, ControlContextActions {}
 export interface ControlContextValues {
   isDragging: Accessor<boolean>;
   isClicking: Accessor<boolean>;
@@ -39,11 +31,7 @@ export function ControlProvider(props: ControlContextProps) {
     isDragging,
   };
 
-  return (
-    <ControlContext.Provider value={actions}>
-      {props.children}
-    </ControlContext.Provider>
-  );
+  return <ControlContext.Provider value={actions}>{props.children}</ControlContext.Provider>;
 }
 
 /**

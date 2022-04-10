@@ -1,15 +1,7 @@
-import {
-  JSX,
-  createContext,
-  createSignal,
-  useContext,
-  Accessor,
-} from "solid-js";
+import { JSX, createContext, createSignal, useContext, Accessor } from "solid-js";
 import { Coordinate } from "../models/game";
 
-export interface UserDataContextModel
-  extends UserDataContextValues,
-    UserDataContextActions {}
+export interface UserDataContextModel extends UserDataContextValues, UserDataContextActions {}
 export interface UserDataContextValues {
   zoom: Accessor<number>;
   coordinate: Accessor<Coordinate | undefined>;
@@ -29,12 +21,8 @@ export const UserDataContext = createContext<UserDataContextModel>();
 
 export function UserDataProvider(props: UserDataContextProps) {
   const [zoom, setZoom] = createSignal<number>(1);
-  const [coordinate, setCoordinate] = createSignal<Coordinate | undefined>(
-    undefined
-  );
-  const [selectedCoordinate, setSelectedCoordinate] = createSignal<
-    Coordinate | undefined
-  >(undefined);
+  const [coordinate, setCoordinate] = createSignal<Coordinate | undefined>(undefined);
+  const [selectedCoordinate, setSelectedCoordinate] = createSignal<Coordinate | undefined>(undefined);
   const store: UserDataContextModel = {
     zoom,
     setZoom: (zoom: number) => {
@@ -50,11 +38,7 @@ export function UserDataProvider(props: UserDataContextProps) {
       setSelectedCoordinate(coord);
     },
   };
-  return (
-    <UserDataContext.Provider value={store}>
-      {props.children}
-    </UserDataContext.Provider>
-  );
+  return <UserDataContext.Provider value={store}>{props.children}</UserDataContext.Provider>;
 }
 
 export function useUserData(): UserDataContextModel | undefined {
