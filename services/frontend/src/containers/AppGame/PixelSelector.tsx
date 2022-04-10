@@ -1,6 +1,7 @@
-import { JSX } from "solid-js";
+import { createMemo, JSX } from "solid-js";
 import { useControl } from "../../context/ControlContext";
 import { useUserData } from "../../context/UserDataContext";
+import { getClosestPixel } from "../../logics/pixel";
 import { PixelSelected } from "./PixelSelected";
 import styles from "./PixelSelector.module.css";
 import { TargetSelector } from "./TargetSelector";
@@ -10,6 +11,16 @@ export interface PixelSelectorProps {
 export function PixelSelector(props: PixelSelectorProps): JSX.Element {
   const control = useControl();
   const userData = useUserData();
+
+  const coordinateAdjusted = createMemo(() => {
+    const c = userData?.selectedCoordinate();
+    if (c) {
+      const adjusted = getClosestPixel(c);
+      return adjusted;
+    } else {
+      return undefined;
+    }
+  });
 
   let containerRef: HTMLDivElement | undefined = undefined;
   return (
@@ -23,9 +34,25 @@ export function PixelSelector(props: PixelSelectorProps): JSX.Element {
           userData?.setCoordinate({ x: e.offsetX, y: e.offsetY });
         }
       }}
+      // onMouseLeave={() => {
+      //   userData?.setCoordinate(undefined);
+      // }}
       onMouseUp={(e) => {
         if (!control?.isDragging()) {
-          userData?.setSelectedCoordinate({ x: e.offsetX, y: e.offsetY });
+          const currentSelection = coordinateAdjusted();
+          const clickSelection = getClosestPixel({
+            x: e.offsetX,
+            y: e.offsetY,
+          });
+          if (
+            currentSelection?.x === clickSelection.x &&
+            currentSelection?.y === clickSelection.y
+          ) {
+            // Unselect
+            userData?.setSelectedCoordinate(undefined);
+          } else {
+            userData?.setSelectedCoordinate({ x: e.offsetX, y: e.offsetY });
+          }
         }
       }}
     >

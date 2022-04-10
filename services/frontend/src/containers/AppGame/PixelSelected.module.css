@@ -2,6 +2,7 @@
   position: absolute;
   margin: 0;
   padding: 0;
+  pointer-events: none;
 }
 
 .svg {
