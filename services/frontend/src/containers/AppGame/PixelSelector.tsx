@@ -19,7 +19,7 @@ export function PixelSelector(props: PixelSelectorProps): JSX.Element {
     <div
       ref={containerRef}
       className={styles.PixelSelector}
-      style={{ cursor: control?.isDragging() ? "pointer" : "none" }}
+      // style={{ cursor: control?.isDragging() ? "pointer" : "none" }}
       onMouseMove={(e) => {
         if (!control?.isDragging()) {
           if (e.offsetX > 0 && e.offsetY > 0) {

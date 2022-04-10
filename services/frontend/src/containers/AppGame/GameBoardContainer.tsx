@@ -1,5 +1,5 @@
 import { JSX, onCleanup, onMount } from "solid-js";
-import { CONSTS } from "../../models/constants";
+import { COLORS, CONSTS } from "../../models/constants";
 import styles from "./GameBoardContainer.module.css";
 export interface GameBoardContainerProps {}
 export function GameBoardContainer(
@@ -45,16 +45,33 @@ export function GameBoardContainer(
           CONSTS.gameBoard.pixelWidth,
           CONSTS.gameBoard.pixelHeight
         );
-        for (let x = 0; x < CONSTS.gameBoard.pixelWidth; x++) {
-          for (let y = 0; y < CONSTS.gameBoard.pixelHeight; y++) {
-            drawPixel(canvasData, x, y, 0, 199, 100);
+        let i = 0;
+        for (
+          let x = 0;
+          x < CONSTS.gameBoard.pixelWidth;
+          x += CONSTS.gameBoard.pixelSize
+        ) {
+          for (
+            let y = 0;
+            y < CONSTS.gameBoard.pixelHeight;
+            y += CONSTS.gameBoard.pixelSize
+          ) {
+            const color = COLORS[Math.floor(Math.random() * COLORS.length)];
+            //drawPixel(canvasData, x, y, color.r, color.g, color.b);
+            ctx.fillStyle = `rgba(${color.r}, ${color.g}, ${color.b}, 1)`;
+            ctx.fillRect(
+              x,
+              y,
+              CONSTS.gameBoard.pixelSize,
+              CONSTS.gameBoard.pixelSize
+            );
           }
         }
-        ctx.putImageData(canvasData, 0, 0);
+        //ctx.putImageData(canvasData, 0, 0);
         console.log("draw");
         lastTime = time;
       }
-      frame = requestAnimationFrame(draw);
+      //frame = requestAnimationFrame(draw);
     }
   };
   return (

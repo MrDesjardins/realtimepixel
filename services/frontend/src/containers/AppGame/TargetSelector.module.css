@@ -1,6 +1,5 @@
 .TargetSelector {
-  width:3px;
-  height:3px;
-  border: 1px solid yellow;
-  position:absolute;
+  position: absolute;
+  box-shadow: black 1px 1px 1px, black -1px -1px 1px, black -1px 1px 1px,
+    black 1px -1px 1px;
 }
