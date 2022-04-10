@@ -2,7 +2,6 @@ import { createMemo, JSX } from "solid-js";
 import { useUserData } from "../../context/UserDataContext";
 import { getClosestPixel } from "../../logics/pixel";
 import { CONSTS } from "../../models/constants";
-import { Coordinate } from "../../models/game";
 import styles from "./TargetSelector.module.css";
 export interface TargetSelectorProps {}
 export function TargetSelector(props: TargetSelectorProps): JSX.Element {
@@ -22,7 +21,6 @@ export function TargetSelector(props: TargetSelectorProps): JSX.Element {
       style={{
         left: `${coordinateAdjusted().x}px`,
         top: `${coordinateAdjusted().y}px`,
-        // visibility: props.display ? "visible" : "hidden",
         width: `${CONSTS.gameBoard.pixelSize}px`,
         height: `${CONSTS.gameBoard.pixelSize}px`,
         border: `${CONSTS.gameBoard.borderTarget}px solid red`,

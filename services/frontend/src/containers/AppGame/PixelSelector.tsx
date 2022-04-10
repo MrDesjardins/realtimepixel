@@ -15,7 +15,7 @@ export function PixelSelector(props: PixelSelectorProps): JSX.Element {
     <div
       ref={containerRef}
       className={styles.PixelSelector}
-      // style={{ cursor: control?.isDragging() ? "pointer" : "none" }}
+      style={{ cursor: control?.isDragging() ? "pointer" : "none" }}
       onMouseMove={(e) => {
         if (!control?.isDragging()) {
           console.log("Pixel Selector offset", e.offsetX, e.offsetY);
@@ -24,12 +24,11 @@ export function PixelSelector(props: PixelSelectorProps): JSX.Element {
           }
         }
       }}
-      onMouseUp={(e) => {
+      onClick={(e) => {
         const rect = containerRef?.getBoundingClientRect();
         const clickedX = e.clientX - (rect?.left ?? 0);
         const clickedY = e.clientY - (rect?.top ?? 0);
-        // console.log("Up", clickedX, clickedY);
-        // console.log("Rect", containerRef?.getBoundingClientRect());
+        console.log("Up", clickedX, clickedY);
         if (!control?.isDragging()) {
           userData?.setSelectedCoordinate({ x: clickedX, y: clickedY });
         }
