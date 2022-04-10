@@ -7,7 +7,12 @@ export interface HeadOverDisplayProps {}
 export function HeadOverDisplay(props: HeadOverDisplayProps): JSX.Element {
   const userData = useUserData();
   const adjustedCoordinate = createMemo(() => {
-    return getAdjustedPixel(userData?.coordinate() ?? { x: 0, y: 0 });
+    const c = userData?.selectedCoordinate();
+    if (c === undefined) {
+      return undefined;
+    } else {
+      return getAdjustedPixel(c);
+    }
   });
   return (
     <div class={styles.HeadOverDisplay}>
@@ -17,9 +22,15 @@ export function HeadOverDisplay(props: HeadOverDisplayProps): JSX.Element {
           <div>{userData?.zoom().toFixed(1)}x</div>
         </div>
         <div class={styles.HeadOverDisplayPanelContent}>
-          <div>Coordinate</div>
+          <div>Selection Coordinate</div>
           <div>
-            [{adjustedCoordinate().x},{adjustedCoordinate().y}]
+            {adjustedCoordinate() === undefined ? (
+              <span>No selection</span>
+            ) : (
+              <span>
+                [{adjustedCoordinate()?.x},{adjustedCoordinate()?.y}]
+              </span>
+            )}
           </div>
         </div>
         <div class={styles.HeadOverDisplayPanelContent}>

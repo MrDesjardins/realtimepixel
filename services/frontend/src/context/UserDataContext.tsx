@@ -12,12 +12,12 @@ export interface UserDataContextModel
     UserDataContextActions {}
 export interface UserDataContextValues {
   zoom: Accessor<number>;
-  coordinate: Accessor<Coordinate>;
+  coordinate: Accessor<Coordinate | undefined>;
   selectedCoordinate: Accessor<Coordinate | undefined>;
 }
 export interface UserDataContextActions {
   setZoom: (zoom: number) => void;
-  setCoordinate: (coord: Coordinate) => void;
+  setCoordinate: (coord: Coordinate | undefined) => void;
   setSelectedCoordinate: (coord: Coordinate | undefined) => void;
 }
 
@@ -29,7 +29,9 @@ export const UserDataContext = createContext<UserDataContextModel>();
 
 export function UserDataProvider(props: UserDataContextProps) {
   const [zoom, setZoom] = createSignal<number>(1);
-  const [coordinate, setCoordinate] = createSignal<Coordinate>({ x: 0, y: 0 });
+  const [coordinate, setCoordinate] = createSignal<Coordinate | undefined>(
+    undefined
+  );
   const [selectedCoordinate, setSelectedCoordinate] = createSignal<
     Coordinate | undefined
   >(undefined);
@@ -39,7 +41,7 @@ export function UserDataProvider(props: UserDataContextProps) {
       setZoom(zoom);
     },
     coordinate,
-    setCoordinate: (coord: Coordinate) => {
+    setCoordinate: (coord: Coordinate | undefined) => {
       setCoordinate(coord);
     },
     selectedCoordinate,

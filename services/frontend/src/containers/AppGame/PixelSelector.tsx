@@ -1,4 +1,4 @@
-import { createMemo, JSX } from "solid-js";
+import { createMemo, JSX, Show } from "solid-js";
 import { useControl } from "../../context/ControlContext";
 import { useUserData } from "../../context/UserDataContext";
 import { getClosestPixel } from "../../logics/pixel";
@@ -27,16 +27,16 @@ export function PixelSelector(props: PixelSelectorProps): JSX.Element {
     <div
       ref={containerRef}
       class={styles.PixelSelector}
-      //style={{ cursor: control?.isDragging() ? "pointer" : "none" }}
+      style={{ cursor: control?.isDragging() ? "pointer" : "none" }}
       onMouseMove={(e) => {
         if (!control?.isDragging()) {
           //console.log("Pixel Selector offset", e.offsetX, e.offsetY);
           userData?.setCoordinate({ x: e.offsetX, y: e.offsetY });
         }
       }}
-      // onMouseLeave={() => {
-      //   userData?.setCoordinate(undefined);
-      // }}
+      onMouseLeave={() => {
+        userData?.setCoordinate(undefined);
+      }}
       onMouseUp={(e) => {
         if (!control?.isDragging()) {
           const currentSelection = coordinateAdjusted();
@@ -56,7 +56,9 @@ export function PixelSelector(props: PixelSelectorProps): JSX.Element {
         }
       }}
     >
-      <TargetSelector />
+      <Show when={control?.isDragging()===false}>
+        <TargetSelector />
+      </Show>
       <PixelSelected />
       {props.children}
     </div>
