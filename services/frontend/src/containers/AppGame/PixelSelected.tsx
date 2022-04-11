@@ -44,7 +44,7 @@ export function PixelSelected(props: PixelSelectedProps): JSX.Element {
             class={styles.svgSelection}
             fill="none"
             style={{
-              "stroke-width": `${CONSTS.gameBoard.borderTargetPx}px`,
+              "stroke-width": `${CONSTS.gameBoard.selectedBorderTargetPx}px`,
               stroke: `rgb(0,0,0)`,
             }}
           />

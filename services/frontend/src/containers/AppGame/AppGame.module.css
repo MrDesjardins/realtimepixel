@@ -1,6 +1,6 @@
 .AppGame {
   flex: 1; /*Take as much space as available*/
-  background-color: blue;
+  background-color: var(--app-bgcolor);
 
   /*The App Game is a container that is set in the middle of the screen*/
   display: flex;

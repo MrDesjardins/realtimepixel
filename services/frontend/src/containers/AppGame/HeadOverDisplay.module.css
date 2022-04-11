@@ -2,7 +2,6 @@
   position: fixed;
   top: 0;
   margin: auto;
-  height: 50px;
   padding: 20px;
 
   display: flex;
@@ -13,8 +12,9 @@
 
 .HeadOverDisplayPanel {
   flex: 0 0 500px;
-  background-color: lightblue;
-  border-radius: 4px;
+  background-color: var(--hud-bgcolor);
+  box-shadow: var(--shadow-color) 1px 2px 3px;
+
   padding: 8px;
   display: flex;
   align-items: center;
@@ -23,4 +23,10 @@
 
 .HeadOverDisplayPanelContent {
   flex: 1;
+}
+
+.HeadOverDisplayPanelContent > div:first-of-type {
+  font-size: 1.1em;
+  color: var(--label-color);
+  margin-bottom:2px;
 }

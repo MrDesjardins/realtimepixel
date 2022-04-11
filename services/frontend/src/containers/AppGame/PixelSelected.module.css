@@ -9,18 +9,35 @@
   top: 0;
   left: 0;
   position: absolute;
+  animation: pulse 650ms linear alternate infinite;
 }
+
+@keyframes pulse {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.5);
+  }
+}
+
 .svgSelection {
-  stroke-dasharray: 3;
-  stroke-dashoffset: 10;
-  animation: dash 1200ms linear alternate infinite;
+  stroke-dasharray: 2;
+  stroke-dashoffset: 0;
+  animation: dash 2000ms linear infinite;
 }
 
 @keyframes dash {
-  from {
-    stroke-dashoffset: 10;
-  }
-  to {
+  0% {
     stroke-dashoffset: 0;
+    stroke: var(--selection-color1);
+  }
+  50% {
+    stroke-dashoffset: 10;
+    stroke: var(--selection-color2);
+  }
+  100% {
+    stroke-dashoffset: 20;
+    stroke: var(--selection-color1);
   }
 }

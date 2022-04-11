@@ -4,7 +4,7 @@
 }
 .App {
   font-family: "Roboto", sans-serif;
-  color: white;
+  color: var(--text-color);
   min-height: 100vh;
   display: flex;
   flex-flow: column wrap;

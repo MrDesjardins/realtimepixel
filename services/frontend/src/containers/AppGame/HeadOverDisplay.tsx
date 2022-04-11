@@ -22,7 +22,7 @@ export function HeadOverDisplay(props: HeadOverDisplayProps): JSX.Element {
           <div>{userData?.zoom().toFixed(1)}x</div>
         </div>
         <div class={styles.HeadOverDisplayPanelContent}>
-          <div>Selection Coordinate</div>
+          <div>Selection</div>
           <div>
             {adjustedCoordinate() === undefined ? (
               <span>No selection</span>

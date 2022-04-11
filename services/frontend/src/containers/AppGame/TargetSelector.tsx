@@ -13,13 +13,13 @@ export function TargetSelector(props: TargetSelectorProps): JSX.Element {
       return undefined;
     }
     const adjusted = getClosestPixel(c);
-    adjusted.x -= CONSTS.gameBoard.borderTargetPx;
-    adjusted.y -= CONSTS.gameBoard.borderTargetPx;
+    adjusted.x -= CONSTS.gameBoard.targetBorderTargetPx;
+    adjusted.y -= CONSTS.gameBoard.targetBorderTargetPx;
     return adjusted;
   });
 
   return (
-    <Show when={coordinateAdjusted() !== undefined}>
+    <Show when={true||coordinateAdjusted() !== undefined}>
       <div
         class={styles.TargetSelector}
         style={{
@@ -27,7 +27,7 @@ export function TargetSelector(props: TargetSelectorProps): JSX.Element {
           top: `${coordinateAdjusted()?.y}px`,
           width: `${CONSTS.gameBoard.pixelSizePx}px`,
           height: `${CONSTS.gameBoard.pixelSizePx}px`,
-          border: `${CONSTS.gameBoard.borderTargetPx}px solid red`,
+          "border-width": `${CONSTS.gameBoard.targetBorderTargetPx}px`,
         }}
       ></div>
     </Show>

@@ -1,7 +1,13 @@
 :root {
-  /*General variables*/
-  --text-color: white;
-  --app-bgcolor: #282c34;
+  /*Colors*/
+  --label-color: #4583b6;
+  --text-color: #9dafbe;
+  --app-bgcolor: #2f4b6a;
+  --hud-bgcolor: rgb(17 48 76 / 69%);
+  --shadow-color: #0b1e36;
+  --selection-color1: #aebccc;
+  --selection-color2: #091e37;
+  --cursor-color: red;
 
   /*Z-index*/
   --z-index-hud: 100;
