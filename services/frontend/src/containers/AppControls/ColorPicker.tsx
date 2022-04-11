@@ -1,14 +1,15 @@
 import { createSignal, JSX } from "solid-js";
-import { ChildProperties } from "solid-js/web";
-import { useUserData } from "../../context/UserDataContext";
+import { SingleColor } from "../../models/color";
 import { COLORS } from "../../models/constants";
 import styles from "./ColorPicker.module.css";
-export interface ColorPickerProps {}
+export interface ColorPickerProps {
+  colors: SingleColor[];
+}
 export function ColorPicker(props: ColorPickerProps): JSX.Element {
   const [selectedIndex, setSelectedIndex] = createSignal(0);
   return (
     <div class={styles.ColorPicker}>
-      {COLORS.map((color, index) => (
+      {props.colors.map((color, index) => (
         <div
           class={styles.ColorPickerColor}
           classList={{ [styles.ColorPickerColorSelected]: index === selectedIndex() }}

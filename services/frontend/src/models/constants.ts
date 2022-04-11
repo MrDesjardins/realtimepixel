@@ -1,3 +1,5 @@
+import { SingleColor } from "./color";
+
 export const CONSTS = {
   gameBoard: {
     boardWidthPx: 500,
@@ -18,7 +20,7 @@ export const CONSTS = {
   },
 };
 
-export const COLORS = [
+export const COLORS: SingleColor[] = [
   // Blue
   {
     r: 36,
