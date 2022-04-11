@@ -28,6 +28,7 @@
 
 .HeadOverDisplayPanelContent > div:first-of-type {
   color: var(--label-color);
+  text-shadow: white 1px 1px 2px;
   font-size: var(--label-size);
   margin-bottom:2px;
 }

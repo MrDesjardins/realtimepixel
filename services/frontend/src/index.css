@@ -9,6 +9,8 @@
   --selection-color1: #aebccc;
   --selection-color2: #091e37;
   --cursor-color: red;
+  --button-bgcolor:#153067;
+  --button-bgcolor-hover:#1f3e7a;
 
   /*Sizes*/
   --label-size: 24px;

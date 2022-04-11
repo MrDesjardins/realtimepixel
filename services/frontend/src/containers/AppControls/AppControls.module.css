@@ -6,4 +6,37 @@
 
 .AppControlsColor {
   padding: 20px;
+
+  display: flex;
+  flex-direction: row;
+}
+
+.AppControlsColorContainer {
+  flex: 1;
+}
+
+.AppControlsColorButtons {
+  width: 100px;
+}
+
+.AppControlsColorButton {
+  width: 80px;
+  height: 80px;
+  margin: 0 10px 0 10px;
+  border: 3px solid black;
+
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  background-color: var(--button-bgcolor);
+  color: var(--text-color);
+
+  cursor: pointer;
+
+  display:flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.AppControlsColorButton:hover {
+  background-color: var(--button-bgcolor-hover);
 }
