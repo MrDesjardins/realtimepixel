@@ -23,10 +23,11 @@
 
 .HeadOverDisplayPanelContent {
   flex: 1;
+  font-size: var(--text-size);
 }
 
 .HeadOverDisplayPanelContent > div:first-of-type {
-  font-size: 1.1em;
   color: var(--label-color);
+  font-size: var(--label-size);
   margin-bottom:2px;
 }

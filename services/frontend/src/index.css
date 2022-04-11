@@ -3,12 +3,17 @@
   --label-color: #4583b6;
   --text-color: #9dafbe;
   --app-bgcolor: #2f4b6a;
+  --app-control-bgcolor: #1e3a5a;
   --hud-bgcolor: rgb(17 48 76 / 69%);
   --shadow-color: #0b1e36;
   --selection-color1: #aebccc;
   --selection-color2: #091e37;
   --cursor-color: red;
 
+  /*Sizes*/
+  --label-size: 24px;
+  --text-size: 18px;
+  
   /*Z-index*/
   --z-index-hud: 100;
 }

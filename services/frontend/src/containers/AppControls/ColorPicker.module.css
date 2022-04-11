@@ -1,0 +1,13 @@
+.ColorPicker {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.ColorPickerColor {
+  width: 30px;
+  height: 30px;
+  flex: 0 0 30px;
+  margin: 4px;
+  border: 2px solid rgb(1, 8, 27);
+}
