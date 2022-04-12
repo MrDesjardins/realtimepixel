@@ -43,6 +43,7 @@ export function AppControls(props: AppControlsProps): JSX.Element {
             class={styles.AppControlsColorButton}
             onClick={() => {
               removeColors();
+              userData?.setSelectedColor(undefined);
             }}
           >
             <div>Apply</div>

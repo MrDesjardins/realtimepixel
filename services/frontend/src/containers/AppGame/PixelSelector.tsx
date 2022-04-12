@@ -28,16 +28,16 @@ export function PixelSelector(props: PixelSelectorProps): JSX.Element {
       ref={containerRef}
       class={styles.PixelSelector}
       style={{ cursor: control?.isDragging() ? "pointer" : "none" }}
-      onMouseMove={(e) => {
+      onPointerMove={(e) => {
         if (!control?.isDragging()) {
           //console.log("Pixel Selector offset", e.offsetX, e.offsetY);
           userData?.setCoordinate({ x: e.offsetX, y: e.offsetY });
         }
       }}
-      onMouseLeave={() => {
+      onPointerLeave={() => {
         userData?.setCoordinate(undefined);
       }}
-      onMouseUp={(e) => {
+      onPointerUp={(e) => {
         if (!control?.isDragging()) {
           const currentSelection = coordinateAdjusted();
           const clickSelection = getClosestPixel({

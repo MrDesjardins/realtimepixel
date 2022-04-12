@@ -1,7 +1,7 @@
 import { createEffect, createMemo, JSX, Show } from "solid-js";
 import { useUserData } from "../../context/UserDataContext";
 import { getClosestPixel } from "../../logics/pixel";
-import { CONSTS } from "../../models/constants";
+import { COLORS, CONSTS } from "../../models/constants";
 import styles from "./PixelSelected.module.css";
 export interface PixelSelectedProps {}
 export function PixelSelected(props: PixelSelectedProps): JSX.Element {
@@ -21,6 +21,15 @@ export function PixelSelected(props: PixelSelectedProps): JSX.Element {
     console.log("readme", userData?.selectedCoordinate());
   });
 
+  const getPixelColor = createMemo(() => {
+    const colorIndex = userData?.selectedColor();
+    if (colorIndex === undefined) {
+      return "transparent";
+    }
+    const colorData = COLORS[colorIndex];
+    return `rgb(${colorData.r},${colorData.g},${colorData.b})`;
+  });
+
   return (
     <Show when={coordinateAdjusted() !== undefined}>
       <div
@@ -30,6 +39,7 @@ export function PixelSelected(props: PixelSelectedProps): JSX.Element {
           top: `${coordinateAdjusted()?.y}px`,
           width: `${CONSTS.gameBoard.pixelSizePx}px`,
           height: `${CONSTS.gameBoard.pixelSizePx}px`,
+          "background-color": getPixelColor(),
         }}
       >
         <svg

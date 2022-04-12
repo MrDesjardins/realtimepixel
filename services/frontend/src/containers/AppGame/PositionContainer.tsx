@@ -36,11 +36,11 @@ export function PositionContainer(props: PositionContainerProps): JSX.Element {
       style={{
         transform: `translate(${translate().x}px, ${translate().y}px)`,
       }}
-      onMouseDown={(e) => {
+      onPointerDown={(e) => {
         setOriginal({ x: e.clientX, y: e.clientY });
         control?.setIsClicking(true);
       }}
-      onMouseMove={(e) => {
+      onPointerMove={(e) => {
         console.log("onMouseMove", e.clientX, e.clientY);
         if (control?.isClicking()) {
           control?.setIsDragging(true);
@@ -50,7 +50,7 @@ export function PositionContainer(props: PositionContainerProps): JSX.Element {
           });
         }
       }}
-      onMouseUp={(e) => {
+      onPointerUp={(e) => {
         // Notify that we change the coordinate (we are panning)
         if (control?.isDragging()) {
           setLastTranslate({
@@ -63,7 +63,7 @@ export function PositionContainer(props: PositionContainerProps): JSX.Element {
         control?.setIsDragging(false);
         control?.setIsClicking(false);
       }}
-      onMouseLeave={(e) => {
+      onPointerLeave={(e) => {
         control?.setIsDragging(false);
         control?.setIsClicking(false);
       }}

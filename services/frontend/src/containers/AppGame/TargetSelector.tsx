@@ -19,7 +19,7 @@ export function TargetSelector(props: TargetSelectorProps): JSX.Element {
   });
 
   return (
-    <Show when={true||coordinateAdjusted() !== undefined}>
+    <Show when={true || coordinateAdjusted() !== undefined}>
       <div
         class={styles.TargetSelector}
         style={{
