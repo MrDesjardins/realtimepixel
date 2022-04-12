@@ -4,10 +4,12 @@ export interface ControlContextModel extends ControlContextValues, ControlContex
 export interface ControlContextValues {
   isDragging: Accessor<boolean>;
   isClicking: Accessor<boolean>;
+  isHelpOpen: Accessor<boolean>;
 }
 export interface ControlContextActions {
   setIsDragging: (isDragging: boolean) => void;
   setIsClicking: (isClicking: boolean) => void;
+  setIsHelpOpen: (isHelpOpen: boolean) => void;
 }
 
 export interface ControlContextProps {
@@ -19,6 +21,7 @@ export const ControlContext = createContext<ControlContextModel>();
 export function ControlProvider(props: ControlContextProps) {
   const [isDragging, setIsDragging] = createSignal<boolean>(false);
   const [isClicking, setIsClicking] = createSignal<boolean>(false);
+  const [isHelpOpen, setIsHelpOpen] = createSignal<boolean>(false);
 
   const actions: ControlContextModel = {
     setIsClicking: (isClicking: boolean) => {
@@ -27,8 +30,12 @@ export function ControlProvider(props: ControlContextProps) {
     setIsDragging: (isDragging: boolean) => {
       setIsDragging(isDragging);
     },
+    setIsHelpOpen: (isHelpOpen: boolean) => {
+      setIsHelpOpen(isHelpOpen);
+    },
     isClicking,
     isDragging,
+    isHelpOpen,
   };
 
   return <ControlContext.Provider value={actions}>{props.children}</ControlContext.Provider>;

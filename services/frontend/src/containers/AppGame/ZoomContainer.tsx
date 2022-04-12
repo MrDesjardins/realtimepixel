@@ -1,4 +1,4 @@
-import { createEffect, createSignal, JSX } from "solid-js";
+import { JSX } from "solid-js";
 import { useUserData } from "../../context/UserDataContext";
 import { CONSTS } from "../../models/constants";
 import { Zoom } from "../../models/enums";
@@ -10,7 +10,7 @@ export function ZoomContainer(props: ZoomContainerProps): JSX.Element {
   const userData = useUserData();
   return (
     <div
-      className={styles.ZoomContainer}
+      class={styles.ZoomContainer}
       style={{
         transform: `scale(${userData?.zoom()})`,
       }}

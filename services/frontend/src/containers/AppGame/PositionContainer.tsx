@@ -41,7 +41,6 @@ export function PositionContainer(props: PositionContainerProps): JSX.Element {
         control?.setIsClicking(true);
       }}
       onPointerMove={(e) => {
-        console.log("onMouseMove", e.clientX, e.clientY);
         if (control?.isClicking()) {
           control?.setIsDragging(true);
           setTranslate({

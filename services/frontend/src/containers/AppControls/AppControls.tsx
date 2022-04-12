@@ -44,6 +44,7 @@ export function AppControls(props: AppControlsProps): JSX.Element {
             onClick={() => {
               removeColors();
               userData?.setSelectedColor(undefined);
+              userData?.setSelectedCoordinate(undefined);
             }}
           >
             <div>Apply</div>

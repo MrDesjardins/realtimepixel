@@ -9,15 +9,19 @@
   --selection-color1: #aebccc;
   --selection-color2: #091e37;
   --cursor-color: red;
-  --button-bgcolor:#153067;
-  --button-bgcolor-hover:#1f3e7a;
+  --button-bgcolor: #153067;
+  --button-bgcolor-hover: #1f3e7a;
+  --help-color: white;
+  --helpbutton-bgcolor: var(--hud-bgcolor);
+  --helpbutton-shadowcolor: var(--shadow-color);
 
   /*Sizes*/
   --label-size: 24px;
   --text-size: 18px;
-  
+
   /*Z-index*/
   --z-index-hud: 100;
+  --z-index-help: 101;
 }
 
 body {
