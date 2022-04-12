@@ -1,4 +1,5 @@
 .GameBoardContainer {
+  box-shadow: black 4px 3px 14px 5px;
 }
 
 .Canvas {
