@@ -4,7 +4,7 @@
   --text-color: #9dafbe;
   --app-bgcolor: #2f4b6a;
   --app-control-bgcolor: #1e3a5a;
-  --hud-bgcolor: rgb(17 48 76 / 69%);
+  --hud-bgcolor: rgb(17 48 76 / 80%);
   --shadow-color: #0b1e36;
   --selection-color1: #aebccc;
   --selection-color2: #091e37;
@@ -30,4 +30,5 @@ body {
     "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow: hidden;
 }

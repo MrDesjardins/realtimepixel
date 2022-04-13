@@ -3,6 +3,7 @@ import { useUserData } from "../../context/UserDataContext";
 import { COLORS } from "../../models/constants";
 import styles from "./AppControls.module.css";
 import { ColorPicker } from "./ColorPicker";
+const AppControlHeight = 200;
 export interface AppControlsProps {}
 export function AppControls(props: AppControlsProps): JSX.Element {
   const userData = useUserData();
@@ -24,6 +25,8 @@ export function AppControls(props: AppControlsProps): JSX.Element {
     if (currentColors.length > 0) {
       setColors(currentColors.slice(0, currentColors.length - 1));
       timeOutRef = window.setTimeout(removeColors, 10);
+    } else if (currentColors.length === 0) {
+      userData?.setSelectedCoordinate(undefined); // Un-select to see the actual color
     }
   };
 
@@ -31,7 +34,10 @@ export function AppControls(props: AppControlsProps): JSX.Element {
     <div
       class={styles.AppControls}
       style={{
-        height: `${userData?.selectedCoordinate() === undefined || colors().length === 0 ? 0 : 200}px`,
+        height: `${AppControlHeight}px`,
+        bottom: `${
+          userData?.selectedCoordinate() === undefined || colors().length === 0 ? -AppControlHeight : 0
+        }px`,
       }}
     >
       <div class={styles.AppControlsColor}>
@@ -44,7 +50,6 @@ export function AppControls(props: AppControlsProps): JSX.Element {
             onClick={() => {
               removeColors();
               userData?.setSelectedColor(undefined);
-              userData?.setSelectedCoordinate(undefined);
             }}
           >
             <div>Apply</div>

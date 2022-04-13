@@ -60,3 +60,13 @@ https://viralganatra.com/docker-nodejs-production-secure-best-practices/
 https://stackoverflow.com/questions/26220957/how-can-i-inspect-the-file-system-of-a-failed-docker-build
 
 
+# Projects Todos
+
+## Front End Todos
+1. Help button smaller + panel creation with rules
+1. Fix the issue of rendering and dragging big canvas
+
+## Back End Todo
+1. Signal IO
+1. Authentication
+1. Manage Many Back End server (Client -> NodeJS server)

@@ -7,6 +7,6 @@
   color: var(--text-color);
   min-height: 100vh;
   display: flex;
-  flex-flow: column wrap;
+  flex-flow: column nowrap;
   overflow: hidden; /*Remove the scrollbar*/
 }

@@ -1,7 +1,10 @@
 .AppControls {
-  background-color: var(--app-control-bgcolor);
+  position: absolute;
+  left: 0;
+  width: 100vw; /*Ensure the control spreads horizontally*/
 
-  transition: height 300ms ease-in-out;
+  background-color: var(--app-control-bgcolor);
+  transition: bottom 300ms ease-in-out;
 }
 
 .AppControlsColor {
@@ -32,7 +35,7 @@
 
   cursor: pointer;
 
-  display:flex;
+  display: flex;
   justify-content: center;
   align-items: center;
 }

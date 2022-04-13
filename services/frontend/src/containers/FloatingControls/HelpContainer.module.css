@@ -1,5 +1,5 @@
 .HelpContainer {
-  position: fixed;
+  position: absolute;
   bottom: 20px;
   right: 20px;
   transition: all 100ms cubic-bezier(0.62, 0.1, 0.5, 1);

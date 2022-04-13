@@ -2,13 +2,13 @@ import { SingleColor } from "./color";
 
 export const CONSTS = {
   gameBoard: {
-    boardWidthPx: 500,
-    boardHeightPx: 500,
+    boardWidthPx: 1200,
+    boardHeightPx: 1200,
     pixelSizePx: 10,
     targetBorderTargetPx: 0,
     selectedBorderTargetPx: 2,
     zoomStep: 0.5,
-    minimumZoom: 0.5,
+    minimumZoom: 0.2,
     maximumZoom: 10,
     fps: 30,
   },
