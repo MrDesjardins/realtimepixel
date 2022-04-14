@@ -14,6 +14,7 @@
   --help-color: white;
   --helpbutton-bgcolor: var(--hud-bgcolor);
   --helpbutton-shadowcolor: var(--shadow-color);
+  --helpcontent-bgcolor: #132a43;
 
   /*Sizes*/
   --label-size: 24px;
@@ -22,6 +23,7 @@
   /*Z-index*/
   --z-index-hud: 100;
   --z-index-help: 101;
+  --z-index-help-content: 102;
 }
 
 body {

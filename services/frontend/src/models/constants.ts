@@ -2,21 +2,23 @@ import { SingleColor } from "./color";
 
 export const CONSTS = {
   gameBoard: {
-    boardWidthPx: 10000,
-    boardHeightPx: 10000,
+    boardWidthPx: 1000,
+    boardHeightPx: 1000,
     pixelSizePx: 10,
     targetBorderTargetPx: 0,
     selectedBorderTargetPx: 2,
-    zoomStep: 0.5,
+    defaultZoom: 2,
+    zoomStep: 0.2,
     minimumZoom: 0.1,
-    maximumZoom: 10,
+    maximumZoom: 5,
     fps: 30,
   },
   gameRules: {
-    pixelValueOnClick: 10,
-    pixelMaximumValueToOverride: 5,
+    pixelInitialLifeUnit: 10,
+    pixelMaximumUnitToOverride: 5,
     decayDelaySeconds: 30,
     decayValueReduction: 1,
+    userPixelDelaySeconds: 60,
   },
 };
 

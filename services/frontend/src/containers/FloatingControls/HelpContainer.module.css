@@ -6,7 +6,7 @@
   z-index: var(--z-index-help);
 }
 
-.HelpContainer.ActionMenuOpen{
+.HelpContainer.ActionMenuOpen {
   bottom: 220px;
 }
 
@@ -36,12 +36,12 @@
 
 .HelpContainer button:hover {
   transition: all 200ms cubic-bezier(0.62, 0.1, 0.5, 1);
-  width: 200px;
+  width: 160px;
   border-top-right-radius: 5px;
   border-bottom-right-radius: 5px;
 }
 
-.LongText {
+.HelpContainerButton span.LongText {
   transition: opacity 1000ms; /*Only the text fadein/fadeout is animated*/
   opacity: 0; /*By default we do not display the text, we want the text to fade in*/
   color: var(--help-color);
@@ -56,7 +56,7 @@
  on the width and the font-size to not have the browser have the text appears on the right     
  side of the browser view port. This has the side-effect of having an horizontal bar. 
  */
-.LongTextOpen {
+.HelpContainerButton span.LongTextOpen {
   transition: opacity 700ms, width 1ms linear 270ms,
     /*two thirds of the animation on the container width*/ font-size 1ms linear 270ms; /*two thirds of the animation on the container width*/
   opacity: 1;
@@ -64,4 +64,60 @@
   margin-left: 65px; /*Center between the + and the right end side*/
   font-size: 20px; /*Text size, cannot be defined initially without moving the scrollbar*/
   width: auto; /*Required to be set with a delay (see animation) to not have scrollbar. Delay is to wait container to size up*/
+}
+
+.HelpContainerContent {
+  z-index: var(--z-index-help-content);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -550%);
+  width: 50vw;
+  padding: 0 20px 20px 20px;
+
+  font-family: "Roboto", sans-serif;
+  color: var(--text-color);
+  /* background-color: var(--helpcontent-bgcolor); */
+  background: linear-gradient(138deg, rgba(19, 42, 67, 1) 0%, rgb(27 55 86) 100%);
+  box-shadow: black 10px 10px 10px;
+
+  transition: all 800ms ease-in-out;
+}
+
+.HelpContainerContent h1 {
+  margin: 18px 0px 2px 0px;
+  text-shadow: white 1px 1px 2px;
+}
+
+.HelpContainerContent ul,
+.HelpContainerContent p {
+  margin: 2px 0px 2px 20px;
+}
+
+.HelpContainerContent ul {
+  padding-left: 20px;
+}
+.HelpContainerContent li {
+  margin: 0;
+  padding: 0;
+}
+.HelpContainerContentOpen {
+  transform: translate(-50%, -50%);
+}
+
+.HelpContainerCloseButton {
+  position: absolute;
+  right: 20px;
+  top: 20px;
+  color: var(--text-color);
+  background-color: var(--button-bgcolor);
+  border: 3px solid black;
+  padding: 8px;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.HelpContainerCloseButton:hover {
+  background-color: var( --button-bgcolor-hover);
 }

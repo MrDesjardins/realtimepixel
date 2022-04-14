@@ -1,4 +1,5 @@
 import { JSX, createContext, createSignal, useContext, Accessor } from "solid-js";
+import { CONSTS } from "../models/constants";
 import { Color, Coordinate } from "../models/game";
 
 export interface UserDataContextModel extends UserDataContextValues, UserDataContextActions {}
@@ -22,7 +23,7 @@ export interface UserDataContextProps {
 export const UserDataContext = createContext<UserDataContextModel>();
 
 export function UserDataProvider(props: UserDataContextProps) {
-  const [zoom, setZoom] = createSignal<number>(1);
+  const [zoom, setZoom] = createSignal<number>(CONSTS.gameBoard.defaultZoom);
   const [coordinate, setCoordinate] = createSignal<Coordinate | undefined>(undefined);
   const [selectedCoordinate, setSelectedCoordinate] = createSignal<Coordinate | undefined>(undefined);
   const [selectedColor, setSelectedColor] = createSignal<Color | undefined>(undefined);
