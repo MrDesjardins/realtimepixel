@@ -2,9 +2,12 @@
   position: absolute;
   left: 0;
   width: 100vw; /*Ensure the control spreads horizontally*/
+  /*height defined dynamically*/
 
   background-color: var(--app-control-bgcolor);
   transition: bottom 300ms ease-in-out;
+
+  display: flex;
 }
 
 .AppControlsColor {

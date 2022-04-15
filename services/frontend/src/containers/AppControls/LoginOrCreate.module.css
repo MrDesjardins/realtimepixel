@@ -1,0 +1,33 @@
+.LoginOrCreate {
+  margin:auto;
+  width:600px;
+  display: flex;
+  flex-direction: column;
+}
+
+.Choice{
+  flex:1;
+
+  display:grid;
+  grid-template-columns: repeat(2, 1fr);
+  column-gap: 20px;
+}
+
+.LoginOrCreate button {
+  height: 36px;
+  font-size: var(--input-size);
+  padding: 3px;
+}
+
+.BackButton {
+  width: 100px;
+  height: 36px;
+  font-size: var(--input-size);
+  padding: 3px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+
+  position: absolute;
+  top: 20px;
+  right: 20px;
+}

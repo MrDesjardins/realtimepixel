@@ -8,12 +8,14 @@ export interface UserDataContextValues {
   coordinate: Accessor<Coordinate | undefined>;
   selectedCoordinate: Accessor<Coordinate | undefined>;
   selectedColor: Accessor<Color | undefined>;
+  isAuthenticated: Accessor<boolean>;
 }
 export interface UserDataContextActions {
   setZoom: (zoom: number) => void;
   setCoordinate: (coord: Coordinate | undefined) => void;
   setSelectedCoordinate: (coord: Coordinate | undefined) => void;
   setSelectedColor: (color: Color | undefined) => void;
+  setIsAuthenticated: (isAuthenticated: boolean) => void;
 }
 
 export interface UserDataContextProps {
@@ -27,6 +29,7 @@ export function UserDataProvider(props: UserDataContextProps) {
   const [coordinate, setCoordinate] = createSignal<Coordinate | undefined>(undefined);
   const [selectedCoordinate, setSelectedCoordinate] = createSignal<Coordinate | undefined>(undefined);
   const [selectedColor, setSelectedColor] = createSignal<Color | undefined>(undefined);
+  const [isAuthenticated, setIsAuthenticated] = createSignal<boolean>(false);
   const store: UserDataContextModel = {
     zoom,
     setZoom: (zoom: number) => {
@@ -44,6 +47,10 @@ export function UserDataProvider(props: UserDataContextProps) {
     selectedColor,
     setSelectedColor: (color: Color | undefined) => {
       setSelectedColor(color);
+    },
+    isAuthenticated,
+    setIsAuthenticated: (isAuthenticated: boolean) => {
+      setIsAuthenticated(isAuthenticated);
     },
   };
   return <UserDataContext.Provider value={store}>{props.children}</UserDataContext.Provider>;

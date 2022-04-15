@@ -1,0 +1,37 @@
+.CreateAccount{}
+
+.Create1,
+.Create2 {
+  display: grid;
+  grid-template-columns: 150px auto 150px;
+  align-items: center;
+  column-gap: 10px;
+  margin-top:10px;
+}
+
+.CreateAccount span {
+  margin-right: 10px;
+  font-size: var(--label-size);
+  text-align: right;
+  grid-column: 1/1;
+  grid-row: 1;
+}
+
+.CreateAccount input[type="text"],
+.CreateAccount input[type="password"] {
+  height: 36px;
+  width: 100%;
+  font-size: var(--input-size);
+  border: 0;
+  margin-right: 10px;
+  grid-column: 2/2;
+  grid-row: 1;
+}
+
+.CreateAccount button {
+  height: 36px;
+  font-size: var(--input-size);
+  padding: 3px;
+  grid-column: 3/3;
+  grid-row: 1;
+}

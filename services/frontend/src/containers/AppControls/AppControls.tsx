@@ -3,6 +3,7 @@ import { useUserData } from "../../context/UserDataContext";
 import { COLORS } from "../../models/constants";
 import styles from "./AppControls.module.css";
 import { ColorPicker } from "./ColorPicker";
+import { LoginOrCreate } from "./LoginOrCreate";
 const AppControlHeight = 200;
 export interface AppControlsProps {}
 export function AppControls(props: AppControlsProps): JSX.Element {
@@ -40,22 +41,25 @@ export function AppControls(props: AppControlsProps): JSX.Element {
         }px`,
       }}
     >
-      <div class={styles.AppControlsColor}>
-        <div class={styles.AppControlsColorContainer}>
-          <ColorPicker colors={colors()} />
-        </div>
-        <div class={styles.AppControlsColorButtons}>
-          <div
-            class={styles.AppControlsColorButton}
-            onClick={() => {
-              removeColors();
-              userData?.setSelectedColor(undefined);
-            }}
-          >
-            <div>Apply</div>
+      {!userData?.isAuthenticated() && <LoginOrCreate />}
+      {userData?.isAuthenticated() && (
+        <div class={styles.AppControlsColor}>
+          <div class={styles.AppControlsColorContainer}>
+            <ColorPicker colors={colors()} />
+          </div>
+          <div class={styles.AppControlsColorButtons}>
+            <div
+              class={styles.AppControlsColorButton}
+              onClick={() => {
+                removeColors();
+                userData?.setSelectedColor(undefined);
+              }}
+            >
+              <div>Apply</div>
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
