@@ -26,6 +26,7 @@ services:
       test: "${DOCKER_SERVER_HEALTHCHECK_TEST}"
     volumes:
       - "./services/backend:/node/app:delegated"
+      - "./services/shared:/node/shared:delegated"
       - "/node/app/node_modules" # Anonymous volume to hide our local node_modules
 
   frontend:

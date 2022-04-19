@@ -1,6 +1,7 @@
 import { JSX, createContext, createSignal, useContext, Accessor } from "solid-js";
+import { Color } from "../../../shared/models/game";
 import { CONSTS } from "../models/constants";
-import { Color, Coordinate } from "../models/game";
+import { Coordinate } from "../models/game";
 
 export interface UserDataContextModel extends UserDataContextValues, UserDataContextActions {}
 export interface UserDataContextValues {

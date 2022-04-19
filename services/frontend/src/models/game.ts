@@ -1,23 +1,5 @@
-/**
- * Positive number: 4 bytes
- **/
-export type EpocTimestamps = number;
-
-/**
- * UUID: 16 bytes
- **/
-export type Id = string;
-
-/**
- * Between 0 to 255 inclusively: 1 byte
- **/
-export type Color = number;
-
-/**
- * Value from 0 to 65536 inclusively: 2 bytes
- **/
-export type CoordinateNumber = number;
-
+import { Id, EpocTimestamps } from '../../../shared/models/primitive';
+import { CoordinateNumber, Color } from '../../../shared/models/game';
 export interface Game {
   tiles: Tile[][];
 }
