@@ -22,6 +22,7 @@ services:
         - "SERVER_PORT=${SERVER_PORT}"
     ports:
       - "${DOCKER_SERVER_PORT_FORWARD}:${SERVER_PORT}"
+      - 9229:9229
     healthcheck:
       test: "${DOCKER_SERVER_HEALTHCHECK_TEST}"
     volumes:
