@@ -1,4 +1,5 @@
 import { createSignal, JSX } from "solid-js";
+import { HttpRequest } from "../../communications/httpRequest";
 import { useUserData } from "../../context/UserDataContext";
 import styles from "./Login.module.css";
 export interface LoginProps {}
@@ -6,6 +7,7 @@ export function Login(props: LoginProps): JSX.Element {
   const userData = useUserData();
   const [email, setEmail] = createSignal<string>("");
   const [password, setPassword] = createSignal<string>("");
+  const [isAuthenticating, setIsAuthenticating] = createSignal<boolean>(false);
   return (
     <div class={styles.Login}>
       <div class={styles.Auth1}>
@@ -16,7 +18,7 @@ export function Login(props: LoginProps): JSX.Element {
           onInput={(
             e: InputEvent & {
               currentTarget: HTMLInputElement;
-              target: Element;
+              target: any;
             },
           ) => {
             setEmail(e.target.value);
@@ -31,15 +33,25 @@ export function Login(props: LoginProps): JSX.Element {
           onInput={(
             e: InputEvent & {
               currentTarget: HTMLInputElement;
-              target: Element;
+              target: any;
             },
           ) => {
             setPassword(e.target.value);
           }}
         />
         <button
-          onClick={() => {
-            userData?.setIsAuthenticated(true); // Temporary until we have real check
+          disabled={isAuthenticating()}
+          onClick={async () => {
+            setIsAuthenticating(true);
+            const http = new HttpRequest();
+            try {
+              const response = await http.login({ email: email(), password: password() });
+              userData?.setIsAuthenticated(response.token !== ""); // Temporary until we have real check
+            } catch (e) {
+              console.error(e); //Todo: log the error in a logging system
+            } finally {
+              setIsAuthenticating(false);
+            }
           }}
         >
           Login

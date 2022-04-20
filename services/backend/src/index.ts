@@ -31,13 +31,15 @@ serverApp.post(
   "/login",
   async (
     req: TypedRequestBody<LoginRequest>,
-    res: TypedResponse<LoginResponse>
+    res: TypedResponse<LoginResponse>,
+    next: express.NextFunction
   ) => {
-    const userToken = await serviceLayer.login.authenticate(req.body);
-    if (userToken === undefined) {
-      res.status(401).send("Invalid credentials");
-    } else {
+    try {
+      const userToken = await serviceLayer.login.authenticate(req.body);
       res.json(buildLoginResponse(req.body.email, userToken));
+    } catch (e) {
+      console.log("Catch", e);
+      return res.status(401).send("Invalid credentials");
     }
   }
 );
