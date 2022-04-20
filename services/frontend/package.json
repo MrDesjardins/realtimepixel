@@ -3,11 +3,12 @@
   "version": "0.0.0",
   "description": "",
   "scripts": {
-    "start:production": "vite --host 0.0.0.0",
-    "start:development": "vite --host 0.0.0.0",
-    "build": "vite build",
-    "serve": "vite preview",
-    "prettier": "prettier --write src/**/*.{ts,tsx,css}"
+    "start:production": "npm run copy:env && vite --host 0.0.0.0",
+    "start:development": "npm run copy:env && vite --host 0.0.0.0",
+    "build": "npm run copy:env && vite build",
+    "serve": "npm run copy:env && vite preview",
+    "prettier": "prettier --write src/**/*.{ts,tsx,css}",
+    "copy:env": "python ../scripts/envToConsts.py"
   },
   "license": "MIT",
   "devDependencies": {
