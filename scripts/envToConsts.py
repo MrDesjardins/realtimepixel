@@ -13,8 +13,8 @@ for line in lines:
         lineSplit = line.split("=")
         left = lineSplit[0].strip()
         right = lineSplit[1].strip()
-        if right.find("#"):
-            right = right[:right.find("#")]
+        if right.find("#") > 0:
+            right = right[:right.find("#")-1]
         keyValues.append([left, right])
 
 # Create the TS file
