@@ -5,7 +5,7 @@ FROM node:16 AS development
 
 WORKDIR /node
 # Install Node without having the whole application files (cache)
-COPY package*.json tsconfig.json ./
+COPY services/frontend/package*.json services/frontend/tsconfig.json ./
 
 # Default build argument is dev
 ARG NODE_ENV=development
@@ -36,10 +36,13 @@ ENV NODE_ENV=${NODE_ENV}
 ARG CLIENT_PORT
 ENV CLIENT_PORT=${CLIENT_PORT}
 
-# Install Node Version 16
+# Install Python and NPM
 RUN apt-get update && apt-get install -y \
     software-properties-common \
+    python \
     npm
+
+# Install Node Version 16
 RUN npm install npm@latest -g && \
     npm install n -g && \
     n 16
@@ -47,10 +50,18 @@ RUN npm install npm@latest -g && \
 WORKDIR /node
 
 # Install Node without having the whole application files (cache)
-COPY package*.json tsconfig.json ./
+COPY services/frontend/package*.json services/frontend/tsconfig.json ./
 RUN npm install --include=dev
 
-COPY . .
+COPY services/frontend /node
+COPY services/shared /shared
+COPY scripts /scripts
+COPY .env /scripts/.env
+
+WORKDIR /scripts
+RUN python envToConsts.py
+
+WORKDIR /node
 RUN npm run build
 
 # Remove default nginx static resources
@@ -60,7 +71,7 @@ RUN rm -rf /usr/share/nginx/html/*
 RUN mv dist/* /usr/share/nginx/html
 
 # Add your nginx.conf
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY services/frontend/nginx.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE ${CLIENT_PORT}
 

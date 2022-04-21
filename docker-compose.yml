@@ -14,8 +14,8 @@ services:
   backend:
     <<: *default-app
     build:
-      context: "./services/backend"
-      dockerfile: Dockerfile
+      context: "./services"
+      dockerfile: backend/Dockerfile
       target: ${NODE_ENV}
       args:
         - "NODE_ENV=${NODE_ENV}"
@@ -35,9 +35,9 @@ services:
     # depends_on:
     # - "backend"
     build:
-      context: "./services/frontend"
+      context: "."
       target: ${NODE_ENV}
-      dockerfile: Dockerfile
+      dockerfile: services/frontend/Dockerfile
       args:
         - "NODE_ENV=${NODE_ENV}"
         - "CLIENT_PORT=${CLIENT_PORT}"

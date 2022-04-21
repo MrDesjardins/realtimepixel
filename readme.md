@@ -20,11 +20,12 @@ docker-compose up
 ```
 3. Modify the source code. Look at the `.env` file to know which port is open.
 
-# How to Debug Build
+# Debug
+## How to Debug Docker Build?
 
 Run
 ```
- DOCKER_BUILDKIT=0 docker-compose build  
+DOCKER_BUILDKIT=0 docker-compose build  
 ```
 This will give some UUID for each step. Use the UUID for the step to debug with this command:
 
@@ -38,6 +39,13 @@ If the build was successful, we can use the image name.
 docker run -it realtimepixel_backend:latest bash 
 docker run -it realtimepixel_frontend:latest bash 
 ```
+
+## How to Debug the Backend?
+The backend NodeJS server listens to the VsCode default debugging port when running Docker in the development environment. Hence, the step needed is to attach the debugger using the configuration `Docker: Attach to Node` from the `launch.json` file. Then, running the code will hit any of your breakpoints. Breakpoints can be set directly to `.ts` file from the `services/backend/src/**` files. It works because we have the generation of map files in the `tsconfig.json` enabled.
+
+# Docker
+While developing or publishing, the project must have Docker built and running. Docker will map volumes to the developer machine when in development, allowing quick changes to be picked up by Node (backend and frontend). The two Docker containers run NodeJS and in production, run NodeJS for the backend and NGINX to serve the frontend files. The Docker image builds the code in all environments and runs scripts (e.g., generating environment variables). Hence, the paths in TypeScript's configuration, in package.json, and inside the scripts are all relative to Docker's file system. Therefore, they are intended to be used inside Docker.
+
 # Documentations
 
 ## Docker References

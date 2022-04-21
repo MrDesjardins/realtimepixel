@@ -3,7 +3,7 @@ import os
 # Read the environment variables from the .env file
 __location__ = os.path.realpath(os.path.join(
     os.getcwd(), os.path.dirname(__file__)))
-f = open(os.path.join(__location__, '../.env'))
+f = open(os.path.join(__location__, '.env'))
 lines = f.read().splitlines()
 
 # Extract all the key-value of each line
@@ -32,6 +32,6 @@ tsFile += "}"
 
 # Write the file on disk
 f = open(os.path.join(__location__,
-         '../app/src/generated/constants_env.ts'), "w")
+         '../node/src/generated/constants_env.ts'), "w")
 f.write(tsFile)
 f.close()

@@ -6,7 +6,7 @@ FROM node:16 AS development
 WORKDIR /node
 
 # Install Node without having the whole application files (cache)
-COPY package*.json tsconfig.json ./
+COPY backend/package*.json backend/tsconfig.json ./
 
 # Default build argument is dev
 ARG NODE_ENV=development
@@ -34,7 +34,7 @@ FROM node:16 AS production
 WORKDIR /node
 
 # Install Node without having the whole application files (cache)
-COPY package*.json tsconfig.json ./
+COPY backend/package*.json backend/tsconfig.json ./
 
 # Default build argument is dev
 ARG NODE_ENV=development
@@ -44,7 +44,11 @@ ENV SERVER_PORT=${SERVER_PORT}
 
 RUN npm install
 
-COPY . .
+WORKDIR /
+COPY backend /node
+COPY shared /shared
+
+WORKDIR /node
 RUN npm run build
 
 EXPOSE ${SERVER_PORT}
