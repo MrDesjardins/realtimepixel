@@ -10,6 +10,7 @@ export interface UserDataContextValues {
   selectedCoordinate: Accessor<Coordinate | undefined>;
   selectedColor: Accessor<Color | undefined>;
   isAuthenticated: Accessor<boolean>;
+  lastActionEpochtime: Accessor<EpochTimeStamp | undefined>;
 }
 export interface UserDataContextActions {
   setZoom: (zoom: number) => void;
@@ -17,6 +18,7 @@ export interface UserDataContextActions {
   setSelectedCoordinate: (coord: Coordinate | undefined) => void;
   setSelectedColor: (color: Color | undefined) => void;
   setIsAuthenticated: (isAuthenticated: boolean) => void;
+  setLastActionEpochtime: (time: EpochTimeStamp | undefined) => void;
 }
 
 export interface UserDataContextProps {
@@ -31,6 +33,7 @@ export function UserDataProvider(props: UserDataContextProps) {
   const [selectedCoordinate, setSelectedCoordinate] = createSignal<Coordinate | undefined>(undefined);
   const [selectedColor, setSelectedColor] = createSignal<Color | undefined>(undefined);
   const [isAuthenticated, setIsAuthenticated] = createSignal<boolean>(false);
+  const [lastActionEpochtime, setLastActionEpochtime] = createSignal<EpochTimeStamp | undefined>(undefined);
   const store: UserDataContextModel = {
     zoom,
     setZoom: (zoom: number) => {
@@ -42,7 +45,6 @@ export function UserDataProvider(props: UserDataContextProps) {
     },
     selectedCoordinate,
     setSelectedCoordinate: (coord: Coordinate | undefined) => {
-      console.log("Saving the selection", coord);
       setSelectedCoordinate(coord);
     },
     selectedColor,
@@ -52,6 +54,10 @@ export function UserDataProvider(props: UserDataContextProps) {
     isAuthenticated,
     setIsAuthenticated: (isAuthenticated: boolean) => {
       setIsAuthenticated(isAuthenticated);
+    },
+    lastActionEpochtime,
+    setLastActionEpochtime: (time: EpochTimeStamp | undefined) => {
+      setLastActionEpochtime(time);
     },
   };
   return <UserDataContext.Provider value={store}>{props.children}</UserDataContext.Provider>;

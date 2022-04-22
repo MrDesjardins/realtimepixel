@@ -1,4 +1,4 @@
-import { createEffect, createMemo, JSX, Show } from "solid-js";
+import { createMemo, JSX, Show } from "solid-js";
 import { useUserData } from "../../context/UserDataContext";
 import { getClosestPixel } from "../../logics/pixel";
 import { COLORS, CONSTS } from "../../models/constants";
@@ -15,10 +15,6 @@ export function PixelSelected(props: PixelSelectedProps): JSX.Element {
     } else {
       return undefined;
     }
-  });
-
-  createEffect(() => {
-    console.log("readme", userData?.selectedCoordinate());
   });
 
   const getPixelColor = createMemo(() => {

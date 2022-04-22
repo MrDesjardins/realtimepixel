@@ -1,4 +1,4 @@
-import { Id, EpocTimestamps } from '../../../shared/models/primitive';
+import { Id } from '../../../shared/models/primitive';
 import { CoordinateNumber, Color } from '../../../shared/models/game';
 export interface Game {
   tiles: Tile[][];
@@ -15,7 +15,7 @@ export interface Coordinate {
  */
 export interface Tile {
   coordinate: Coordinate;
-  time: EpocTimestamps;
+  time: EpochTimeStamp;
   userId: Id;
   color: Color;
 }

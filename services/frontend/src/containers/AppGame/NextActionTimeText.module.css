@@ -1,0 +1,52 @@
+.NextActionTimeText {
+  position: relative; /*Allow to have inner DOM that move*/
+  display: contents; /*Keep the height like other text even if the child is a position absolute*/
+}
+
+.NextActionTimeTextSpan {
+  padding: 4px;
+  top: 55px;
+
+  position: absolute;
+  display: block;
+}
+
+.NextActionTimeTextCompleted,
+.NextActionTimeTextAlmost {
+  color: white;
+  box-shadow: black 1px 1px 3px;
+  background-color: red;
+  background: linear-gradient(238deg, #fd8800, #fd008f, #9700fd, #003dfd, #05c7e6, #4bd58d);
+  background-size: 1200% 1200%;
+  animation: pulseFast 1s ease-in-out infinite alternate, backgroundFast 1s ease-in-out infinite alternate;
+}
+
+@keyframes pulseFast {
+  0% {
+    transform: scale(1) rotate(0deg);
+  }
+  25% {
+    transform: scale(1.2) rotate(15deg);
+  }
+  50% {
+    transform: scale(1) rotate(0deg);
+  }
+  75% {
+    transform: scale(1.2) rotate(-15deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+@keyframes backgroundFast {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}

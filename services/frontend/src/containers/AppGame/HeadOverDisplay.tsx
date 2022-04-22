@@ -1,8 +1,9 @@
-import { createMemo, createSignal, JSX } from "solid-js";
-import { useControl } from "../../context/ControlContext";
+import { createMemo, JSX } from "solid-js";
 import { useUserData } from "../../context/UserDataContext";
 import { getAdjustedPixel } from "../../logics/pixel";
+import { createTimeCounter } from "../../reactivities/createTimeCounter";
 import styles from "./HeadOverDisplay.module.css";
+import { NextActionTimeText } from "./NextActionTimeText";
 export interface HeadOverDisplayProps {}
 export function HeadOverDisplay(props: HeadOverDisplayProps): JSX.Element {
   const userData = useUserData();
@@ -14,6 +15,8 @@ export function HeadOverDisplay(props: HeadOverDisplayProps): JSX.Element {
       return getAdjustedPixel(c);
     }
   });
+
+  const nextActionTime = createTimeCounter(userData?.lastActionEpochtime);
   return (
     <div class={styles.HeadOverDisplay}>
       <div class={styles.HeadOverDisplayPanel}>
@@ -35,9 +38,14 @@ export function HeadOverDisplay(props: HeadOverDisplayProps): JSX.Element {
         </div>
         <div class={styles.HeadOverDisplayPanelContent}>
           <div>Next action in:</div>
-          <div>23 sec</div>
+          <div>
+            &nbsp;
+            <NextActionTimeText seconds={nextActionTime()} />
+          </div>
         </div>
       </div>
     </div>
   );
 }
+
+

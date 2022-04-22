@@ -12,8 +12,8 @@ export function AppControls(props: AppControlsProps): JSX.Element {
   let timeOutRef: number | undefined = undefined;
   createEffect(
     // When a new pixel is selected, we reset all the colors
-    on(userData!.selectedCoordinate, () => {
-      if (userData!.selectedCoordinate !== undefined) {
+    on(userData?.selectedCoordinate ?? [], () => {
+      if (userData?.selectedCoordinate !== undefined) {
         clearTimeout(timeOutRef);
         setColors(COLORS);
       }
@@ -51,8 +51,9 @@ export function AppControls(props: AppControlsProps): JSX.Element {
             <div
               class={styles.AppControlsColorButton}
               onClick={() => {
+                userData.setLastActionEpochtime(new Date().getTime());
                 removeColors();
-                userData?.setSelectedColor(undefined);
+                userData.setSelectedColor(undefined);
               }}
             >
               <div>Apply</div>

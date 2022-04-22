@@ -18,7 +18,7 @@ export const CONSTS = {
     pixelMaximumUnitToOverride: 5,
     decayDelaySeconds: 30,
     decayValueReduction: 1,
-    userPixelDelaySeconds: 60,
+    userPixelDelaySeconds: 30,
   },
 };
 
