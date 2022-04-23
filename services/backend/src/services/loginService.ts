@@ -11,11 +11,11 @@ export class LoginService extends BaseService {
    *
    * @returns String with a valid token if the user is not valid, rejection (exception) otherwise.
    **/
-  public authenticate(loginRequest: UserLoginRequest): Promise<string> {
-    console.log("Main123");
+  public authenticate(request: UserLoginRequest): Promise<string> {
+    console.log("authenticate");
     return new Promise((resolve, reject) => {
       setTimeout(() => {
-        if (loginRequest.email === "test" && loginRequest.password === "test") {
+        if (request.email === "test" && request.password === "test") {
           resolve("test_token");
         } else {
           console.log("Main2");
@@ -25,8 +25,8 @@ export class LoginService extends BaseService {
     });
   }
 
-  public create(loginRequest: CreateUserRequest): Promise<string> {
-    console.log("Main123");
+  public create(request: CreateUserRequest): Promise<string> {
+    console.log("create");
     return new Promise((resolve, reject) => {
       setTimeout(() => {
         resolve("test_token");

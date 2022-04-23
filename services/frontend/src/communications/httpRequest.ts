@@ -1,4 +1,6 @@
 import { LoginRequest, LoginResponse } from "@shared/models/login";
+import { LastUserActionRequest, LastUserActionResponse } from "@shared/models/user";
+import { HEADERS, URLS } from "@shared/constants/backend";
 import { ENV_VARIABLES } from "../generated/constants_env";
 export function login(login: LoginRequest): LoginResponse {
   return { email: "", timestamp: 0, token: "" };
@@ -11,12 +13,24 @@ export class HttpRequest {
   }
 
   public async login(loginRequest: LoginRequest): Promise<LoginResponse> {
-    const response = await fetch(`${this.baseUrl}/login`, {
+    const response = await fetch(`${this.baseUrl}/${URLS.login}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(loginRequest),
+    });
+
+    return response.json();
+  }
+
+  public async getLastUserAction(request: LastUserActionRequest): Promise<LastUserActionResponse> {
+    const response = await fetch(`${this.baseUrl}/${URLS.lastUserAction}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        [HEADERS.access_token]: request.token,
+      },
     });
 
     return response.json();

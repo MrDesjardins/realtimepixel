@@ -4,6 +4,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";
 import { addCreateAccountRoute, addLoginRoute } from "./controllers/loginController";
+import { addUserLastActionRoute } from "./controllers/userController";
 import { ServiceLayer } from "./services/serviceLayer";
 dotenv.config();
 
@@ -21,9 +22,11 @@ serverApp.get("/health", async (req, res) => {
   res.send("ok:" + process.env.NODE_ENV);
 });
 
+addLoginRoute(serverApp, serviceLayer);
+addCreateAccountRoute(serverApp, serviceLayer);
+addUserLastActionRoute(serverApp, serviceLayer);
+
 serverApp.listen(SERVER_PORT, () =>
   console.log(`Web Server Listening on IP ${SERVER_IP} and PORT ${SERVER_PORT}`)
 );
 
-addLoginRoute(serverApp, serviceLayer);
-addCreateAccountRoute(serverApp, serviceLayer);

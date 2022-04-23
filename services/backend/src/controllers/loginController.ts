@@ -1,20 +1,19 @@
 import * as core from "express-serve-static-core";
-import {
-  UserLoginRequest,
-  UserLoginResponse,
-} from "@shared/models/login";
+import { UserLoginRequest, UserLoginResponse } from "@shared/models/login";
 import {
   buildCreateUserResponse,
   buildLoginUserResponse,
 } from "../builders/loginBuilders";
 import { ServiceLayer } from "../services/serviceLayer";
+import { URLS } from "@shared/constants/backend";
+
 import { TypedRequestBody, TypedResponse } from "../webServer/expressType";
 export function addLoginRoute(
   serverApp: core.Express,
   serviceLayer: ServiceLayer
 ): void {
   serverApp.post(
-    "/login",
+    `/${URLS.login}`,
     async (
       req: TypedRequestBody<UserLoginRequest>,
       res: TypedResponse<UserLoginResponse>,
@@ -36,7 +35,7 @@ export function addCreateAccountRoute(
   serviceLayer: ServiceLayer
 ): void {
   serverApp.post(
-    "/login",
+    `/${URLS.create}`,
     async (
       req: TypedRequestBody<UserLoginRequest>,
       res: TypedResponse<UserLoginResponse>,

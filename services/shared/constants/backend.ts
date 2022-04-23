@@ -8,3 +8,13 @@ export enum ServiceEnvironment {
   Test = "Test",
   Production = "Production",
 }
+
+export const HEADERS = {
+  access_token: "access_token",
+};
+
+export const URLS = {
+  login: "login",
+  create: "create",
+  lastUserAction: "lastUserAction",
+};
