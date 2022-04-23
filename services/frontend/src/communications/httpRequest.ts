@@ -1,4 +1,4 @@
-import { LoginRequest, LoginResponse } from "../../../shared/models/login";
+import { LoginRequest, LoginResponse } from "@shared/models/login";
 import { ENV_VARIABLES } from "../generated/constants_env";
 export function login(login: LoginRequest): LoginResponse {
   return { email: "", timestamp: 0, token: "" };

@@ -48,7 +48,8 @@ export function AppControls(props: AppControlsProps): JSX.Element {
             <ColorPicker colors={colors()} />
           </div>
           <div class={styles.AppControlsColorButtons}>
-            <div
+            <button
+              disabled={!userData.isReadyForAction()}
               class={styles.AppControlsColorButton}
               onClick={() => {
                 userData.setLastActionEpochtime(new Date().getTime());
@@ -57,7 +58,7 @@ export function AppControls(props: AppControlsProps): JSX.Element {
               }}
             >
               <div>Apply</div>
-            </div>
+            </button>
           </div>
         </div>
       )}

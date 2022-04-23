@@ -1,5 +1,5 @@
-import { Id } from '../../../shared/models/primitive';
-import { CoordinateNumber, Color } from '../../../shared/models/game';
+import { Id } from '@shared/models/primitive';
+import { CoordinateNumber, Color } from '@shared/models/game';
 export interface Game {
   tiles: Tile[][];
 }

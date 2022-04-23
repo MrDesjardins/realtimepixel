@@ -1,6 +1,7 @@
 import { JSX } from "solid-js";
-import { CONSTS } from "../../models/constants";
+import { CONST_RULES } from "@shared/constants/rules";
 import styles from "./NextActionTimeText.module.css";
+
 export interface NextActionTimeTextProps {
   seconds: number;
 }
@@ -13,7 +14,7 @@ export function NextActionTimeText(props: NextActionTimeTextProps): JSX.Element 
       <span
         class={styles.NextActionTimeTextSpan}
         classList={{
-          [styles.NextActionTimeTextAlmost]: props.seconds <= CONSTS.gameRules.userPixelDelaySeconds * 0.2,
+          [styles.NextActionTimeTextAlmost]: props.seconds <= CONST_RULES.userPixelDelaySeconds * 0.2,
           [styles.NextActionTimeTextCompleted]: props.seconds === 0,
         }}
       >

@@ -1,3 +1,4 @@
+import path from "path";
 import { defineConfig, loadEnv } from "vite";
 import solidPlugin from "vite-plugin-solid";
 
@@ -6,6 +7,9 @@ export default (conf: any) => {
   console.log(process.env);
   return defineConfig({
     plugins: [solidPlugin()],
+    resolve: {
+      alias: [{ find: "@shared", replacement: path.resolve(__dirname, "../shared") }],
+    },
     build: {
       target: "esnext",
       polyfillDynamicImport: false,

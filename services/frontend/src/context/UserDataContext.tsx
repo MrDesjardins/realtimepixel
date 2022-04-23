@@ -1,5 +1,6 @@
-import { JSX, createContext, createSignal, useContext, Accessor } from "solid-js";
-import { Color } from "../../../shared/models/game";
+import { JSX, createContext, createSignal, useContext, Accessor, createEffect } from "solid-js";
+import { secondsUntilNextAction } from "@shared/logics/time";
+import { Color } from "@shared/models/game";
 import { CONSTS } from "../models/constants";
 import { Coordinate } from "../models/game";
 
@@ -10,6 +11,7 @@ export interface UserDataContextValues {
   selectedCoordinate: Accessor<Coordinate | undefined>;
   selectedColor: Accessor<Color | undefined>;
   isAuthenticated: Accessor<boolean>;
+  isReadyForAction: Accessor<boolean>;
   lastActionEpochtime: Accessor<EpochTimeStamp | undefined>;
 }
 export interface UserDataContextActions {
@@ -34,6 +36,29 @@ export function UserDataProvider(props: UserDataContextProps) {
   const [selectedColor, setSelectedColor] = createSignal<Color | undefined>(undefined);
   const [isAuthenticated, setIsAuthenticated] = createSignal<boolean>(false);
   const [lastActionEpochtime, setLastActionEpochtime] = createSignal<EpochTimeStamp | undefined>(undefined);
+  const [isReadyForAction, setIsReadyForAction] = createSignal<boolean>(true);
+
+  setInterval(() => {
+    const last = lastActionEpochtime();
+    if (last === undefined) {
+      if (!isReadyForAction()) {
+        console.log("Setting isReadyForAction to false");
+        setIsReadyForAction(true);
+      }
+    } else {
+      const t = secondsUntilNextAction(last);
+      const readyForAction = t <= 0;
+      // console.log("Time==>", t, readyForAction, isReadyForAction());
+      if (readyForAction && !isReadyForAction()) {
+        console.log("Setting isReadyForAction to true");
+        setIsReadyForAction(true);
+      } else if (!readyForAction && isReadyForAction()) {
+        console.log("Setting isReadyForAction to false");
+        setIsReadyForAction(false);
+      }
+    }
+  }, 1000);
+
   const store: UserDataContextModel = {
     zoom,
     setZoom: (zoom: number) => {
@@ -59,6 +84,7 @@ export function UserDataProvider(props: UserDataContextProps) {
     setLastActionEpochtime: (time: EpochTimeStamp | undefined) => {
       setLastActionEpochtime(time);
     },
+    isReadyForAction,
   };
   return <UserDataContext.Provider value={store}>{props.children}</UserDataContext.Provider>;
 }

@@ -13,13 +13,6 @@ export const CONSTS = {
     maximumZoom: 5,
     fps: 30,
   },
-  gameRules: {
-    pixelInitialLifeUnit: 10,
-    pixelMaximumUnitToOverride: 5,
-    decayDelaySeconds: 30,
-    decayValueReduction: 1,
-    userPixelDelaySeconds: 30,
-  },
 };
 
 export const COLORS: SingleColor[] = [

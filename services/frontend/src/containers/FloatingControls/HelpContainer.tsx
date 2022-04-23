@@ -2,6 +2,7 @@ import { createSignal, JSX } from "solid-js";
 import { Portal } from "solid-js/web";
 import { useUserData } from "../../context/UserDataContext";
 import { CONSTS } from "../../models/constants";
+import { CONST_RULES } from "@shared/constants/rules";
 import styles from "./HelpContainer.module.css";
 export interface HelpContainerProps {}
 export function HelpContainer(props: HelpContainerProps): JSX.Element {
@@ -51,12 +52,12 @@ export function HelpContainer(props: HelpContainerProps): JSX.Element {
           <p>Click on a pixel to select it. A bottom panel will open. Select a color. Then click Apply.</p>
           <h1>Rules</h1>
           <ul>
-            <li>You can place 1 pixel every {CONSTS.gameRules.userPixelDelaySeconds} seconds</li>
-            <li>Each pixel has a life of {CONSTS.gameRules.pixelInitialLifeUnit} units</li>
-            <li>Pixel looses 1 unit every {CONSTS.gameRules.decayDelaySeconds} seconds</li>
+            <li>You can place 1 pixel every {CONST_RULES.userPixelDelaySeconds} seconds</li>
+            <li>Each pixel has a life of {CONST_RULES.pixelInitialLifeUnit} units</li>
+            <li>Pixel looses 1 unit every {CONST_RULES.decayDelaySeconds} seconds</li>
             <li>
               You can draw over an existing pixel if the pixel life is{" "}
-              {CONSTS.gameRules.pixelMaximumUnitToOverride} units or less
+              {CONST_RULES.pixelMaximumUnitToOverride} units or less
             </li>
           </ul>
           <h1>Actions</h1>

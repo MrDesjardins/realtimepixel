@@ -2,7 +2,7 @@ import * as core from "express-serve-static-core";
 import {
   UserLoginRequest,
   UserLoginResponse,
-} from "../../../shared/models/login";
+} from "@shared/models/login";
 import {
   buildCreateUserResponse,
   buildLoginUserResponse,

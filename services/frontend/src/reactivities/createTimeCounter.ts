@@ -1,18 +1,17 @@
-import { Accessor, createEffect, createSignal } from "solid-js";
-import { CONSTS } from "../models/constants";
+import { Accessor, createSignal } from "solid-js";
+import { secondsUntilNextAction } from "@shared/logics/time";
 
-export function createTimeCounter(lastEpochTime: Accessor<EpochTimeStamp | undefined> | undefined): Accessor<number> {
+export function createTimeCounter(
+  lastEpochTime: Accessor<EpochTimeStamp | undefined> | undefined,
+): Accessor<number> {
   const [remaining, setRemaining] = createSignal<number>(0);
 
   setInterval(() => {
-    const t = lastEpochTime?.();
-    if (t === undefined) {
+    const lastEpoch = lastEpochTime?.();
+    if (lastEpoch === undefined) {
       setRemaining(0);
     } else {
-      const now = new Date().getTime();
-      const timeDiff = now - t;
-      const elapsedSecondSinceLastMove = Math.ceil(timeDiff / 1000);
-      const timeInSecondBeforeNextMove = CONSTS.gameRules.userPixelDelaySeconds - elapsedSecondSinceLastMove;
+      const timeInSecondBeforeNextMove = secondsUntilNextAction(lastEpoch);
       setRemaining(timeInSecondBeforeNextMove < 0 ? 0 : timeInSecondBeforeNextMove);
     }
   }, 1000);

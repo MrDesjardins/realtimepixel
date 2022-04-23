@@ -43,6 +43,15 @@
   align-items: center;
 }
 
+button.AppControlsColorButton:disabled {
+  background-color: var(--button-bgcolor);
+  cursor: no-drop;
+}
+
+button.AppControlsColorButton:disabled:hover {
+  background-color: var(--button-bgcolor);
+}
+
 .AppControlsColorButton:hover {
   background-color: var(--button-bgcolor-hover);
 }
