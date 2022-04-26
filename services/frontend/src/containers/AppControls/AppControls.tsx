@@ -1,6 +1,6 @@
 import { createEffect, createSignal, JSX, on } from "solid-js";
 import { useUserData } from "../../context/UserDataContext";
-import { COLORS } from "../../models/constants";
+import { COLORS } from "@shared/constants/colors";
 import styles from "./AppControls.module.css";
 import { ColorPicker } from "./ColorPicker";
 import { LoginOrCreate } from "./LoginOrCreate";

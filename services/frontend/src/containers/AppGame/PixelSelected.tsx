@@ -1,7 +1,8 @@
 import { createMemo, JSX, Show } from "solid-js";
 import { useUserData } from "../../context/UserDataContext";
 import { getClosestPixel } from "../../logics/pixel";
-import { COLORS, CONSTS } from "../../models/constants";
+import { CONSTS } from "../../models/constants";
+import { COLORS } from "@shared/constants/colors";
 import styles from "./PixelSelected.module.css";
 export interface PixelSelectedProps {}
 export function PixelSelected(props: PixelSelectedProps): JSX.Element {

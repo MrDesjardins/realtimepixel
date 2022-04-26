@@ -1,11 +1,12 @@
-import { JSX, createContext, createSignal, useContext, Accessor, on, createEffect } from "solid-js";
-import { createStore } from "solid-js/store";
 import { secondsUntilNextAction } from "@shared/logics/time";
 import { Color } from "@shared/models/game";
 import { Token } from "@shared/models/primitive";
+import { createContext, JSX, onMount, useContext } from "solid-js";
+import { createStore } from "solid-js/store";
+import { HttpRequest } from "../communications/httpRequest";
 import { CONSTS } from "../models/constants";
 import { Coordinate } from "../models/game";
-import { HttpRequest } from "../communications/httpRequest";
+import { getTokenFromUserMachine, persistTokenInUserMachine } from "../persistences/localStorage";
 
 export interface UserDataContextState {
   zoom: number;
@@ -48,8 +49,15 @@ const initialValue: UserDataContextState = {
 };
 export const UserDataContext = createContext<UserDataContextModel>();
 
-export function UserDataProvider(props: UserDataContextProps) {
+export function UserDataProvider(props: UserDataContextProps): JSX.Element {
   const [state, setState] = createStore<UserDataContextState>(initialValue);
+
+  onMount(() => {
+    const token = getTokenFromUserMachine();
+    if (token !== undefined) {
+      actions.setUserToken(token);
+    }
+  });
 
   // Update every second the status "is ready for action"
   setInterval(() => {
@@ -58,7 +66,7 @@ export function UserDataProvider(props: UserDataContextProps) {
       // Undefined means that the user has not yet retrieved its last time
       const t = secondsUntilNextAction(last);
       const readyForAction = t <= 0;
-      console.log("Time==>", t, readyForAction, state.isReadyForAction);
+      // console.log("Time==>", t, readyForAction, state.isReadyForAction);
       if (readyForAction && !state.isReadyForAction) {
         console.log("Setting isReadyForAction to true");
         setState({ isReadyForAction: true });
@@ -84,7 +92,7 @@ export function UserDataProvider(props: UserDataContextProps) {
     },
     setIsAuthenticated: async (isAuthenticated: boolean) => {
       setState({ isAuthenticated: isAuthenticated });
-      if (isAuthenticated) {
+      if (isAuthenticated && state.userToken !== undefined) {
         // Get the latest action for the authenticated user
         try {
           const http = new HttpRequest();
@@ -103,6 +111,7 @@ export function UserDataProvider(props: UserDataContextProps) {
     },
     setUserToken: (token: Token | undefined) => {
       setState({ userToken: token });
+      persistTokenInUserMachine(token);
       if (token !== undefined) {
         actions.setIsAuthenticated(token !== "");
       }

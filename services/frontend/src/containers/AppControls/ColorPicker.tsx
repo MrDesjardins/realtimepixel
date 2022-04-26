@@ -1,6 +1,6 @@
-import { createSignal, JSX } from "solid-js";
+import { JSX } from "solid-js";
 import { useUserData } from "../../context/UserDataContext";
-import { SingleColor } from "../../models/color";
+import { SingleColor } from "@shared/models/color";
 import styles from "./ColorPicker.module.css";
 export interface ColorPickerProps {
   colors: SingleColor[];

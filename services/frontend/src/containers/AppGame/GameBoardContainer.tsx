@@ -1,5 +1,6 @@
 import { JSX, onCleanup, onMount } from "solid-js";
-import { COLORS, CONSTS } from "../../models/constants";
+import { CONSTS } from "../../models/constants";
+import { COLORS } from "@shared/constants/colors";
 import styles from "./GameBoardContainer.module.css";
 export interface GameBoardContainerProps {}
 export function GameBoardContainer(props: GameBoardContainerProps): JSX.Element {

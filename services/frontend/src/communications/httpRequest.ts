@@ -1,10 +1,7 @@
-import { LoginRequest, LoginResponse } from "@shared/models/login";
+import { UserLoginRequest, UserLoginResponse } from "@shared/models/login";
 import { LastUserActionRequest, LastUserActionResponse } from "@shared/models/user";
 import { HEADERS, URLS } from "@shared/constants/backend";
 import { ENV_VARIABLES } from "../generated/constants_env";
-export function login(login: LoginRequest): LoginResponse {
-  return { email: "", timestamp: 0, token: "" };
-}
 
 export class HttpRequest {
   private baseUrl: string = "";
@@ -12,7 +9,7 @@ export class HttpRequest {
     this.baseUrl = `http://${ENV_VARIABLES.SERVER_IP}:${ENV_VARIABLES.DOCKER_SERVER_PORT_FORWARD}`;
   }
 
-  public async login(loginRequest: LoginRequest): Promise<LoginResponse> {
+  public async login(loginRequest: UserLoginRequest): Promise<UserLoginResponse> {
     const response = await fetch(`${this.baseUrl}/${URLS.login}`, {
       method: "POST",
       headers: {
