@@ -13,7 +13,7 @@ export function PixelSelector(props: PixelSelectorProps): JSX.Element {
   const userData = useUserData();
 
   const coordinateAdjusted = createMemo(() => {
-    const c = userData?.selectedCoordinate();
+    const c = userData?.state.selectedCoordinate;
     if (c) {
       const adjusted = getClosestPixel(c);
       return adjusted;
@@ -31,11 +31,11 @@ export function PixelSelector(props: PixelSelectorProps): JSX.Element {
       onPointerMove={(e) => {
         if (!control?.isDragging()) {
           //console.log("Pixel Selector offset", e.offsetX, e.offsetY);
-          userData?.setCoordinate({ x: e.offsetX, y: e.offsetY });
+          userData?.actions.setCoordinate({ x: e.offsetX, y: e.offsetY });
         }
       }}
       onPointerLeave={() => {
-        userData?.setCoordinate(undefined);
+        userData?.actions.setCoordinate(undefined);
       }}
       onPointerUp={(e) => {
         if (!control?.isDragging()) {
@@ -49,9 +49,9 @@ export function PixelSelector(props: PixelSelectorProps): JSX.Element {
             currentSelection?.y === clickSelection.y
           ) {
             // Unselect
-            userData?.setSelectedCoordinate(undefined);
+            userData?.actions.setSelectedCoordinate(undefined);
           } else {
-            userData?.setSelectedCoordinate({ x: e.offsetX, y: e.offsetY });
+            userData?.actions.setSelectedCoordinate({ x: e.offsetX, y: e.offsetY });
           }
         }
       }}

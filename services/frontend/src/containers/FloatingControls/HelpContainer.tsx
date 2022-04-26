@@ -1,7 +1,6 @@
 import { createSignal, JSX } from "solid-js";
 import { Portal } from "solid-js/web";
 import { useUserData } from "../../context/UserDataContext";
-import { CONSTS } from "../../models/constants";
 import { CONST_RULES } from "@shared/constants/rules";
 import styles from "./HelpContainer.module.css";
 export interface HelpContainerProps {}
@@ -14,7 +13,7 @@ export function HelpContainer(props: HelpContainerProps): JSX.Element {
       class={styles.HelpContainer}
       classList={{
         [styles.HelpContainerOpen]: isHover(),
-        [styles.ActionMenuOpen]: userData?.selectedCoordinate() !== undefined,
+        [styles.ActionMenuOpen]: userData?.state.selectedCoordinate !== undefined,
       }}
     >
       <button

@@ -8,7 +8,7 @@ export function TargetSelector(props: TargetSelectorProps): JSX.Element {
   const userData = useUserData();
 
   const coordinateAdjusted = createMemo(() => {
-    const c = userData?.coordinate();
+    const c = userData?.state.coordinate;
     if (c === undefined) {
       return undefined;
     }

@@ -10,10 +10,12 @@ export function AppControls(props: AppControlsProps): JSX.Element {
   const userData = useUserData();
   const [colors, setColors] = createSignal(COLORS);
   let timeOutRef: number | undefined = undefined;
+
+  const tracked = () => userData?.state.selectedCoordinate;
   createEffect(
     // When a new pixel is selected, we reset all the colors
-    on(userData?.selectedCoordinate ?? [], () => {
-      if (userData?.selectedCoordinate !== undefined) {
+    on(tracked, () => {
+      if (userData?.state.selectedCoordinate !== undefined) {
         clearTimeout(timeOutRef);
         setColors(COLORS);
       }
@@ -27,7 +29,7 @@ export function AppControls(props: AppControlsProps): JSX.Element {
       setColors(currentColors.slice(0, currentColors.length - 1));
       timeOutRef = window.setTimeout(removeColors, 10);
     } else if (currentColors.length === 0) {
-      userData?.setSelectedCoordinate(undefined); // Un-select to see the actual color
+      userData?.actions.setSelectedCoordinate(undefined); // Un-select to see the actual color
     }
   };
 
@@ -37,24 +39,24 @@ export function AppControls(props: AppControlsProps): JSX.Element {
       style={{
         height: `${AppControlHeight}px`,
         bottom: `${
-          userData?.selectedCoordinate() === undefined || colors().length === 0 ? -AppControlHeight : 0
+          userData?.state.selectedCoordinate === undefined || colors().length === 0 ? -AppControlHeight : 0
         }px`,
       }}
     >
-      {!userData?.isAuthenticated() && <LoginOrCreate />}
-      {userData?.isAuthenticated() && (
+      {!userData?.state.isAuthenticated && <LoginOrCreate />}
+      {userData?.state.isAuthenticated && (
         <div class={styles.AppControlsColor}>
           <div class={styles.AppControlsColorContainer}>
             <ColorPicker colors={colors()} />
           </div>
           <div class={styles.AppControlsColorButtons}>
             <button
-              disabled={!userData.isReadyForAction()}
+              disabled={!userData.state.isReadyForAction}
               class={styles.AppControlsColorButton}
               onClick={() => {
-                userData.setLastActionEpochtime(new Date().getTime());
+                userData.actions.setLastActionEpochtime(new Date().getTime());
                 removeColors();
-                userData.setSelectedColor(undefined);
+                userData.actions.setSelectedColor(undefined);
               }}
             >
               <div>Apply</div>

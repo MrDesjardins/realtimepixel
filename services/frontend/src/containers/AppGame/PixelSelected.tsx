@@ -8,7 +8,7 @@ export function PixelSelected(props: PixelSelectedProps): JSX.Element {
   const userData = useUserData();
 
   const coordinateAdjusted = createMemo(() => {
-    const c = userData?.selectedCoordinate();
+    const c = userData?.state.selectedCoordinate;
     if (c) {
       const adjusted = getClosestPixel(c);
       return adjusted;
@@ -18,7 +18,7 @@ export function PixelSelected(props: PixelSelectedProps): JSX.Element {
   });
 
   const getPixelColor = createMemo(() => {
-    const colorIndex = userData?.selectedColor();
+    const colorIndex = userData?.state.selectedColor;
     if (colorIndex === undefined) {
       return "transparent";
     }

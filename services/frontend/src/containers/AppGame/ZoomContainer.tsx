@@ -12,20 +12,20 @@ export function ZoomContainer(props: ZoomContainerProps): JSX.Element {
     <div
       class={styles.ZoomContainer}
       style={{
-        transform: `scale(${userData?.zoom()})`,
+        transform: `scale(${userData?.state.zoom})`,
       }}
       onWheel={(e) => {
         const direction = e.deltaY < 0 ? Zoom.In : Zoom.Out;
         let newValue =
           direction === Zoom.In
-            ? (userData?.zoom() ?? 1) + CONSTS.gameBoard.zoomStep
-            : (userData?.zoom() ?? 1) - CONSTS.gameBoard.zoomStep;
+            ? (userData?.state.zoom ?? 1) + CONSTS.gameBoard.zoomStep
+            : (userData?.state.zoom ?? 1) - CONSTS.gameBoard.zoomStep;
         if (newValue < CONSTS.gameBoard.minimumZoom) {
           newValue = CONSTS.gameBoard.minimumZoom;
         } else if (newValue > CONSTS.gameBoard.maximumZoom) {
           newValue = CONSTS.gameBoard.maximumZoom;
         }
-        userData?.setZoom(newValue);
+        userData?.actions.setZoom(newValue);
       }}
     >
       {props.children}

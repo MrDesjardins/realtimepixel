@@ -8,7 +8,7 @@ export interface HeadOverDisplayProps {}
 export function HeadOverDisplay(props: HeadOverDisplayProps): JSX.Element {
   const userData = useUserData();
   const adjustedCoordinate = createMemo(() => {
-    const c = userData?.selectedCoordinate();
+    const c = userData?.state.selectedCoordinate;
     if (c === undefined) {
       return undefined;
     } else {
@@ -16,13 +16,13 @@ export function HeadOverDisplay(props: HeadOverDisplayProps): JSX.Element {
     }
   });
 
-  const nextActionTime = createTimeCounter(userData?.lastActionEpochtime);
+  const nextActionTime = createTimeCounter(() => userData?.state.lastActionEpochtime);
   return (
     <div class={styles.HeadOverDisplay}>
       <div class={styles.HeadOverDisplayPanel}>
         <div class={styles.HeadOverDisplayPanelContent}>
           <div>Zoom</div>
-          <div>{userData?.zoom().toFixed(1)}x</div>
+          <div>{userData?.state.zoom.toFixed(1)}x</div>
         </div>
         <div class={styles.HeadOverDisplayPanelContent}>
           <div>Selection</div>
@@ -47,5 +47,3 @@ export function HeadOverDisplay(props: HeadOverDisplayProps): JSX.Element {
     </div>
   );
 }
-
-
