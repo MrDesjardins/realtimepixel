@@ -3,12 +3,12 @@
  **/
 export const ENV_VARIABLES = {
   NODE_ENV: "development",
-  CLIENT_IP: "127.0.0.1",
+  CLIENT_IP: "sideproject",
   CLIENT_PORT: 3000,
   DOCKER_CLIENT_PORT_FORWARD: 3501,
   DOCKER_CLIENT_HEALTHCHECK_TEST: "/bin/true",
-  SERVER_IP: "127.0.0.1",
+  SERVER_IP: "sideproject",
   SERVER_PORT: 80,
   DOCKER_SERVER_PORT_FORWARD: 3500,
   DOCKER_SERVER_HEALTHCHECK_TEST: "/bin/true",
-}
+};

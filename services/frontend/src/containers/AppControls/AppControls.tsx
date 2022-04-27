@@ -4,6 +4,7 @@ import { COLORS } from "@shared/constants/colors";
 import styles from "./AppControls.module.css";
 import { ColorPicker } from "./ColorPicker";
 import { LoginOrCreate } from "./LoginOrCreate";
+import { MsgUserPixel, MsgUserPixelKind } from "../../../../shared/models/socketMessages";
 const AppControlHeight = 200;
 export interface AppControlsProps {}
 export function AppControls(props: AppControlsProps): JSX.Element {
@@ -52,11 +53,31 @@ export function AppControls(props: AppControlsProps): JSX.Element {
           <div class={styles.AppControlsColorButtons}>
             <button
               disabled={!userData.state.isReadyForAction}
+              title={
+                userData.state.isReadyForAction
+                  ? "Click to apply the color"
+                  : "Cannot click because your next action is not ready"
+              }
               class={styles.AppControlsColorButton}
               onClick={() => {
-                userData.actions.setLastActionEpochtime(new Date().getTime());
-                removeColors();
-                userData.actions.setSelectedColor(undefined);
+                if (
+                  userData.state.selectedColor !== undefined &&
+                  userData.state.selectedCoordinate !== undefined &&
+                  userData.state.userToken !== undefined
+                ) {
+                  const msg: MsgUserPixel = {
+                    kind: MsgUserPixelKind,
+                    color: userData.state.selectedColor,
+                    coordinate: userData.state.selectedCoordinate,
+                    userToken: userData.state.userToken,
+                  };
+                  userData.actions.submitSocketMessage(msg);
+                  userData.actions.setLastActionEpochtime(new Date().getTime());
+                  removeColors();
+                  userData.actions.setSelectedColor(undefined);
+                } else {
+                  console.error("Cannot submit pixel");
+                }
               }}
             >
               <div>Apply</div>

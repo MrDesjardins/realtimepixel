@@ -32,8 +32,8 @@ services:
 
   frontend:
     <<: *default-app
-    # depends_on:
-    # - "backend"
+    depends_on:
+      - "backend"
     build:
       context: "."
       target: ${NODE_ENV}

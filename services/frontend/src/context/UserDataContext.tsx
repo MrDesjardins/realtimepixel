@@ -1,12 +1,14 @@
 import { secondsUntilNextAction } from "@shared/logics/time";
-import { Color } from "@shared/models/game";
+import { Color, Coordinate } from "@shared/models/game";
+import { MsgUserPixel, MsgUserPixelKind } from "@shared/models/socketMessages";
 import { Token } from "@shared/models/primitive";
 import { createContext, JSX, onMount, useContext } from "solid-js";
 import { createStore } from "solid-js/store";
 import { HttpRequest } from "../communications/httpRequest";
 import { CONSTS } from "../models/constants";
-import { Coordinate } from "../models/game";
 import { getTokenFromUserMachine, persistTokenInUserMachine } from "../persistences/localStorage";
+import { io } from "socket.io-client";
+import { ENV_VARIABLES } from "../generated/constants_env";
 
 export interface UserDataContextState {
   zoom: number;
@@ -32,6 +34,7 @@ export interface UserDataContextActions {
   setIsAuthenticated: (isAuthenticated: boolean) => void;
   setLastActionEpochtime: (time: EpochTimeStamp | undefined) => void;
   setUserToken: (token: Token | undefined) => void;
+  submitSocketMessage: (message: MsgUserPixel) => void;
 }
 
 export interface UserDataContextProps {
@@ -51,7 +54,10 @@ export const UserDataContext = createContext<UserDataContextModel>();
 
 export function UserDataProvider(props: UserDataContextProps): JSX.Element {
   const [state, setState] = createStore<UserDataContextState>(initialValue);
-
+  const socket = io(`${ENV_VARIABLES.SERVER_IP}:${ENV_VARIABLES.DOCKER_SERVER_PORT_FORWARD}`, {
+    transports: ["websocket"],
+  });
+  //const socket = io(`sideproject:${ENV_VARIABLES.DOCKER_SERVER_PORT_FORWARD}`, {});
   onMount(() => {
     const token = getTokenFromUserMachine();
     if (token !== undefined) {
@@ -115,6 +121,9 @@ export function UserDataProvider(props: UserDataContextProps): JSX.Element {
       if (token !== undefined) {
         actions.setIsAuthenticated(token !== "");
       }
+    },
+    submitSocketMessage: (message: MsgUserPixel) => {
+      socket.emit(MsgUserPixelKind, message);
     },
   };
 

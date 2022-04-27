@@ -52,7 +52,7 @@ export function GameBoardContainer(props: GameBoardContainerProps): JSX.Element 
         console.log("draw");
         lastTime = time;
       }
-      //frame = requestAnimationFrame(draw);
+      //frame = requestAnimationFrame(draw); // todo: uncomment to redraw
     }
   };
   return (

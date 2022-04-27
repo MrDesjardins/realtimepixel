@@ -22,14 +22,19 @@ export class HttpRequest {
   }
 
   public async getLastUserAction(request: LastUserActionRequest): Promise<LastUserActionResponse> {
-    const response = await fetch(`${this.baseUrl}/${URLS.lastUserAction}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        [HEADERS.access_token]: request.token,
-      },
-    });
+    try {
+      const response = await fetch(`${this.baseUrl}/${URLS.lastUserAction}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          [HEADERS.access_token]: request.token,
+        },
+      });
 
-    return response.json();
+      return response.json();
+    } catch (e) {
+      console.error("Error fetching using getLastUserAction", e);
+      return { last: undefined };
+    }
   }
 }
