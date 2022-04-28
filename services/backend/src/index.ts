@@ -6,11 +6,13 @@ import express from "express";
 import {
   addCreateAccountRoute,
   addLoginRoute,
+  addRefreshTokensRoute,
 } from "./controllers/loginController";
 import { addUserLastActionRoute } from "./controllers/userController";
 import { ServiceLayer } from "./services/serviceLayer";
 import http from "http";
 import { Server } from "socket.io";
+import { secureEndpointMiddleware } from "./middlewares/secureEndpoints";
 
 dotenv.config();
 
@@ -31,8 +33,13 @@ serverApp.get("/health", async (req, res) => {
   res.send("ok:" + process.env.NODE_ENV);
 });
 
+// Route that does not need the access token
 addLoginRoute(serverApp, serviceLayer);
 addCreateAccountRoute(serverApp, serviceLayer);
+addRefreshTokensRoute(serverApp, serviceLayer);
+
+// Route that must be secured with an access token
+serverApp.use(secureEndpointMiddleware(serviceLayer));
 addUserLastActionRoute(serverApp, serviceLayer);
 
 const server = http.createServer(serverApp);

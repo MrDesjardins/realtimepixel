@@ -6,7 +6,7 @@ import {
 
 import { ServiceLayer } from "../services/serviceLayer";
 import { TypedRequestBody, TypedResponse } from "../webServer/expressType";
-import { HEADERS, URLS } from "../../../shared/constants/backend";
+import { URLS } from "../../../shared/constants/backend";
 import { buildLastActionResponse } from "../builders/userBuilders";
 export function addUserLastActionRoute(
   serverApp: core.Express,
@@ -20,9 +20,12 @@ export function addUserLastActionRoute(
       next: core.NextFunction
     ) => {
       try {
-        const token = req.headers[HEADERS.access_token];
-        const ts = await serviceLayer.user.getLastUserAction(token);
-        res.json(buildLastActionResponse(ts));
+        if (req.jwtPayload === undefined) {
+          res.json(buildLastActionResponse(undefined));
+        } else {
+          const ts = await serviceLayer.user.getLastUserAction(req.jwtPayload.user);
+          res.json(buildLastActionResponse(ts));
+        }
       } catch (e) {
         console.log("addUserLastActionRoute catch", e);
         res.json(buildLastActionResponse(undefined));

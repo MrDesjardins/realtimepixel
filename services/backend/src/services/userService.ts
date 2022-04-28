@@ -7,7 +7,9 @@ export class UserService extends BaseService {
     super(environment);
   }
 
-  public getLastUserAction(token: Token): Promise<EpochTimeStamp | undefined> {
+  public getLastUserAction(
+    userEmail: string
+  ): Promise<EpochTimeStamp | undefined> {
     return new Promise((resolve, reject) => {
       setTimeout(() => {
         resolve(new Date().getTime() - CONST_RULES.userPixelDelaySeconds);

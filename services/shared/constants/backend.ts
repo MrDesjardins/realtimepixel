@@ -10,11 +10,13 @@ export enum ServiceEnvironment {
 }
 
 export const HEADERS = {
-  access_token: "access_token",
+  authorization: "authorization",
 };
 
 export const URLS = {
   login: "login",
   create: "create",
+  refreshtokens: "refreshtokens",
+  logout: "logout",
   lastUserAction: "lastUserAction",
 };

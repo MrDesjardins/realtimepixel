@@ -1,13 +1,17 @@
 import { Token } from "./primitive";
+export interface TokenResponse {
+  accessToken: Token;
+  refreshToken: Token;
+}
 
 export interface UserLoginRequest {
   email: string;
   password: string;
 }
 
-export interface UserLoginResponse {
+export interface UserLoginResponse extends TokenResponse {
   email: string;
-  token: Token;
+
   timestamp: number;
 }
 
@@ -16,8 +20,19 @@ export interface CreateUserRequest {
   password: string;
 }
 
-export interface CreateUserResponse {
+export interface CreateUserResponse extends TokenResponse {
   email: string;
-  token: Token;
   timestamp: number;
 }
+
+export interface RefreshTokenRequest {
+  email: string;
+  refreshToken: string;
+}
+
+export interface RefreshTokenResponse extends TokenResponse {}
+
+export interface LogoutRequest {
+  refreshToken: string;
+}
+export interface LogoutResponse {}

@@ -27,7 +27,7 @@ export class HttpRequest {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          [HEADERS.access_token]: request.token,
+          [HEADERS.authorization]: `Bearer ${request.token}`,
         },
       });
 

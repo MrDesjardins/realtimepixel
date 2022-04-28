@@ -1,23 +1,40 @@
-import { UserLoginResponse, CreateUserResponse } from "@shared/models/login";
+import {
+  UserLoginResponse,
+  CreateUserResponse,
+  RefreshTokenResponse,
+} from "@shared/models/login";
 
 export function buildLoginUserResponse(
   userEmail: string,
-  userToken: string
+  accessToken: string,
+  refreshToken: string
 ): UserLoginResponse {
   return {
     email: userEmail,
     timestamp: Date.now(),
-    token: userToken,
+    accessToken: accessToken,
+    refreshToken: refreshToken,
   };
 }
 
 export function buildCreateUserResponse(
   userEmail: string,
-  userToken: string
+  accessToken: string,
+  refreshToken: string
 ): CreateUserResponse {
   return {
     email: userEmail,
     timestamp: Date.now(),
-    token: userToken,
+    accessToken: accessToken,
+    refreshToken: refreshToken,
+  };
+}
+export function buildRefreshTokensResponse(
+  accessToken: string,
+  refreshToken: string
+): RefreshTokenResponse {
+  return {
+    accessToken: accessToken,
+    refreshToken: refreshToken,
   };
 }
