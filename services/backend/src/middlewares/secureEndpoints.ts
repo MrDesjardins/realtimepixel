@@ -10,10 +10,14 @@ export function secureEndpointMiddleware(serviceLayer: ServiceLayer) {
   ) {
     //get token from request header
     const authHeader = req.headers[HEADERS.authorization]; // Format is "Bearer <token>"
+    if (authHeader === undefined) {
+      res.status(400).send("Token not present");
+      return;
+    }
     const accessToken = authHeader.split(" ")[1];
-
     if (accessToken === undefined) {
       res.status(400).send("Token not present");
+      return;
     }
     try {
       const userData = await serviceLayer.login.verifyAccess(accessToken);

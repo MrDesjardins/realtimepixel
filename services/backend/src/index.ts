@@ -42,6 +42,10 @@ addRefreshTokensRoute(serverApp, serviceLayer);
 serverApp.use(secureEndpointMiddleware(serviceLayer));
 addUserLastActionRoute(serverApp, serviceLayer);
 
+serverApp.use((err: any, req: any, res: any, next: any) => {
+  console.error("ERROR ENDPOINT", err.stack);
+  res.status(500).send("Something broke!");
+});
 const server = http.createServer(serverApp);
 const io = new Server(server, {
   cors: {

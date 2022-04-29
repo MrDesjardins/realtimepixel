@@ -24,7 +24,6 @@ export class LoginService extends BaseService {
    * @returns String with a valid token if the user is not valid, rejection (exception) otherwise.
    **/
   public async authenticate(request: UserLoginRequest): Promise<TokenResponse> {
-    console.log("loginService.authenticate");
 
     return new Promise((resolve, reject) => {
       setTimeout(async () => {
@@ -86,11 +85,11 @@ export class LoginService extends BaseService {
       jwt.verify(
         accessToken,
         process.env.ACCESS_TOKEN_SECRET ?? "",
-        (err: VerifyErrors | null, user: any) => {
+        (err: VerifyErrors | null, data: any) => {
           if (err) {
             reject(err.message);
           } else {
-            resolve(user);
+            resolve(data.email);
           }
         }
       );
@@ -98,17 +97,17 @@ export class LoginService extends BaseService {
   }
 
   private generateAccessToken(email: string): string {
-    return jwt.sign(email, process.env.ACCESS_TOKEN_SECRET ?? "", {
-      expiresIn: "15m",
+    return jwt.sign({ email: email }, process.env.ACCESS_TOKEN_SECRET ?? "", {
+      expiresIn: 15 * 60 * 60,
     });
   }
 
   private generateRefreshToken(email: string): string {
     const refreshToken = jwt.sign(
-      email,
+      { email: email },
       process.env.REFRESH_TOKEN_SECRET ?? "",
       {
-        expiresIn: "20m",
+        expiresIn: 20 * 60 * 60,
       }
     );
     this.allRefreshTokens.push(refreshToken);
