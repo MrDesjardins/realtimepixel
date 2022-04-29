@@ -5,6 +5,7 @@ import styles from "./AppControls.module.css";
 import { ColorPicker } from "./ColorPicker";
 import { LoginOrCreate } from "./LoginOrCreate";
 import { MsgUserPixel, MsgUserPixelKind } from "../../../../shared/models/socketMessages";
+import { getAdjustedPixel } from "../../logics/pixel";
 const AppControlHeight = 200;
 export interface AppControlsProps {}
 export function AppControls(props: AppControlsProps): JSX.Element {
@@ -52,11 +53,15 @@ export function AppControls(props: AppControlsProps): JSX.Element {
           </div>
           <div class={styles.AppControlsColorButtons}>
             <button
-              disabled={!userData.state.isReadyForAction}
+              disabled={
+                !userData.state.isReadyForAction ||
+                userData.state.selectedColor === undefined ||
+                userData.state.selectedCoordinate === undefined
+              }
               title={
                 userData.state.isReadyForAction
                   ? "Click to apply the color"
-                  : "Cannot click because your next action is not ready"
+                  : "Cannot click because your next action is not ready yet"
               }
               class={styles.AppControlsColorButton}
               onClick={() => {
@@ -68,8 +73,8 @@ export function AppControls(props: AppControlsProps): JSX.Element {
                   const msg: MsgUserPixel = {
                     kind: MsgUserPixelKind,
                     color: userData.state.selectedColor,
-                    coordinate: userData.state.selectedCoordinate,
-                    userToken: userData.state.userToken,
+                    coordinate: getAdjustedPixel(userData.state.selectedCoordinate),
+                    accessToken: userData.state.userToken,
                   };
                   userData.actions.submitSocketMessage(msg);
                   userData.actions.setLastActionEpochtime(new Date().getTime());

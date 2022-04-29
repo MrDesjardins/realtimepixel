@@ -1,6 +1,13 @@
 import { secondsUntilNextAction } from "@shared/logics/time";
 import { Color, Coordinate } from "@shared/models/game";
-import { MsgUserPixel, MsgUserPixelKind } from "@shared/models/socketMessages";
+import {
+  MsgError,
+  MsgErrorKind,
+  MsgUserPixel,
+  MsgUserPixelKind,
+  MsgUserPixelValidation,
+  MsgUserPixelValidationKind,
+} from "@shared/models/socketMessages";
 import { Token } from "@shared/models/primitive";
 import { createContext, JSX, onMount, useContext } from "solid-js";
 import { createStore } from "solid-js/store";
@@ -56,6 +63,12 @@ export function UserDataProvider(props: UserDataContextProps): JSX.Element {
   const [state, setState] = createStore<UserDataContextState>(initialValue);
   const socket = io(`${ENV_VARIABLES.SERVER_IP}:${ENV_VARIABLES.DOCKER_SERVER_PORT_FORWARD}`, {
     transports: ["websocket"],
+  });
+  socket.on(MsgErrorKind, (error: MsgError) => {
+    console.error("From server:", error);
+  });
+  socket.on(MsgUserPixelValidationKind, (confirmation: MsgUserPixelValidation) => {
+    console.error("From server Confirmation:", confirmation);
   });
   //const socket = io(`sideproject:${ENV_VARIABLES.DOCKER_SERVER_PORT_FORWARD}`, {});
   onMount(() => {

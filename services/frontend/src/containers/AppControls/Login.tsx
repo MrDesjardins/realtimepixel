@@ -46,7 +46,7 @@ export function Login(props: LoginProps): JSX.Element {
             const http = new HttpRequest();
             try {
               const response = await http.login({ email: email(), password: password() });
-              userData?.actions.setUserToken(response.token); // Temporary until we have real check
+              userData?.actions.setUserToken(response.accessToken); // Temporary until we have real check
             } catch (e) {
               console.error(e); //Todo: log the error in a logging system
             } finally {

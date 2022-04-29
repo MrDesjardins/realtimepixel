@@ -13,7 +13,15 @@ import { ServiceLayer } from "./services/serviceLayer";
 import http from "http";
 import { Server } from "socket.io";
 import { secureEndpointMiddleware } from "./middlewares/secureEndpoints";
-
+import {
+  MsgError,
+  MsgErrorKind,
+  MsgUserPixel,
+  MsgUserPixelKind,
+  MsgUserPixelValidation,
+  MsgUserPixelValidationKind,
+} from "@shared/models/socketMessages";
+import { buildLastActionResponse } from "./builders/userBuilders";
 dotenv.config();
 
 const SERVER_IP = process.env.SERVER_IP;
@@ -54,9 +62,29 @@ const io = new Server(server, {
   },
 });
 io.on("connection", (socket) => {
-  console.log("a user connected");
+  console.log("a user connected", socket.id);
   socket.on("disconnect", () => {
-    console.log("user disconnected");
+    console.log("user disconnected", socket.id);
+  });
+  socket.on(MsgUserPixelKind, async (msg: MsgUserPixel) => {
+    console.log("user pixel", msg);
+    try {
+      const userData = await serviceLayer.login.verifyAccess(msg.accessToken);
+      // Todo: Apply the pixel and broadcast to all clients
+      // Todo: Check if the time is correct. If correct returns the validation with status OK, otherwise return with status that time not yet reached
+      const confirmation: MsgUserPixelValidation = {
+        kind: MsgUserPixelValidationKind,
+        status: "ok",
+        ...buildLastActionResponse(Date.now()), // Todo: MUST use the UserService to update the last action of the user this way the Rest Endpoint can have the real value
+      };
+      socket.emit(MsgUserPixelValidationKind, confirmation);
+    } catch (e) {
+      const error: MsgError = {
+        kind: MsgErrorKind,
+        errorMessage: "Invalid access token",
+      };
+      socket.emit(MsgErrorKind, error);
+    }
   });
 });
 
