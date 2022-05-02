@@ -13,6 +13,8 @@ export interface MsgUserPixelValidation {
   kind: typeof MsgUserPixelValidationKind;
   status: "ok";
   last: EpochTimeStamp | undefined;
+  coordinate: Coordinate;
+  colorBeforeRequest: Color;
 }
 
 export const MsgErrorKind = "MsgErrorKind";

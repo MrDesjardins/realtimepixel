@@ -20,3 +20,16 @@ export const URLS = {
   logout: "logout",
   lastUserAction: "lastUserAction",
 };
+
+export const HTTP_STATUS = {
+  ok: 200,
+  bad_request: 400,
+  token_missing: 400,
+  token_invalid: 401,
+  valid_but_not_authorization: 403,
+};
+
+export const EXPIRATIONS = {
+  accessTokenMs: 15 * 60 * 60,
+  refreshTokenMs: 20 * 60 * 60,
+};

@@ -32,7 +32,5 @@ export interface RefreshTokenRequest {
 
 export interface RefreshTokenResponse extends TokenResponse {}
 
-export interface LogoutRequest {
-  refreshToken: string;
-}
+export interface LogoutRequest {}
 export interface LogoutResponse {}

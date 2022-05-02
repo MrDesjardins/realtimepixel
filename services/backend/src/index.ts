@@ -6,6 +6,7 @@ import express from "express";
 import {
   addCreateAccountRoute,
   addLoginRoute,
+  addLogoutRoute,
   addRefreshTokensRoute,
 } from "./controllers/loginController";
 import { addUserLastActionRoute } from "./controllers/userController";
@@ -48,6 +49,7 @@ addRefreshTokensRoute(serverApp, serviceLayer);
 
 // Route that must be secured with an access token
 serverApp.use(secureEndpointMiddleware(serviceLayer));
+addLogoutRoute(serverApp, serviceLayer);
 addUserLastActionRoute(serverApp, serviceLayer);
 
 serverApp.use((err: any, req: any, res: any, next: any) => {
@@ -69,13 +71,15 @@ io.on("connection", (socket) => {
   socket.on(MsgUserPixelKind, async (msg: MsgUserPixel) => {
     console.log("user pixel", msg);
     try {
-      const userData = await serviceLayer.login.verifyAccess(msg.accessToken);
+      const userData = await serviceLayer.auth.verifyAccess(msg.accessToken);
       // Todo: Apply the pixel and broadcast to all clients
       // Todo: Check if the time is correct. If correct returns the validation with status OK, otherwise return with status that time not yet reached
       const confirmation: MsgUserPixelValidation = {
         kind: MsgUserPixelValidationKind,
         status: "ok",
         ...buildLastActionResponse(Date.now()), // Todo: MUST use the UserService to update the last action of the user this way the Rest Endpoint can have the real value
+        coordinate: msg.coordinate,
+        colorBeforeRequest: msg.color,
       };
       socket.emit(MsgUserPixelValidationKind, confirmation);
     } catch (e) {

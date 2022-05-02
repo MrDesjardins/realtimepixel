@@ -68,7 +68,17 @@ export function UserDataProvider(props: UserDataContextProps): JSX.Element {
     console.error("From server:", error);
   });
   socket.on(MsgUserPixelValidationKind, (confirmation: MsgUserPixelValidation) => {
-    console.error("From server Confirmation:", confirmation);
+    console.log("From server Confirmation:", confirmation);
+    if(confirmation.status === "ok") {
+      // Todo: Popup message success
+    } else {
+      // 1) Set back the pixel to the original color
+
+      // 2) Popup message error
+      // Todo: popup message error
+      
+      // 3) Reset the time for last action
+    }
   });
   //const socket = io(`sideproject:${ENV_VARIABLES.DOCKER_SERVER_PORT_FORWARD}`, {});
   onMount(() => {
@@ -120,8 +130,8 @@ export function UserDataProvider(props: UserDataContextProps): JSX.Element {
             setState({ lastActionEpochtime: response.last });
           }
         } catch (e) {
-          console.error(e); //Todo: log the error in a logging system
-        } finally {
+          // Something wrong happen, ensure we do not keep a stale cookie
+          actions.setUserToken(undefined);
         }
       }
     },

@@ -1,6 +1,6 @@
 import { UserLoginRequest, UserLoginResponse } from "@shared/models/login";
 import { LastUserActionRequest, LastUserActionResponse } from "@shared/models/user";
-import { HEADERS, URLS } from "@shared/constants/backend";
+import { HEADERS, HTTP_STATUS, URLS } from "@shared/constants/backend";
 import { ENV_VARIABLES } from "../generated/constants_env";
 
 export class HttpRequest {
@@ -10,15 +10,20 @@ export class HttpRequest {
   }
 
   public async login(loginRequest: UserLoginRequest): Promise<UserLoginResponse> {
-    const response = await fetch(`${this.baseUrl}/${URLS.login}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(loginRequest),
-    });
+    try {
+      const response = await fetch(`${this.baseUrl}/${URLS.login}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(loginRequest),
+      });
 
-    return response.json();
+      return response.json();
+    } catch (e) {
+      console.error("Error login", e);
+      throw e;
+    }
   }
 
   public async getLastUserAction(request: LastUserActionRequest): Promise<LastUserActionResponse> {
@@ -30,11 +35,17 @@ export class HttpRequest {
           [HEADERS.authorization]: `Bearer ${request.token}`,
         },
       });
-
+      if (this.isBadResponse(response)) {
+        throw new Error("Bad response");
+      }
       return response.json();
     } catch (e) {
       console.error("Error fetching using getLastUserAction", e);
-      return { last: undefined };
+      throw e;
     }
+  }
+
+  private isBadResponse(response: Response): boolean {
+    return response.status === HTTP_STATUS.token_missing || response.status === HTTP_STATUS.token_invalid;
   }
 }

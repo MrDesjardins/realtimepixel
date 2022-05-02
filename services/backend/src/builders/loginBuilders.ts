@@ -3,6 +3,8 @@ import {
   CreateUserResponse,
   RefreshTokenResponse,
 } from "@shared/models/login";
+import { BaseJsonResponse } from "@shared/models/response";
+import { HTTP_STATUS } from "@shared/constants/backend";
 
 export function buildLoginUserResponse(
   userEmail: string,
@@ -36,5 +38,12 @@ export function buildRefreshTokensResponse(
   return {
     accessToken: accessToken,
     refreshToken: refreshToken,
+  };
+}
+
+export function buildSuccessfulResponse(message: string): BaseJsonResponse {
+  return {
+    status: HTTP_STATUS.ok,
+    message: message,
   };
 }
