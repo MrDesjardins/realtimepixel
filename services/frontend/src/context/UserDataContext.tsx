@@ -69,18 +69,17 @@ export function UserDataProvider(props: UserDataContextProps): JSX.Element {
   });
   socket.on(MsgUserPixelValidationKind, (confirmation: MsgUserPixelValidation) => {
     console.log("From server Confirmation:", confirmation);
-    if(confirmation.status === "ok") {
+    if (confirmation.status === "ok") {
+      actions.setLastActionEpochtime(confirmation.last);
+      actions.setSelectedColor(undefined);
       // Todo: Popup message success
     } else {
       // 1) Set back the pixel to the original color
-
       // 2) Popup message error
       // Todo: popup message error
-      
       // 3) Reset the time for last action
     }
   });
-  //const socket = io(`sideproject:${ENV_VARIABLES.DOCKER_SERVER_PORT_FORWARD}`, {});
   onMount(() => {
     const token = getTokenFromUserMachine();
     if (token !== undefined) {

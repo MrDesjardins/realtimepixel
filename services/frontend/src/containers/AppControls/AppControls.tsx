@@ -77,9 +77,7 @@ export function AppControls(props: AppControlsProps): JSX.Element {
                     accessToken: userData.state.userToken,
                   };
                   userData.actions.submitSocketMessage(msg);
-                  userData.actions.setLastActionEpochtime(new Date().getTime());
                   removeColors();
-                  userData.actions.setSelectedColor(undefined);
                 } else {
                   console.error("Cannot submit pixel");
                 }
