@@ -1,5 +1,6 @@
 import { ServiceEnvironment } from "@shared/constants/backend";
 import { CONST_RULES } from "@shared/constants/rules";
+import { Id } from "@shared/models/primitive";
 import { UserRepository } from "../Repositories/userRepository";
 import { BaseService } from "./baseService";
 export class UserService extends BaseService {
@@ -15,13 +16,19 @@ export class UserService extends BaseService {
     const lastUserAction = await this.userRepository.getLastUserAction(
       userEmail
     );
-
     if (lastUserAction === undefined) {
       return Promise.resolve(
-        new Date().getTime() - CONST_RULES.userPixelDelaySeconds
+        new Date().valueOf() - CONST_RULES.userPixelDelaySeconds * 1000
       );
     } else {
       return Promise.resolve(lastUserAction);
     }
+  }
+
+  public async setLastUserAction(
+    userEmail: Id,
+    time: EpochTimeStamp
+  ): Promise<void> {
+    return this.userRepository.setLastUserAction(userEmail, time);
   }
 }

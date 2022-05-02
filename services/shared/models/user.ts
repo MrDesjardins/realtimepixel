@@ -1,5 +1,5 @@
 export interface LastUserActionRequest {
-  token: string;
+  accessToken: string;
 }
 
 export interface LastUserActionResponse {

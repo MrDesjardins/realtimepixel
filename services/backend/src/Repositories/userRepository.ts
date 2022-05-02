@@ -9,4 +9,11 @@ export class UserRepository {
   ): Promise<EpochTimeStamp | undefined> {
     return Promise.resolve(this.fakeRepository.get(email));
   }
+
+  public async setLastUserAction(
+    userEmail: string,
+    time: number
+  ): Promise<void> {
+    this.fakeRepository.set(userEmail, time);
+  }
 }

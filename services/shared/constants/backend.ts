@@ -19,6 +19,7 @@ export const URLS = {
   refreshtokens: "refreshtokens",
   logout: "logout",
   lastUserAction: "lastUserAction",
+  allTiles: "allTiles",
 };
 
 export const HTTP_STATUS = {

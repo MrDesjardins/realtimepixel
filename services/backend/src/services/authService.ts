@@ -99,7 +99,7 @@ export class AuthService extends BaseService {
 
   public async verifyAccess(
     accessToken: string
-  ): Promise<RequestUserFromJwt | undefined> {
+  ): Promise<RequestUserFromJwt> {
     return new Promise((resolve, reject) => {
       jwt.verify(
         accessToken,

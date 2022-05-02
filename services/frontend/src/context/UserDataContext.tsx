@@ -1,6 +1,8 @@
 import { secondsUntilNextAction } from "@shared/logics/time";
-import { Color, Coordinate } from "@shared/models/game";
+import { Color, Coordinate, getTileKey, Tile } from "@shared/models/game";
 import {
+  MsgBroadcastNewPixel,
+  MsgBroadcastNewPixelKind,
   MsgError,
   MsgErrorKind,
   MsgUserPixel,
@@ -26,6 +28,7 @@ export interface UserDataContextState {
   isReadyForAction: boolean;
   lastActionEpochtime: EpochTimeStamp | undefined;
   userToken: Token | undefined;
+  tiles: Map<string, Tile>;
 }
 
 export interface UserDataContextModel {
@@ -42,6 +45,7 @@ export interface UserDataContextActions {
   setLastActionEpochtime: (time: EpochTimeStamp | undefined) => void;
   setUserToken: (token: Token | undefined) => void;
   submitSocketMessage: (message: MsgUserPixel) => void;
+  addTile: (tile: Tile) => void;
 }
 
 export interface UserDataContextProps {
@@ -56,6 +60,7 @@ const initialValue: UserDataContextState = {
   userToken: undefined,
   lastActionEpochtime: undefined,
   isReadyForAction: false,
+  tiles: new Map<string, Tile>(),
 };
 export const UserDataContext = createContext<UserDataContextModel>();
 
@@ -80,11 +85,22 @@ export function UserDataProvider(props: UserDataContextProps): JSX.Element {
       // 3) Reset the time for last action
     }
   });
-  onMount(() => {
+
+  socket.on(MsgBroadcastNewPixelKind, (newPixel: MsgBroadcastNewPixel) => {
+    console.log("From server Broadcast:", newPixel);
+    actions.addTile(newPixel.tile);
+  });
+
+  onMount(async () => {
     const token = getTokenFromUserMachine();
     if (token !== undefined) {
       actions.setUserToken(token);
     }
+
+    // Fetch all existing tiles from the server
+    const http = new HttpRequest();
+    const tiles = await http.getAllTiles();
+    setState({ tiles: new Map(tiles.tiles.map((i) => [getTileKey(i), i])) });
   });
 
   // Update every second the status "is ready for action"
@@ -124,7 +140,7 @@ export function UserDataProvider(props: UserDataContextProps): JSX.Element {
         // Get the latest action for the authenticated user
         try {
           const http = new HttpRequest();
-          const response = await http.getLastUserAction({ token: state.userToken });
+          const response = await http.getLastUserAction({ accessToken: state.userToken });
           if (response.last !== undefined) {
             setState({ lastActionEpochtime: response.last });
           }
@@ -146,6 +162,9 @@ export function UserDataProvider(props: UserDataContextProps): JSX.Element {
     },
     submitSocketMessage: (message: MsgUserPixel) => {
       socket.emit(MsgUserPixelKind, message);
+    },
+    addTile: (tile: Tile) => {
+      state.tiles.set(getTileKey(tile), tile);
     },
   };
 

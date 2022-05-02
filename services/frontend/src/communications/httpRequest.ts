@@ -1,6 +1,7 @@
+import { HEADERS, HTTP_STATUS, URLS } from "@shared/constants/backend";
+import { AllTilesResponse } from "@shared/models/game";
 import { UserLoginRequest, UserLoginResponse } from "@shared/models/login";
 import { LastUserActionRequest, LastUserActionResponse } from "@shared/models/user";
-import { HEADERS, HTTP_STATUS, URLS } from "@shared/constants/backend";
 import { ENV_VARIABLES } from "../generated/constants_env";
 
 export class HttpRequest {
@@ -32,7 +33,7 @@ export class HttpRequest {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          [HEADERS.authorization]: `Bearer ${request.token}`,
+          [HEADERS.authorization]: `Bearer ${request.accessToken}`,
         },
       });
       if (this.isBadResponse(response)) {
@@ -41,6 +42,24 @@ export class HttpRequest {
       return response.json();
     } catch (e) {
       console.error("Error fetching using getLastUserAction", e);
+      throw e;
+    }
+  }
+
+  public async getAllTiles(): Promise<AllTilesResponse> {
+    try {
+      const response = await fetch(`${this.baseUrl}/${URLS.allTiles}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (this.isBadResponse(response)) {
+        throw new Error("Bad response");
+      }
+      return response.json();
+    } catch (e) {
+      console.error("Error fetching using getAllTiles", e);
       throw e;
     }
   }

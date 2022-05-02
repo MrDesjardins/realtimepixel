@@ -1,15 +1,14 @@
 import { Id } from "./primitive";
 
- /**
-  * Between 0 to 255 inclusively: 1 byte
-  **/
- export type Color = number;
- 
- /**
-  * Value from 0 to 65536 inclusively: 2 bytes
-  **/
- export type CoordinateNumber = number;
+/**
+ * Between 0 to 255 inclusively: 1 byte
+ **/
+export type Color = number;
 
+/**
+ * Value from 0 to 65536 inclusively: 2 bytes
+ **/
+export type CoordinateNumber = number;
 
 export interface Coordinate {
   x: CoordinateNumber;
@@ -25,4 +24,13 @@ export interface Tile {
   time: EpochTimeStamp;
   userId: Id;
   color: Color;
+}
+
+export function getTileKey(tile: Tile): string {
+  return `${tile.coordinate.x}-${tile.coordinate.y}`;
+}
+
+export interface AllTilesRequest {}
+export interface AllTilesResponse {
+  tiles: Tile[];
 }

@@ -1,4 +1,4 @@
-import { Color, Coordinate } from "./game";
+import { Color, Coordinate, Tile } from "./game";
 
 export const MsgUserPixelKind = "MsgUserPixel";
 export interface MsgUserPixel {
@@ -21,4 +21,10 @@ export const MsgErrorKind = "MsgErrorKind";
 export interface MsgError {
   kind: typeof MsgErrorKind;
   errorMessage: string;
+}
+
+export const MsgBroadcastNewPixelKind = "MsgBroadcastNewPixelKind";
+export interface MsgBroadcastNewPixel {
+  kind: typeof MsgBroadcastNewPixelKind;
+  tile: Tile;
 }

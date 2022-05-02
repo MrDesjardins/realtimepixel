@@ -15,6 +15,8 @@ import http from "http";
 import { Server } from "socket.io";
 import { secureEndpointMiddleware } from "./middlewares/secureEndpoints";
 import {
+  MsgBroadcastNewPixel,
+  MsgBroadcastNewPixelKind,
   MsgError,
   MsgErrorKind,
   MsgUserPixel,
@@ -23,6 +25,10 @@ import {
   MsgUserPixelValidationKind,
 } from "@shared/models/socketMessages";
 import { buildLastActionResponse } from "./builders/userBuilders";
+import { isNextActionReadyForUser, secondsUntilNextAction } from "@shared/logics/time";
+import { Tile } from "@shared/models/game";
+import { addAllTilesRoute } from "./controllers/gameController";
+
 dotenv.config();
 
 const SERVER_IP = process.env.SERVER_IP;
@@ -46,6 +52,7 @@ serverApp.get("/health", async (req, res) => {
 addLoginRoute(serverApp, serviceLayer);
 addCreateAccountRoute(serverApp, serviceLayer);
 addRefreshTokensRoute(serverApp, serviceLayer);
+addAllTilesRoute(serverApp, serviceLayer);
 
 // Route that must be secured with an access token
 serverApp.use(secureEndpointMiddleware(serviceLayer));
@@ -72,16 +79,44 @@ io.on("connection", (socket) => {
     console.log("user pixel", msg);
     try {
       const userData = await serviceLayer.auth.verifyAccess(msg.accessToken);
-      // Todo: Apply the pixel and broadcast to all clients
-      // Todo: Check if the time is correct. If correct returns the validation with status OK, otherwise return with status that time not yet reached
-      const confirmation: MsgUserPixelValidation = {
-        kind: MsgUserPixelValidationKind,
-        status: "ok",
-        ...buildLastActionResponse(Date.now()), // Todo: MUST use the UserService to update the last action of the user this way the Rest Endpoint can have the real value
-        coordinate: msg.coordinate,
-        colorBeforeRequest: msg.color,
-      };
-      socket.emit(MsgUserPixelValidationKind, confirmation);
+
+      const lastUserAction = await serviceLayer.user.getLastUserAction(
+        userData?.user
+      );
+
+      if (userData && isNextActionReadyForUser(lastUserAction)) {
+        const newTile: Tile = {
+          time: new Date().valueOf(),
+          userId: userData?.user,
+          coordinate: msg.coordinate,
+          color: msg.color,
+        };
+
+        // Persist the new tile and the last action of the user
+        await Promise.all([
+          serviceLayer.game.setTile(newTile),
+          serviceLayer.user.setLastUserAction(userData.user, newTile.time),
+        ]);
+
+        // Send confirmation to the user who submitted
+        const confirmation: MsgUserPixelValidation = {
+          kind: MsgUserPixelValidationKind,
+          status: "ok",
+          ...buildLastActionResponse(Date.now()), // Todo: MUST use the UserService to update the last action of the user this way the Rest Endpoint can have the real value
+          coordinate: msg.coordinate,
+          colorBeforeRequest: msg.color,
+        };
+        socket.emit(MsgUserPixelValidationKind, confirmation);
+
+        // Broadcast the pixel to the other users (and the user who submitted)
+        const broadcastPayload: MsgBroadcastNewPixel = {
+          kind: MsgBroadcastNewPixelKind,
+          tile: newTile,
+        };
+        io.emit(MsgBroadcastNewPixelKind, broadcastPayload);
+      } else {
+        console.log("Send error to the user who submitted"); // Todo
+      }
     } catch (e) {
       const error: MsgError = {
         kind: MsgErrorKind,
