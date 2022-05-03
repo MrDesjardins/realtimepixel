@@ -78,7 +78,7 @@ io.on("connection", (socket) => {
   socket.on("disconnect", () => {
     console.log("user disconnected", socket.id);
   });
-  socket.on(MsgUserPixelKind, async (msg: MsgUserPixel) => {
+  socket.on(MsgUserPixelKind, async (msg: MsgUserPixel, callback) => {
     console.log("user pixel", msg);
     try {
       const userData = await serviceLayer.auth.verifyAccess(msg.accessToken);
@@ -107,7 +107,6 @@ io.on("connection", (socket) => {
           coordinate: msg.coordinate,
           colorBeforeRequest: msg.color,
         };
-        socket.emit(MsgUserPixelValidationKind, confirmation);
 
         // Broadcast the pixel to the other users (and the user who submitted)
         const broadcastPayload: MsgBroadcastNewPixel = {
@@ -115,6 +114,7 @@ io.on("connection", (socket) => {
           tile: newTile,
         };
         io.emit(MsgBroadcastNewPixelKind, broadcastPayload);
+        callback(confirmation);
       } else {
         console.log("Send error to the user who submitted"); // Todo
       }

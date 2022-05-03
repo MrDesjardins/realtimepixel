@@ -74,19 +74,19 @@ export function UserDataProvider(props: UserDataContextProps): JSX.Element {
   socket.on(MsgErrorKind, (error: MsgError) => {
     console.error("From server:", error);
   });
-  socket.on(MsgUserPixelValidationKind, (confirmation: MsgUserPixelValidation) => {
-    console.log("From server Confirmation:", confirmation);
-    if (confirmation.status === "ok") {
-      actions.setLastActionEpochtime(confirmation.last);
-      actions.setSelectedColor(undefined);
-      // Todo: Popup message success
-    } else {
-      // 1) Set back the pixel to the original color
-      // 2) Popup message error
-      // Todo: popup message error
-      // 3) Reset the time for last action
-    }
-  });
+  // socket.on(MsgUserPixelValidationKind, (confirmation: MsgUserPixelValidation) => {
+  //   console.log("From server Confirmation:", confirmation);
+  //   if (confirmation.status === "ok") {
+  //     actions.setLastActionEpochtime(confirmation.last);
+  //     actions.setSelectedColor(undefined);
+  //     // Todo: Popup message success
+  //   } else {
+  //     // 1) Set back the pixel to the original color
+  //     // 2) Popup message error
+  //     // Todo: popup message error
+  //     // 3) Reset the time for last action
+  //   }
+  // });
 
   socket.on(MsgBroadcastNewPixelKind, (newPixel: MsgBroadcastNewPixel) => {
     console.log("From server Broadcast:", newPixel);
@@ -168,7 +168,19 @@ export function UserDataProvider(props: UserDataContextProps): JSX.Element {
       }
     },
     submitSocketMessage: (message: MsgUserPixel) => {
-      socket.emit(MsgUserPixelKind, message);
+      socket.emit(MsgUserPixelKind, message, (response: MsgUserPixelValidation) => {
+        console.log("From server Confirmation:", response);
+        if (response.status === "ok") {
+          actions.setLastActionEpochtime(response.last);
+          actions.setSelectedColor(undefined);
+          // Todo: Popup message success
+        } else {
+          // 1) Set back the pixel to the original color
+          // 2) Popup message error
+          // Todo: popup message error
+          // 3) Reset the time for last action
+        }
+      });
     },
     addTile: (tile: Tile) => {
       const newMap = new Map(state.tiles);
