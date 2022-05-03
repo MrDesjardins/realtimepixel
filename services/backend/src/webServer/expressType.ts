@@ -11,7 +11,7 @@ export interface TypedResponse<ResBody> extends Express.Response {
 }
 
 export interface RequestUserFromJwt {
-  user: string; // Email
+  email: string; // Email
   iat: number; // “issued at” helps identify the date/time issued
   exp: number; // “expires at” helps identify the date/time the token will expire
 }

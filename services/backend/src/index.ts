@@ -25,7 +25,10 @@ import {
   MsgUserPixelValidationKind,
 } from "@shared/models/socketMessages";
 import { buildLastActionResponse } from "./builders/userBuilders";
-import { isNextActionReadyForUser, secondsUntilNextAction } from "@shared/logics/time";
+import {
+  isNextActionReadyForUser,
+  secondsUntilNextAction,
+} from "@shared/logics/time";
 import { Tile } from "@shared/models/game";
 import { addAllTilesRoute } from "./controllers/gameController";
 
@@ -79,23 +82,21 @@ io.on("connection", (socket) => {
     console.log("user pixel", msg);
     try {
       const userData = await serviceLayer.auth.verifyAccess(msg.accessToken);
-
       const lastUserAction = await serviceLayer.user.getLastUserAction(
-        userData?.user
+        userData?.email
       );
 
       if (userData && isNextActionReadyForUser(lastUserAction)) {
         const newTile: Tile = {
           time: new Date().valueOf(),
-          userId: userData?.user,
+          userId: userData.email,
           coordinate: msg.coordinate,
           color: msg.color,
         };
-
         // Persist the new tile and the last action of the user
         await Promise.all([
           serviceLayer.game.setTile(newTile),
-          serviceLayer.user.setLastUserAction(userData.user, newTile.time),
+          serviceLayer.user.setLastUserAction(userData.email, newTile.time),
         ]);
 
         // Send confirmation to the user who submitted

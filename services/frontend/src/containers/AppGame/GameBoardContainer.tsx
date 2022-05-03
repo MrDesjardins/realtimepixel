@@ -1,7 +1,6 @@
-import { createEffect, createSignal, JSX, on, onCleanup, onMount } from "solid-js";
+import { createEffect, JSX, on, onCleanup, onMount } from "solid-js";
 import { CONSTS } from "../../models/constants";
 import { COLORS } from "@shared/constants/colors";
-import { Tile } from "@shared/models/game";
 import styles from "./GameBoardContainer.module.css";
 import { useUserData } from "../../context/UserDataContext";
 export interface GameBoardContainerProps {}
@@ -13,7 +12,7 @@ export function GameBoardContainer(props: GameBoardContainerProps): JSX.Element 
   const userData = useUserData();
 
   onMount(() => {
-    frame = requestAnimationFrame(draw);
+    // frame = requestAnimationFrame(draw); // Commented because instead of looping we only render when new tiles are added
     onCleanup(() => cancelAnimationFrame(frame));
   });
 
@@ -21,31 +20,22 @@ export function GameBoardContainer(props: GameBoardContainerProps): JSX.Element 
   const tracked = () => userData?.state.tiles;
   createEffect(
     on(tracked, () => {
-      draw(Date.now());
+      const ctx = canvasRef?.getContext("2d") ?? null;
+      if (ctx !== null) {
+        clearAndSetPixelOnCanvas(ctx);
+      }
     }),
   );
 
   const draw = (time: number) => {
     const ctx = canvasRef?.getContext("2d") ?? null;
     if (ctx) {
+      console.log("Draw time", time, userData?.state.tiles.entries());
       if (time > lastTime + 1000 / CONSTS.gameBoard.fps) {
-        ctx.clearRect(0, 0, CONSTS.gameBoard.boardWidthPx, CONSTS.gameBoard.boardHeightPx);
-        if (userData) {
-          for (const [key, t] of userData.state.tiles.entries()) {
-            const color = COLORS[t.color];
-            ctx.fillStyle = `rgba(${color.r}, ${color.g}, ${color.b}, 1)`;
-            ctx.fillRect(
-              t.coordinate.x,
-              t.coordinate.y,
-              CONSTS.gameBoard.pixelSizePx,
-              CONSTS.gameBoard.pixelSizePx,
-            );
-          }
-        }
-        console.log("draw");
+        clearAndSetPixelOnCanvas(ctx);
         lastTime = time;
       }
-      //frame = requestAnimationFrame(draw); // todo: uncomment to redraw
+      frame = requestAnimationFrame(draw); // todo: uncomment to redraw
     }
   };
   return (
@@ -61,4 +51,21 @@ export function GameBoardContainer(props: GameBoardContainerProps): JSX.Element 
       />
     </div>
   );
+
+  function clearAndSetPixelOnCanvas(ctx: CanvasRenderingContext2D) {
+    ctx.clearRect(0, 0, CONSTS.gameBoard.boardWidthPx, CONSTS.gameBoard.boardHeightPx);
+    if (userData) {
+      for (const [key, t] of userData.state.tiles.entries()) {
+        const color = COLORS[t.color];
+        ctx.fillStyle = `rgba(${color.r}, ${color.g}, ${color.b}, 1)`;
+        ctx.fillRect(
+          t.coordinate.x,
+          t.coordinate.y,
+          CONSTS.gameBoard.pixelSizePx,
+          CONSTS.gameBoard.pixelSizePx,
+        );
+      }
+    }
+    console.log("draw");
+  }
 }

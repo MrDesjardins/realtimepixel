@@ -103,13 +103,12 @@ export function UserDataProvider(props: UserDataContextProps): JSX.Element {
     // Fetch all existing tiles from the server
     const http = new HttpRequest();
     const tiles = await http.getAllTiles();
+    const tiles2 = tiles.tiles.map((i) => {
+      i.coordinate = getCoordinateToPixelValue(i.coordinate);
+      return [getTileKey(i), i];
+    });
     setState({
-      tiles: new Map(
-        tiles.tiles.map((i) => {
-          i.coordinate = getCoordinateToPixelValue(i.coordinate);
-          return [getTileKey(i), i];
-        }),
-      ),
+      tiles: new Map(tiles2 as any),
     });
   });
 

@@ -108,7 +108,7 @@ export class AuthService extends BaseService {
           if (err) {
             reject(err.message);
           } else {
-            resolve(data.email);
+            resolve(data);
           }
         }
       );
