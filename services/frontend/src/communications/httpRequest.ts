@@ -65,6 +65,10 @@ export class HttpRequest {
   }
 
   private isBadResponse(response: Response): boolean {
-    return response.status === HTTP_STATUS.token_missing || response.status === HTTP_STATUS.token_invalid;
+    return (
+      response.status === HTTP_STATUS.token_missing ||
+      response.status === HTTP_STATUS.token_invalid ||
+      response.status === HTTP_STATUS.valid_but_not_authorization
+    );
   }
 }

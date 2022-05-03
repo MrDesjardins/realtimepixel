@@ -18,11 +18,13 @@ import { CONSTS } from "../models/constants";
 import { getTokenFromUserMachine, persistTokenInUserMachine } from "../persistences/localStorage";
 import { io } from "socket.io-client";
 import { ENV_VARIABLES } from "../generated/constants_env";
+import { HTTP_STATUS } from "../../../shared/constants/backend";
+import { getCoordinateToPixelValue } from "../logics/pixel";
 
 export interface UserDataContextState {
   zoom: number;
-  coordinate: Coordinate | undefined;
-  selectedCoordinate: Coordinate | undefined;
+  coordinate: Coordinate | undefined; // Pixel
+  selectedCoordinate: Coordinate | undefined; // Pixel
   selectedColor: Color | undefined;
   isAuthenticated: boolean;
   isReadyForAction: boolean;
@@ -88,6 +90,7 @@ export function UserDataProvider(props: UserDataContextProps): JSX.Element {
 
   socket.on(MsgBroadcastNewPixelKind, (newPixel: MsgBroadcastNewPixel) => {
     console.log("From server Broadcast:", newPixel);
+    newPixel.tile.coordinate = getCoordinateToPixelValue(newPixel.tile.coordinate); // Convert from coordinate to pixel
     actions.addTile(newPixel.tile);
   });
 
@@ -100,7 +103,14 @@ export function UserDataProvider(props: UserDataContextProps): JSX.Element {
     // Fetch all existing tiles from the server
     const http = new HttpRequest();
     const tiles = await http.getAllTiles();
-    setState({ tiles: new Map(tiles.tiles.map((i) => [getTileKey(i), i])) });
+    setState({
+      tiles: new Map(
+        tiles.tiles.map((i) => {
+          i.coordinate = getCoordinateToPixelValue(i.coordinate);
+          return [getTileKey(i), i];
+        }),
+      ),
+    });
   });
 
   // Update every second the status "is ready for action"
@@ -141,9 +151,7 @@ export function UserDataProvider(props: UserDataContextProps): JSX.Element {
         try {
           const http = new HttpRequest();
           const response = await http.getLastUserAction({ accessToken: state.userToken });
-          if (response.last !== undefined) {
-            setState({ lastActionEpochtime: response.last });
-          }
+          setState({ lastActionEpochtime: response.last });
         } catch (e) {
           // Something wrong happen, ensure we do not keep a stale cookie
           actions.setUserToken(undefined);
@@ -164,7 +172,9 @@ export function UserDataProvider(props: UserDataContextProps): JSX.Element {
       socket.emit(MsgUserPixelKind, message);
     },
     addTile: (tile: Tile) => {
-      state.tiles.set(getTileKey(tile), tile);
+      const newMap = new Map(state.tiles);
+      newMap.set(getTileKey(tile), tile);
+      setState({ tiles: newMap });
     },
   };
 

@@ -7,14 +7,13 @@ export class GameRepository {
   }
 
   public setTile(tile: Tile): Promise<void> {
-    this.fakeTilesRepository.set(
-      getTileKey(tile),
-      tile
-    );
+    console.log("Tiles", this.fakeTilesRepository.values());
+    this.fakeTilesRepository.set(getTileKey(tile), tile);
     return Promise.resolve();
   }
 
   public getAllTiles(): Promise<Tile[]> {
+    console.log("Tiles", Object.values(this.fakeTilesRepository));
     return Promise.resolve(Object.values(this.fakeTilesRepository));
   }
 }

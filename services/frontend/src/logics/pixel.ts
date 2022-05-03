@@ -14,3 +14,11 @@ export function getAdjustedPixel(coordinate: Coordinate): Coordinate {
     y: closest.y / CONSTS.gameBoard.pixelSizePx,
   };
 }
+
+export function getCoordinateToPixelValue(coordinate: Coordinate): Coordinate {
+
+  return {
+    x: coordinate.x * CONSTS.gameBoard.pixelSizePx,
+    y: coordinate.y * CONSTS.gameBoard.pixelSizePx,
+  };
+}
