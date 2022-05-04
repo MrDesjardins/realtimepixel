@@ -103,7 +103,7 @@ io.on("connection", (socket) => {
         const confirmation: MsgUserPixelValidation = {
           kind: MsgUserPixelValidationKind,
           status: "ok",
-          ...buildLastActionResponse(Date.now()), // Todo: MUST use the UserService to update the last action of the user this way the Rest Endpoint can have the real value
+          ...buildLastActionResponse(newTile.time),
           coordinate: msg.coordinate,
           colorBeforeRequest: msg.color,
         };

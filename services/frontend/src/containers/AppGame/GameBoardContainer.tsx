@@ -35,7 +35,7 @@ export function GameBoardContainer(props: GameBoardContainerProps): JSX.Element 
         clearAndSetPixelOnCanvas(ctx);
         lastTime = time;
       }
-      frame = requestAnimationFrame(draw); // todo: uncomment to redraw
+      frame = requestAnimationFrame(draw);
     }
   };
   return (

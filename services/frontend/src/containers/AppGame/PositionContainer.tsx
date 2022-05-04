@@ -1,8 +1,7 @@
-import { createEffect, createSignal, JSX, on } from "solid-js";
+import { createSignal, JSX } from "solid-js";
 import { useControl } from "../../context/ControlContext";
 import { useUserData } from "../../context/UserDataContext";
-import { CONSTS } from "../../models/constants";
-import { Coordinate } from "../../models/game";
+import { Coordinate } from "@shared/models/game";
 import styles from "./PositionContainer.module.css";
 export interface PositionContainerProps {
   children: JSX.Element;

@@ -112,14 +112,14 @@ export function addLogoutRoute(
       next: core.NextFunction
     ) => {
       try {
-        if (req.jwtPayload?.user === undefined) {
+        if (req.jwtPayload?.email === undefined) {
           return res
             .status(HTTP_STATUS.token_invalid)
             .send(
               buildBaseJsonResponse(HTTP_STATUS.token_invalid, "Refresh Tokens Failed")
             );
         } else {
-          await serviceLayer.auth.logout(req.jwtPayload?.user);
+          await serviceLayer.auth.logout(req.jwtPayload?.email);
 
           buildSuccessfulResponse;
           return res.status(HTTP_STATUS.ok).send("Logout Successful");

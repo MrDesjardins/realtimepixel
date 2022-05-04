@@ -1,5 +1,6 @@
 import { createMemo, JSX, Show } from "solid-js";
 import { useControl } from "../../context/ControlContext";
+import { useNotification } from "../../context/NotificationContext";
 import { useUserData } from "../../context/UserDataContext";
 import { getClosestPixel } from "../../logics/pixel";
 import { PixelSelected } from "./PixelSelected";
@@ -11,7 +12,7 @@ export interface PixelSelectorProps {
 export function PixelSelector(props: PixelSelectorProps): JSX.Element {
   const control = useControl();
   const userData = useUserData();
-
+  
   const coordinateAdjusted = createMemo(() => {
     const c = userData?.state.selectedCoordinate;
     if (c) {

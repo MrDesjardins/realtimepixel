@@ -25,6 +25,7 @@
   --z-index-hud: 100;
   --z-index-help: 101;
   --z-index-help-content: 102;
+  --z-index-toastnotification: 103;
 }
 
 body {

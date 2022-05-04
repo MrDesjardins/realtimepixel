@@ -20,6 +20,7 @@ import { io } from "socket.io-client";
 import { ENV_VARIABLES } from "../generated/constants_env";
 import { HTTP_STATUS } from "../../../shared/constants/backend";
 import { getCoordinateToPixelValue } from "../logics/pixel";
+import { useNotification } from "./NotificationContext";
 
 export interface UserDataContextState {
   zoom: number;
@@ -67,6 +68,7 @@ const initialValue: UserDataContextState = {
 export const UserDataContext = createContext<UserDataContextModel>();
 
 export function UserDataProvider(props: UserDataContextProps): JSX.Element {
+  const notification = useNotification();
   const [state, setState] = createStore<UserDataContextState>(initialValue);
   const socket = io(`${ENV_VARIABLES.SERVER_IP}:${ENV_VARIABLES.DOCKER_SERVER_PORT_FORWARD}`, {
     transports: ["websocket"],
@@ -173,12 +175,14 @@ export function UserDataProvider(props: UserDataContextProps): JSX.Element {
         if (response.status === "ok") {
           actions.setLastActionEpochtime(response.last);
           actions.setSelectedColor(undefined);
-          // Todo: Popup message success
+          notification?.setMessage("Pixel submitted successfully");
         } else {
           // 1) Set back the pixel to the original color
+          // - Nothing to do, haven't change it
           // 2) Popup message error
-          // Todo: popup message error
+          notification?.setMessage("Pixel submission failed");
           // 3) Reset the time for last action
+          // - Nothing to do, the last action has not been changed
         }
       });
     },

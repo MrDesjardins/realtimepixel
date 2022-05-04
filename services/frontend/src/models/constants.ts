@@ -11,4 +11,7 @@ export const CONSTS = {
     maximumZoom: 5,
     fps: 30,
   },
+  notification: {
+    toastNotificationDurationMs: 5000,
+  },
 };
