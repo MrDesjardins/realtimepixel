@@ -11,16 +11,16 @@ import {
   MsgUserPixelValidationKind,
 } from "@shared/models/socketMessages";
 import { Token } from "@shared/models/primitive";
-import { createContext, JSX, onMount, useContext } from "solid-js";
+import { createContext, createEffect, createSignal, JSX, on, onCleanup, onMount, useContext } from "solid-js";
 import { createStore } from "solid-js/store";
 import { HttpRequest } from "../communications/httpRequest";
 import { CONSTS } from "../models/constants";
 import { getTokenFromUserMachine, persistTokenInUserMachine } from "../persistences/localStorage";
-import { io } from "socket.io-client";
+import { io, Socket } from "socket.io-client";
 import { ENV_VARIABLES } from "../generated/constants_env";
-import { HTTP_STATUS } from "../../../shared/constants/backend";
 import { getCoordinateToPixelValue } from "../logics/pixel";
 import { useNotification } from "./NotificationContext";
+import { TokenResponse } from "../../../shared/models/login";
 
 export interface UserDataContextState {
   zoom: number;
@@ -30,7 +30,7 @@ export interface UserDataContextState {
   isAuthenticated: boolean;
   isReadyForAction: boolean;
   lastActionEpochtime: EpochTimeStamp | undefined;
-  userToken: Token | undefined;
+  userToken: TokenResponse | undefined;
   tiles: Map<string, Tile>;
 }
 
@@ -46,7 +46,7 @@ export interface UserDataContextActions {
   setSelectedColor: (color: Color | undefined) => void;
   setIsAuthenticated: (isAuthenticated: boolean) => void;
   setLastActionEpochtime: (time: EpochTimeStamp | undefined) => void;
-  setUserToken: (token: Token | undefined) => void;
+  setUserToken: (token: TokenResponse | undefined) => void;
   submitSocketMessage: (message: MsgUserPixel) => void;
   addTile: (tile: Tile) => void;
 }
@@ -70,30 +70,50 @@ export const UserDataContext = createContext<UserDataContextModel>();
 export function UserDataProvider(props: UserDataContextProps): JSX.Element {
   const notification = useNotification();
   const [state, setState] = createStore<UserDataContextState>(initialValue);
-  const socket = io(`${ENV_VARIABLES.SERVER_IP}:${ENV_VARIABLES.DOCKER_SERVER_PORT_FORWARD}`, {
-    transports: ["websocket"],
-  });
-  socket.on(MsgErrorKind, (error: MsgError) => {
-    console.error("From server:", error);
-  });
-  // socket.on(MsgUserPixelValidationKind, (confirmation: MsgUserPixelValidation) => {
-  //   console.log("From server Confirmation:", confirmation);
-  //   if (confirmation.status === "ok") {
-  //     actions.setLastActionEpochtime(confirmation.last);
-  //     actions.setSelectedColor(undefined);
-  //     // Todo: Popup message success
-  //   } else {
-  //     // 1) Set back the pixel to the original color
-  //     // 2) Popup message error
-  //     // Todo: popup message error
-  //     // 3) Reset the time for last action
-  //   }
-  // });
+  const [socketReady, setSocketReady] = createSignal(false);
+  let socket: Socket | undefined = undefined;
 
-  socket.on(MsgBroadcastNewPixelKind, (newPixel: MsgBroadcastNewPixel) => {
-    console.log("From server Broadcast:", newPixel);
-    newPixel.tile.coordinate = getCoordinateToPixelValue(newPixel.tile.coordinate); // Convert from coordinate to pixel
-    actions.addTile(newPixel.tile);
+  const listenUserToken = () => state.userToken;
+  createEffect(
+    on(listenUserToken, (token: TokenResponse | undefined) => {
+      console.log("Trying to initialize Socket.io");
+      // Initialize only once the user has an access token
+      if (socket === undefined && token !== undefined) {
+        console.log("---> Socket.io: Done");
+        socket = io(`${ENV_VARIABLES.SERVER_IP}:${ENV_VARIABLES.DOCKER_SERVER_PORT_FORWARD}`, {
+          transports: ["websocket"],
+          query: { access_token: token.accessToken },
+        });
+        setSocketReady(true);
+      }
+    }),
+  );
+
+  createEffect(() => {
+    if (socketReady()) {
+      console.log("Trying to set Socket.io listening with on()");
+      if (socket !== undefined) {
+        console.log("---> Socket.io listening with on(): Done");
+        socket.on(MsgErrorKind, (error: MsgError) => {
+          console.error("From server:", error);
+        });
+
+        /**
+         * Needed because we cannot solely rely on the response from the server since the user
+         * might have many devices connected to the server (many sockets).
+         **/
+        socket.on(MsgUserPixelValidationKind, (response: MsgUserPixelValidation) => {
+          console.log("From server Confirmation:", response);
+          manageResponseFromMsgUserPixel(response);
+        });
+
+        socket.on(MsgBroadcastNewPixelKind, (newPixel: MsgBroadcastNewPixel) => {
+          console.log("From server Broadcast:", newPixel);
+          newPixel.tile.coordinate = getCoordinateToPixelValue(newPixel.tile.coordinate); // Convert from coordinate to pixel
+          actions.addTile(newPixel.tile);
+        });
+      }
+    }
   });
 
   onMount(async () => {
@@ -112,6 +132,12 @@ export function UserDataProvider(props: UserDataContextProps): JSX.Element {
     setState({
       tiles: new Map(tiles2 as any),
     });
+  });
+
+  onCleanup(() => {
+    if (socket !== undefined) {
+      socket.close();
+    }
   });
 
   // Update every second the status "is ready for action"
@@ -151,7 +177,7 @@ export function UserDataProvider(props: UserDataContextProps): JSX.Element {
         // Get the latest action for the authenticated user
         try {
           const http = new HttpRequest();
-          const response = await http.getLastUserAction({ accessToken: state.userToken });
+          const response = await http.getLastUserAction({ accessToken: state.userToken.accessToken });
           setState({ lastActionEpochtime: response.last });
         } catch (e) {
           // Something wrong happen, ensure we do not keep a stale cookie
@@ -162,29 +188,21 @@ export function UserDataProvider(props: UserDataContextProps): JSX.Element {
     setLastActionEpochtime: (time: EpochTimeStamp | undefined) => {
       setState({ lastActionEpochtime: time });
     },
-    setUserToken: (token: Token | undefined) => {
+    setUserToken: (token: TokenResponse | undefined) => {
       setState({ userToken: token });
       persistTokenInUserMachine(token);
       if (token !== undefined) {
-        actions.setIsAuthenticated(token !== "");
+        actions.setIsAuthenticated(token.accessToken !== "");
       }
     },
     submitSocketMessage: (message: MsgUserPixel) => {
-      socket.emit(MsgUserPixelKind, message, (response: MsgUserPixelValidation) => {
-        console.log("From server Confirmation:", response);
-        if (response.status === "ok") {
-          actions.setLastActionEpochtime(response.last);
-          actions.setSelectedColor(undefined);
-          notification?.setMessage("Pixel submitted successfully");
-        } else {
-          // 1) Set back the pixel to the original color
-          // - Nothing to do, haven't change it
-          // 2) Popup message error
-          notification?.setMessage("Pixel submission failed");
-          // 3) Reset the time for last action
-          // - Nothing to do, the last action has not been changed
-        }
-      });
+      console.log("SubmitSocketMessage", socket);
+      if (socket !== undefined) {
+        socket.emit(MsgUserPixelKind, message, (response: MsgUserPixelValidation) => {
+          console.log("From server Confirmation:", response);
+          manageResponseFromMsgUserPixel(response);
+        });
+      }
     },
     addTile: (tile: Tile) => {
       const newMap = new Map(state.tiles);
@@ -203,6 +221,29 @@ export function UserDataProvider(props: UserDataContextProps): JSX.Element {
       {props.children}
     </UserDataContext.Provider>
   );
+
+  function manageResponseFromMsgUserPixel(response: MsgUserPixelValidation): void {
+    if (response.status === "ok") {
+      const newTile: Tile = {
+        color: response.colorBeforeRequest,
+        coordinate: getCoordinateToPixelValue(response.coordinate),
+        time: response.last ?? Date.now().valueOf(),
+        userId: response.userId,
+      };
+
+      actions.addTile(newTile);
+      actions.setLastActionEpochtime(response.last);
+      actions.setSelectedColor(undefined);
+      notification?.setMessage("Pixel submitted successfully");
+    } else {
+      // 1) Set back the pixel to the original color
+      // - Nothing to do, haven't change it
+      // 2) Popup message error
+      notification?.setMessage("Pixel submission failed");
+      // 3) Reset the time for last action
+      // - Nothing to do, the last action has not been changed
+    }
+  }
 }
 
 export function useUserData(): UserDataContextModel | undefined {

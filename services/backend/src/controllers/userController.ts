@@ -23,7 +23,7 @@ export function addUserLastActionRoute(
         if (req.jwtPayload === undefined) {
           res.json(buildLastActionResponse(undefined));
         } else {
-          const ts = await serviceLayer.user.getLastUserAction(req.jwtPayload.email);
+          const ts = await serviceLayer.user.getLastUserAction(req.jwtPayload.id);
           res.json(buildLastActionResponse(ts));
         }
       } catch (e) {

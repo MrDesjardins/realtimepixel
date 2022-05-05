@@ -30,16 +30,21 @@ export function addLoginRoute(
       next: core.NextFunction
     ) => {
       try {
-        const { accessToken, refreshToken } =
+        const { id, accessToken, refreshToken } =
           await serviceLayer.auth.authenticate(req.body);
         return res.json(
-          buildLoginUserResponse(req.body.email, accessToken, refreshToken)
+          buildLoginUserResponse(id, req.body.email, accessToken, refreshToken)
         );
       } catch (e) {
         console.log("Catch", e);
         return res
           .status(HTTP_STATUS.token_invalid)
-          .send(buildBaseJsonResponse(HTTP_STATUS.token_invalid, "Invalid credential"));
+          .send(
+            buildBaseJsonResponse(
+              HTTP_STATUS.token_invalid,
+              "Invalid credential"
+            )
+          );
       }
     }
   );
@@ -57,18 +62,20 @@ export function addCreateAccountRoute(
       next: core.NextFunction
     ) => {
       try {
-        const { accessToken, refreshToken } = await serviceLayer.auth.create(
-          req.body
-        );
+        const { id, accessToken, refreshToken } =
+          await serviceLayer.auth.create(req.body);
         return res.json(
-          buildCreateUserResponse(req.body.email, accessToken, refreshToken)
+          buildCreateUserResponse(id, req.body.email, accessToken, refreshToken)
         );
       } catch (e) {
         console.log("Catch", e);
         return res
           .status(HTTP_STATUS.token_invalid)
           .send(
-            buildBaseJsonResponse(HTTP_STATUS.token_invalid, "Invalid account creation")
+            buildBaseJsonResponse(
+              HTTP_STATUS.token_invalid,
+              "Invalid account creation"
+            )
           );
       }
     }
@@ -87,14 +94,19 @@ export function addRefreshTokensRoute(
       next: core.NextFunction
     ) => {
       try {
-        const { accessToken, refreshToken } =
+        const { id, accessToken, refreshToken } =
           await serviceLayer.auth.refreshTokens(req.body);
-        res.json(buildRefreshTokensResponse(accessToken, refreshToken));
+        res.json(buildRefreshTokensResponse(id, accessToken, refreshToken));
       } catch (e) {
         console.log("Catch", e);
         return res
           .status(HTTP_STATUS.token_invalid)
-          .send(buildBaseJsonResponse(HTTP_STATUS.token_invalid, "Refresh Tokens Failed"));
+          .send(
+            buildBaseJsonResponse(
+              HTTP_STATUS.token_invalid,
+              "Refresh Tokens Failed"
+            )
+          );
       }
     }
   );
@@ -116,7 +128,10 @@ export function addLogoutRoute(
           return res
             .status(HTTP_STATUS.token_invalid)
             .send(
-              buildBaseJsonResponse(HTTP_STATUS.token_invalid, "Refresh Tokens Failed")
+              buildBaseJsonResponse(
+                HTTP_STATUS.token_invalid,
+                "Refresh Tokens Failed"
+              )
             );
         } else {
           await serviceLayer.auth.logout(req.jwtPayload?.email);
@@ -128,7 +143,12 @@ export function addLogoutRoute(
         console.log("Catch", e);
         return res
           .status(HTTP_STATUS.token_invalid)
-          .send(buildBaseJsonResponse(HTTP_STATUS.token_invalid, "Refresh Tokens Failed"));
+          .send(
+            buildBaseJsonResponse(
+              HTTP_STATUS.token_invalid,
+              "Refresh Tokens Failed"
+            )
+          );
       }
     }
   );

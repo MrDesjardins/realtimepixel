@@ -10,7 +10,6 @@ export function ToastNotification(): JSX.Element {
   createEffect(
     on(notification?.message!, (message) => {
       if (message.length > 0) {
-        console.log("Notificaftion");
         setOpen(true);
         setTimeout(() => {
           close();

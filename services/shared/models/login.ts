@@ -1,5 +1,6 @@
-import { Token } from "./primitive";
+import { Id, Token } from "./primitive";
 export interface TokenResponse {
+  id: Id;
   accessToken: Token;
   refreshToken: Token;
 }
@@ -26,7 +27,7 @@ export interface CreateUserResponse extends TokenResponse {
 }
 
 export interface RefreshTokenRequest {
-  email: string;
+  id: Id;
   refreshToken: string;
 }
 

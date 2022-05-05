@@ -25,10 +25,7 @@ import {
   MsgUserPixelValidationKind,
 } from "@shared/models/socketMessages";
 import { buildLastActionResponse } from "./builders/userBuilders";
-import {
-  isNextActionReadyForUser,
-  secondsUntilNextAction,
-} from "@shared/logics/time";
+import { isNextActionReadyForUser } from "@shared/logics/time";
 import { Tile } from "@shared/models/game";
 import { addAllTilesRoute } from "./controllers/gameController";
 
@@ -73,59 +70,86 @@ const io = new Server(server, {
     origin: "*",
   },
 });
-io.on("connection", (socket) => {
-  console.log("a user connected", socket.id);
-  socket.on("disconnect", () => {
-    console.log("user disconnected", socket.id);
-  });
-  socket.on(MsgUserPixelKind, async (msg: MsgUserPixel, callback) => {
-    console.log("user pixel", msg);
-    try {
-      const userData = await serviceLayer.auth.verifyAccess(msg.accessToken);
-      const lastUserAction = await serviceLayer.user.getLastUserAction(
-        userData?.email
-      );
+io.on("connection", async (socket) => {
+  const accessToken = socket.handshake.query.access_token;
+  console.log("a user connected", socket.id, accessToken, typeof accessToken);
+  if (typeof accessToken === "string") {
+    const userData = await serviceLayer.auth.verifyAccess(accessToken);
+    const userId = userData.id;
+    serviceLayer.user.addUserSocket(userId, socket.id);
+    socket.on("disconnect", () => {
+      console.log("user disconnected", socket.id);
+      serviceLayer.user.removeUserSocket(userId, socket.id);
+    });
 
-      if (userData && isNextActionReadyForUser(lastUserAction)) {
-        const newTile: Tile = {
-          time: new Date().valueOf(),
-          userId: userData.email,
-          coordinate: msg.coordinate,
-          color: msg.color,
-        };
-        // Persist the new tile and the last action of the user
-        await Promise.all([
-          serviceLayer.game.setTile(newTile),
-          serviceLayer.user.setLastUserAction(userData.email, newTile.time),
-        ]);
+    socket.on(MsgUserPixelKind, async (msg: MsgUserPixel, callback) => {
+      console.log("MsgUserPixelKind 1)", msg);
+      try {
+        const userData = await serviceLayer.auth.verifyAccess(msg.accessToken);
+        const user = await serviceLayer.user.getUser(userData.id);
+        const lastUserAction = await serviceLayer.user.getLastUserAction(
+          userData?.id
+        );
+        console.log(
+          "MsgUserPixelKind 1.5)",
+          userData,
+          user,
+          isNextActionReadyForUser(lastUserAction)
+        );
+        if (userData && user && isNextActionReadyForUser(lastUserAction)) {
+          const newTile: Tile = {
+            time: new Date().valueOf(),
+            userId: userData.id,
+            coordinate: msg.coordinate,
+            color: msg.color,
+          };
+          console.log("MsgUserPixelKind 2)", newTile);
+          // Persist the new tile and the last action of the user
+          await Promise.all([
+            serviceLayer.game.setTile(newTile),
+            serviceLayer.user.setLastUserAction(userData.id, newTile.time),
+          ]);
 
-        // Send confirmation to the user who submitted
-        const confirmation: MsgUserPixelValidation = {
-          kind: MsgUserPixelValidationKind,
-          status: "ok",
-          ...buildLastActionResponse(newTile.time),
-          coordinate: msg.coordinate,
-          colorBeforeRequest: msg.color,
-        };
+          // Send confirmation to the user who submitted
+          const confirmation: MsgUserPixelValidation = {
+            kind: MsgUserPixelValidationKind,
+            userId: newTile.userId,
+            status: "ok",
+            ...buildLastActionResponse(newTile.time),
+            coordinate: msg.coordinate,
+            colorBeforeRequest: msg.color,
+          };
 
-        // Broadcast the pixel to the other users (and the user who submitted)
-        const broadcastPayload: MsgBroadcastNewPixel = {
-          kind: MsgBroadcastNewPixelKind,
-          tile: newTile,
+          // If the user who submitted has more than one socket, we need to send to all of them
+          // to ensure the **lastAction time** is updated on all the user device
+          console.log("MsgUserPixelKind 3)", user.socketIds);
+          if (user.socketIds.length > 1) {
+            for (let userSocket of user.socketIds) {
+              console.log("Submitting to socket#", userSocket);
+              io.to(userSocket).emit(MsgUserPixelValidationKind, confirmation);
+            }
+          }
+
+          // Broadcast the pixel to the other users (and the user who submitted)
+          const broadcastPayload: MsgBroadcastNewPixel = {
+            kind: MsgBroadcastNewPixelKind,
+            tile: newTile,
+          };
+          io.emit(MsgBroadcastNewPixelKind, broadcastPayload);
+          callback(confirmation);
+        } else {
+          console.log("Send error to the user who submitted"); // Todo
+        }
+      } catch (e) {
+        console.error("Err", e); // Todo
+        const error: MsgError = {
+          kind: MsgErrorKind,
+          errorMessage: "Invalid access token",
         };
-        io.emit(MsgBroadcastNewPixelKind, broadcastPayload);
-        callback(confirmation);
-      } else {
-        console.log("Send error to the user who submitted"); // Todo
+        socket.emit(MsgErrorKind, error);
       }
-    } catch (e) {
-      const error: MsgError = {
-        kind: MsgErrorKind,
-        errorMessage: "Invalid access token",
-      };
-      socket.emit(MsgErrorKind, error);
-    }
-  });
+    });
+  }
 });
 
 io.on("connect_error", function (e) {

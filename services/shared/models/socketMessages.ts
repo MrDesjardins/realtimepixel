@@ -1,4 +1,5 @@
 import { Color, Coordinate, Tile } from "./game";
+import { Id } from "./primitive";
 
 export const MsgUserPixelKind = "MsgUserPixel";
 export interface MsgUserPixel {
@@ -11,6 +12,7 @@ export interface MsgUserPixel {
 export const MsgUserPixelValidationKind = "MsgUserPixelValidationKind";
 export interface MsgUserPixelValidation {
   kind: typeof MsgUserPixelValidationKind;
+  userId: Id;
   status: "ok";
   last: EpochTimeStamp | undefined;
   coordinate: Coordinate;

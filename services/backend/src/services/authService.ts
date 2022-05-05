@@ -9,17 +9,17 @@ import {
 } from "@shared/models/login";
 import bcrypt from "bcrypt";
 import jwt, { VerifyErrors } from "jsonwebtoken";
-import { AuthRepository } from "../Repositories/authRepository";
-import { TokenRepository } from "../Repositories/tokenRepository";
 import { RequestUserFromJwt } from "../webServer/expressType";
 import { BaseService } from "./baseService";
+import { v4 as uuidv4 } from "uuid";
+import { UserRepository } from "../Repositories/userRepository";
+import { Id } from "@shared/models/primitive";
+
 export class AuthService extends BaseService {
-  private authRepository: AuthRepository;
-  private tokenRepository: TokenRepository;
+  private repository: UserRepository;
   public constructor(environment: ServiceEnvironment) {
     super(environment);
-    this.authRepository = new AuthRepository();
-    this.tokenRepository = new TokenRepository();
+    this.repository = new UserRepository();
   }
 
   /**
@@ -28,23 +28,19 @@ export class AuthService extends BaseService {
    **/
   public async authenticate(request: UserLoginRequest): Promise<TokenResponse> {
     try {
-      const passwordHashed = await this.authRepository.getUserHashPassword(
-        request.email
-      );
-
+      const user = await this.repository.getUserByEmail(request.email);
+      if (user === undefined) {
+        throw new Error("User not found");
+      }
       const isPasswordFound = await bcrypt.compare(
         request.password,
-        passwordHashed ?? ""
+        user.hashedPassword ?? ""
       );
       if (isPasswordFound) {
-        const accessToken = this.generateAccessToken(request.email);
-        const refreshToken = this.generateRefreshToken(request.email);
-        await this.tokenRepository.updateTokens(
-          request.email,
-          accessToken,
-          refreshToken
-        );
-        return { accessToken, refreshToken };
+        const accessToken = this.generateAccessToken(user.id, request.email);
+        const refreshToken = this.generateRefreshToken(user.id, request.email);
+        await this.repository.updateTokens(user.id, accessToken, refreshToken);
+        return { id: user.id, accessToken, refreshToken };
       } else {
         throw Error("Password does not match for this user");
       }
@@ -58,15 +54,19 @@ export class AuthService extends BaseService {
     const hashedPassword = await bcrypt.hash(request.password, 10);
     console.log("loginService.create", userEmail, hashedPassword);
     try {
-      await this.authRepository.createUser(userEmail, hashedPassword);
-      const accessToken = this.generateAccessToken(request.email);
-      const refreshToken = this.generateRefreshToken(request.email);
-      await this.tokenRepository.updateTokens(
-        request.email,
-        accessToken,
-        refreshToken
-      );
-      return { accessToken, refreshToken };
+      const newUserId = uuidv4();
+      const accessToken = this.generateAccessToken(newUserId, request.email);
+      const refreshToken = this.generateRefreshToken(newUserId, request.email);
+      const newUser = await this.repository.createUser({
+        id: newUserId,
+        email: userEmail,
+        hashedPassword: hashedPassword,
+        accessToken: accessToken,
+        refreshToken: refreshToken,
+        lastUserAction: undefined,
+        socketIds: [],
+      });
+      return { id: newUser.id, accessToken, refreshToken };
     } catch (e) {
       throw e;
     }
@@ -74,32 +74,25 @@ export class AuthService extends BaseService {
   public async refreshTokens(
     request: RefreshTokenRequest
   ): Promise<RefreshTokenResponse> {
-    if (await this.tokenRepository.hasToken(request.email)) {
-      const tokens = await this.tokenRepository.getToken(request.email);
-      if (tokens?.refreshToken === request.refreshToken) {
-        const accessToken = this.generateAccessToken(request.email);
-        const refreshToken = this.generateRefreshToken(request.email);
-        await this.tokenRepository.updateTokens(
-          request.email,
-          accessToken,
-          refreshToken
-        );
-        return { accessToken, refreshToken };
-      }
+    const user = await this.repository.getUser(request.id);
+    if (user?.refreshToken === request.refreshToken) {
+      const accessToken = this.generateAccessToken(user.id, user.email);
+      const refreshToken = this.generateRefreshToken(user.id, user.email);
+      await this.repository.updateTokens(request.id, accessToken, refreshToken);
+      return { id: user.id, accessToken, refreshToken };
     }
+
     throw new Error("Invalid refresh token");
   }
   public async logout(userEmail: string): Promise<LogoutResponse> {
-    if (await this.tokenRepository.hasToken(userEmail)) {
-      this.tokenRepository.removeToken(userEmail);
+    if (await this.repository.hasToken(userEmail)) {
+      this.repository.removeToken(userEmail);
     }
 
     return {};
   }
 
-  public async verifyAccess(
-    accessToken: string
-  ): Promise<RequestUserFromJwt> {
+  public async verifyAccess(accessToken: string): Promise<RequestUserFromJwt> {
     return new Promise((resolve, reject) => {
       jwt.verify(
         accessToken,
@@ -115,15 +108,19 @@ export class AuthService extends BaseService {
     });
   }
 
-  private generateAccessToken(email: string): string {
-    return jwt.sign({ email: email }, process.env.ACCESS_TOKEN_SECRET ?? "", {
-      expiresIn: EXPIRATIONS.accessTokenMs,
-    });
+  private generateAccessToken(id: Id, email: string): string {
+    return jwt.sign(
+      { id: id, email: email },
+      process.env.ACCESS_TOKEN_SECRET ?? "",
+      {
+        expiresIn: EXPIRATIONS.accessTokenMs,
+      }
+    );
   }
 
-  private generateRefreshToken(email: string): string {
+  private generateRefreshToken(id: Id, email: string): string {
     const refreshToken = jwt.sign(
-      { email: email },
+      { id: id, email: email },
       process.env.REFRESH_TOKEN_SECRET ?? "",
       {
         expiresIn: EXPIRATIONS.refreshTokenMs,

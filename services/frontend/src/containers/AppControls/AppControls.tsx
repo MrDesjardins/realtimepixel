@@ -74,7 +74,7 @@ export function AppControls(props: AppControlsProps): JSX.Element {
                     kind: MsgUserPixelKind,
                     color: userData.state.selectedColor,
                     coordinate: getAdjustedPixel(userData.state.selectedCoordinate),
-                    accessToken: userData.state.userToken,
+                    accessToken: userData.state.userToken.accessToken,
                   };
                   userData.actions.submitSocketMessage(msg);
                   removeColors();
