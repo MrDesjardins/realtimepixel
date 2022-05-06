@@ -116,6 +116,10 @@ export function UserDataProvider(props: UserDataContextProps): JSX.Element {
 
         socket.on("disconnect", () => {
           console.log("UserDataContext> Socket.io disconnected");
+          notification?.setMessage({
+            message: "Refresh the page to reconnect to the server",
+            type: NotificationType.Error,
+          });
         });
         socket.on("connect_error", () => {
           console.log("UserDataContext> Socket.io Connect_Error");

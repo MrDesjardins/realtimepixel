@@ -1,10 +1,12 @@
 import { Color, Coordinate, Tile } from "./game";
 import { Id } from "./primitive";
 
-export const MsgUserPixelKind = "MsgUserPixel";
-export interface MsgUserPixel {
-  kind: typeof MsgUserPixelKind;
+export interface BaseMsg {
   accessToken: string;
+}
+export const MsgUserPixelKind = "MsgUserPixel";
+export interface MsgUserPixel extends BaseMsg {
+  kind: typeof MsgUserPixelKind;
   coordinate: Coordinate;
   color: Color;
 }
