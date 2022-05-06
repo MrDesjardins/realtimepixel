@@ -19,7 +19,7 @@ import { getTokenFromUserMachine, persistTokenInUserMachine } from "../persisten
 import { io, Socket } from "socket.io-client";
 import { ENV_VARIABLES } from "../generated/constants_env";
 import { getCoordinateToPixelValue } from "../logics/pixel";
-import { useNotification } from "./NotificationContext";
+import { NotificationType, useNotification } from "./NotificationContext";
 import { TokenResponse } from "../../../shared/models/login";
 
 export interface UserDataContextState {
@@ -68,6 +68,7 @@ const initialValue: UserDataContextState = {
 export const UserDataContext = createContext<UserDataContextModel>();
 
 export function UserDataProvider(props: UserDataContextProps): JSX.Element {
+  const http = new HttpRequest();
   const notification = useNotification();
   const [state, setState] = createStore<UserDataContextState>(initialValue);
   const [socketReady, setSocketReady] = createSignal(false);
@@ -112,6 +113,36 @@ export function UserDataProvider(props: UserDataContextProps): JSX.Element {
           newPixel.tile.coordinate = getCoordinateToPixelValue(newPixel.tile.coordinate); // Convert from coordinate to pixel
           actions.addTile(newPixel.tile);
         });
+
+        socket.on("disconnect", () => {
+          console.log("UserDataContext> Socket.io disconnected");
+        });
+        socket.on("connect_error", () => {
+          console.log("UserDataContext> Socket.io Connect_Error");
+          setTimeout(async () => {
+            if (state.userToken !== undefined) {
+              try {
+                const refreshResponse = await http.refreshToken({
+                  id: state.userToken.id,
+                  refreshToken: state.userToken.refreshToken,
+                });
+
+                actions.setUserToken(refreshResponse);
+                setTimeout(async () => {
+                  if (socket !== undefined) {
+                    // Give some time for the new refresh token to be in the state
+                    socket.connect();
+                  }
+                }, 1000);
+              } catch (e: unknown) {
+                notification?.setMessage({
+                  message: "You need to login again",
+                  type: NotificationType.Error,
+                });
+              }
+            }
+          }, 1000); // Give some time before trying to reconnect
+        });
       }
     }
   });
@@ -123,7 +154,7 @@ export function UserDataProvider(props: UserDataContextProps): JSX.Element {
     }
 
     // Fetch all existing tiles from the server
-    const http = new HttpRequest();
+
     const tiles = await http.getAllTiles();
     const tiles2 = tiles.tiles.map((i) => {
       i.coordinate = getCoordinateToPixelValue(i.coordinate);
@@ -176,7 +207,6 @@ export function UserDataProvider(props: UserDataContextProps): JSX.Element {
       if (isAuthenticated && state.userToken !== undefined) {
         // Get the latest action for the authenticated user
         try {
-          const http = new HttpRequest();
           const response = await http.getLastUserAction({ accessToken: state.userToken.accessToken });
           setState({ lastActionEpochtime: response.last });
         } catch (e) {
@@ -234,12 +264,12 @@ export function UserDataProvider(props: UserDataContextProps): JSX.Element {
       actions.addTile(newTile);
       actions.setLastActionEpochtime(response.last);
       actions.setSelectedColor(undefined);
-      notification?.setMessage("Pixel submitted successfully");
+      notification?.setMessage({ message: "Pixel submitted successfully" });
     } else {
       // 1) Set back the pixel to the original color
       // - Nothing to do, haven't change it
       // 2) Popup message error
-      notification?.setMessage("Pixel submission failed");
+      notification?.setMessage({ message: "Pixel submission failed" });
       // 3) Reset the time for last action
       // - Nothing to do, the last action has not been changed
     }

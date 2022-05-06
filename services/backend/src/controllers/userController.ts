@@ -23,8 +23,8 @@ export function addUserLastActionRoute(
         if (req.jwtPayload === undefined) {
           res.json(buildLastActionResponse(undefined));
         } else {
-          const ts = await serviceLayer.user.getLastUserAction(req.jwtPayload.id);
-          res.json(buildLastActionResponse(ts));
+          const ts = await serviceLayer.user.getUser(req.jwtPayload.id);
+          res.json(buildLastActionResponse(ts?.lastUserAction));
         }
       } catch (e) {
         console.log("addUserLastActionRoute catch", e);

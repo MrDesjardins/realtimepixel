@@ -1,6 +1,11 @@
 import { HEADERS, HTTP_STATUS, URLS } from "@shared/constants/backend";
 import { AllTilesResponse } from "@shared/models/game";
-import { UserLoginRequest, UserLoginResponse } from "@shared/models/login";
+import {
+  RefreshTokenRequest,
+  RefreshTokenResponse,
+  UserLoginRequest,
+  UserLoginResponse,
+} from "@shared/models/login";
 import { LastUserActionRequest, LastUserActionResponse } from "@shared/models/user";
 import { ENV_VARIABLES } from "../generated/constants_env";
 
@@ -19,12 +24,31 @@ export class HttpRequest {
         },
         body: JSON.stringify(loginRequest),
       });
-      if (this.isBadResponse(response)) {
+      if (HttpRequest.isBadResponse(response)) {
         throw Error("Login failed");
       }
       return response.json();
     } catch (e) {
       console.error("Error login", e);
+      throw e;
+    }
+  }
+
+  public async refreshToken(loginRequest: RefreshTokenRequest): Promise<RefreshTokenResponse> {
+    try {
+      const response = await fetch(`${this.baseUrl}/${URLS.refreshtokens}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(loginRequest),
+      });
+      if (HttpRequest.isBadResponse(response)) {
+        throw Error("Refresh failed");
+      }
+      return response.json();
+    } catch (e) {
+      console.error("Error refresh token", e);
       throw e;
     }
   }
@@ -38,7 +62,7 @@ export class HttpRequest {
           [HEADERS.authorization]: `Bearer ${request.accessToken}`,
         },
       });
-      if (this.isBadResponse(response)) {
+      if (HttpRequest.isBadResponse(response)) {
         throw new Error("Bad response");
       }
       return response.json();
@@ -56,7 +80,7 @@ export class HttpRequest {
           "Content-Type": "application/json",
         },
       });
-      if (this.isBadResponse(response)) {
+      if (HttpRequest.isBadResponse(response)) {
         throw new Error("Bad response");
       }
       return response.json();
@@ -66,7 +90,7 @@ export class HttpRequest {
     }
   }
 
-  private isBadResponse(response: Response): boolean {
+  public static isBadResponse(response: Response): boolean {
     return response.status !== HTTP_STATUS.ok;
   }
 }

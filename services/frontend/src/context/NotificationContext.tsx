@@ -5,7 +5,7 @@ export enum NotificationType {
 }
 export interface NotificationMessage {
   message: string;
-  type: NotificationType;
+  type?: NotificationType;
 }
 export interface NotificationContextModel extends NotificationContextValues, NotificationContextActions {}
 export interface NotificationContextValues {

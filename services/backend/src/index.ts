@@ -111,9 +111,7 @@ async function onReceivePixel(
   try {
     const userData = await serviceLayer.auth.verifyAccess(msg.accessToken);
     const user = await serviceLayer.user.getUser(userData.id);
-    const lastUserAction = await serviceLayer.user.getLastUserAction(
-      userData?.id
-    );
+    const lastUserAction = user?.lastUserAction;
     console.log(
       "MsgUserPixelKind 1.5)",
       userData,
