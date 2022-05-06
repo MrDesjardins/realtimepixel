@@ -19,7 +19,9 @@ export class HttpRequest {
         },
         body: JSON.stringify(loginRequest),
       });
-
+      if (this.isBadResponse(response)) {
+        throw Error("Login failed");
+      }
       return response.json();
     } catch (e) {
       console.error("Error login", e);
@@ -65,10 +67,6 @@ export class HttpRequest {
   }
 
   private isBadResponse(response: Response): boolean {
-    return (
-      response.status === HTTP_STATUS.token_missing ||
-      response.status === HTTP_STATUS.token_invalid ||
-      response.status === HTTP_STATUS.valid_but_not_authorization
-    );
+    return response.status !== HTTP_STATUS.ok;
   }
 }

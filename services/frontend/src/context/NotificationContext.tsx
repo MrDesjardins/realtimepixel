@@ -1,11 +1,18 @@
 import { JSX, createContext, createSignal, useContext, Accessor } from "solid-js";
-
+export enum NotificationType {
+  Info = "Info",
+  Error = "Error",
+}
+export interface NotificationMessage {
+  message: string;
+  type: NotificationType;
+}
 export interface NotificationContextModel extends NotificationContextValues, NotificationContextActions {}
 export interface NotificationContextValues {
-  message: Accessor<string>;
+  message: Accessor<NotificationMessage | undefined>;
 }
 export interface NotificationContextActions {
-  setMessage: (message: string) => void;
+  setMessage: (message: NotificationMessage | undefined) => void;
 }
 
 export interface NotificationContextProps {
@@ -15,10 +22,10 @@ export interface NotificationContextProps {
 export const NotificationContext = createContext<NotificationContextModel>();
 
 export function NotificationProvider(props: NotificationContextProps) {
-  const [message, setMessage] = createSignal<string>("");
+  const [message, setMessage] = createSignal<NotificationMessage | undefined>();
 
   const actions: NotificationContextModel = {
-    setMessage: (message: string) => {
+    setMessage: (message: NotificationMessage | undefined) => {
       setMessage(message);
     },
     message,

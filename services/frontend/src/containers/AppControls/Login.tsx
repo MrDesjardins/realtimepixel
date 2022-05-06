@@ -1,5 +1,6 @@
 import { createSignal, JSX } from "solid-js";
 import { HttpRequest } from "../../communications/httpRequest";
+import { NotificationType, useNotification } from "../../context/NotificationContext";
 import { useUserData } from "../../context/UserDataContext";
 import styles from "./Login.module.css";
 export interface LoginProps {}
@@ -8,6 +9,7 @@ export function Login(props: LoginProps): JSX.Element {
   const [email, setEmail] = createSignal<string>("");
   const [password, setPassword] = createSignal<string>("");
   const [isAuthenticating, setIsAuthenticating] = createSignal<boolean>(false);
+  const notification = useNotification();
   return (
     <div class={styles.Login}>
       <div class={styles.Auth1}>
@@ -47,8 +49,10 @@ export function Login(props: LoginProps): JSX.Element {
             try {
               const response = await http.login({ email: email(), password: password() });
               userData?.actions.setUserToken(response);
-            } catch (e) {
-              console.error(e);
+            } catch (e: unknown) {
+              if (e instanceof Error) {
+                notification?.setMessage({ message: e.message, type: NotificationType.Error });
+              }
             } finally {
               setIsAuthenticating(false);
             }

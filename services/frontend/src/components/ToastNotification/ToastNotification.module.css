@@ -30,3 +30,7 @@
   right: 5px;
   top: 5px;
 }
+
+.ToastError {
+  background-color:rgb(192 78 78 / 94%);
+}

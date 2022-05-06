@@ -1,5 +1,5 @@
 import { createEffect, createSignal, JSX, on } from "solid-js";
-import { useNotification } from "../../context/NotificationContext";
+import { NotificationType, useNotification } from "../../context/NotificationContext";
 import { CONSTS } from "../../models/constants";
 import styles from "./ToastNotification.module.css";
 
@@ -9,7 +9,7 @@ export function ToastNotification(): JSX.Element {
 
   createEffect(
     on(notification?.message!, (message) => {
-      if (message.length > 0) {
+      if ((message?.message ?? "").length > 0) {
         setOpen(true);
         setTimeout(() => {
           close();
@@ -20,11 +20,17 @@ export function ToastNotification(): JSX.Element {
 
   function close(): void {
     setOpen(false);
-    notification?.setMessage("");
+    notification?.setMessage(undefined);
   }
 
   return (
-    <div class={styles.ToastNotification} classList={{ [styles.ToastNotificationOpen]: open() }}>
+    <div
+      class={styles.ToastNotification}
+      classList={{
+        [styles.ToastNotificationOpen]: open(),
+        [styles.ToastError]: notification?.message()?.type === NotificationType.Error,
+      }}
+    >
       <button
         class={styles.ToastNotificationCloseButton}
         onClick={() => close()}
@@ -32,7 +38,7 @@ export function ToastNotification(): JSX.Element {
       >
         X
       </button>
-      <p>{notification?.message}</p>
+      <p>{notification?.message()?.message}</p>
     </div>
   );
 }
