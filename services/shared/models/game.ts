@@ -34,3 +34,8 @@ export interface AllTilesRequest {}
 export interface AllTilesResponse {
   tiles: Tile[];
 }
+
+export interface RemoveExpiredTilesRequest {}
+export interface RemoveExpiredTilesResponse {
+  status: string;
+}

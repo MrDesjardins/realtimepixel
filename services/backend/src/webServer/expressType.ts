@@ -1,14 +1,14 @@
-import { Send } from "express-serve-static-core";
 import { Id } from "../../../shared/models/primitive";
-export interface TypedRequestBody<T> extends Express.Request {
-  body: T;
-  headers?: any;
+import { Request, Response } from "express";
+
+export interface TypedRequestBody<T> extends Request {
+  //body: T;
   jwtPayload?: RequestUserFromJwt | undefined;
 }
 
-export interface TypedResponse<ResBody> extends Express.Response {
-  json: Send<ResBody, this>;
-  status: any;
+export interface TypedResponse<ResBody> extends Response {
+  // json: Send<ResBody, this>;
+  // status: any;
 }
 
 export interface RequestUserFromJwt {

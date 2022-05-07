@@ -16,4 +16,8 @@ export class GameService extends BaseService {
   public async getAllTiles(): Promise<Tile[]> {
     return this.gameRepository.getAllTiles();
   }
+
+  public async removeExpiredTiles(): Promise<Tile[]> {
+    return this.gameRepository.removeExpiredTiles();
+  }
 }

@@ -3,6 +3,8 @@ import { Color, Coordinate, getTileKey, Tile } from "@shared/models/game";
 import {
   MsgBroadcastNewPixel,
   MsgBroadcastNewPixelKind,
+  MsgBroadcastRemovedPixels,
+  MsgBroadcastRemovedPixelsKind,
   MsgError,
   MsgErrorKind,
   MsgUserPixel,
@@ -10,7 +12,6 @@ import {
   MsgUserPixelValidation,
   MsgUserPixelValidationKind,
 } from "@shared/models/socketMessages";
-import { Token } from "@shared/models/primitive";
 import { createContext, createEffect, createSignal, JSX, on, onCleanup, onMount, useContext } from "solid-js";
 import { createStore } from "solid-js/store";
 import { HttpRequest } from "../communications/httpRequest";
@@ -112,6 +113,13 @@ export function UserDataProvider(props: UserDataContextProps): JSX.Element {
           console.log("From server Broadcast:", newPixel);
           newPixel.tile.coordinate = getCoordinateToPixelValue(newPixel.tile.coordinate); // Convert from coordinate to pixel
           actions.addTile(newPixel.tile);
+        });
+
+        socket.on(MsgBroadcastRemovedPixelsKind, (removedTiles: MsgBroadcastRemovedPixels) => {
+          console.log("From server Broadcast:", removedTiles);
+          for (const tile of removedTiles.tiles) {
+            state.tiles.delete(getTileKey(tile));
+          }
         });
 
         socket.on("disconnect", () => {

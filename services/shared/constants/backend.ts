@@ -20,7 +20,16 @@ export const URLS = {
   logout: "logout",
   lastUserAction: "lastUserAction",
   allTiles: "allTiles",
+  removeExpiredTiles: "removeExpiredTiles",
 };
+
+export const URLS_UNSECURE = [
+  URLS.login,
+  URLS.create,
+  URLS.refreshtokens,
+  URLS.allTiles,
+  URLS.removeExpiredTiles,
+];
 
 export const HTTP_STATUS = {
   ok: 200,

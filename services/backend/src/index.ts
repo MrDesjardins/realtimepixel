@@ -1,4 +1,4 @@
-import { ServiceEnvironment } from "@shared/constants/backend";
+import { HTTP_STATUS, ServiceEnvironment } from "@shared/constants/backend";
 import bodyParser from "body-parser";
 import cors from "cors";
 import dotenv from "dotenv";
@@ -15,7 +15,6 @@ import http from "http";
 import { Server, Socket } from "socket.io";
 import { secureEndpointMiddleware } from "./middlewares/secureEndpoints";
 import {
-  BaseMsg,
   MsgBroadcastNewPixel,
   MsgBroadcastNewPixelKind,
   MsgError,
@@ -28,11 +27,14 @@ import {
 import { buildLastActionResponse } from "./builders/userBuilders";
 import { isNextActionReadyForUser } from "@shared/logics/time";
 import { Tile } from "@shared/models/game";
-import { addAllTilesRoute } from "./controllers/gameController";
+import {
+  addAllTilesRoute,
+  addRemoveExpiredTiles,
+} from "./controllers/gameController";
 import { RequestUserFromJwt } from "./webServer/expressType";
-import { Event } from "socket.io";
 import { UserTableSchema } from "./Repositories/userRepository";
 import { authorizationMiddleware } from "./socket/authorizationMiddleware";
+import { buildBaseJsonResponse } from "./builders/errorBuilders";
 dotenv.config();
 
 const SERVER_IP = process.env.SERVER_IP;
@@ -43,6 +45,15 @@ console.log(`Socket IO Cors Allowing: ${CORS_CLIENT_ORIGIN}`);
 
 const serviceLayer = new ServiceLayer(ServiceEnvironment.Test);
 const serverApp = express();
+
+const server = http.createServer(serverApp);
+const io = new Server(server, {
+  cors: {
+    //origin: `http://${CORS_CLIENT_ORIGIN}`,
+    origin: "*",
+  },
+});
+
 serverApp.use(bodyParser.json()); // Allows to parse POST body
 serverApp.use(bodyParser.urlencoded({ extended: true }));
 serverApp.use(cors());
@@ -52,14 +63,17 @@ serverApp.get("/health", async (req, res) => {
   res.send("ok:" + process.env.NODE_ENV);
 });
 
+// Middlewares
+serverApp.use(secureEndpointMiddleware(serviceLayer));
+
 // Route that does not need the access token
 addLoginRoute(serverApp, serviceLayer);
 addCreateAccountRoute(serverApp, serviceLayer);
 addRefreshTokensRoute(serverApp, serviceLayer);
 addAllTilesRoute(serverApp, serviceLayer);
+addRemoveExpiredTiles(serverApp, serviceLayer, io);
 
 // Route that must be secured with an access token
-serverApp.use(secureEndpointMiddleware(serviceLayer));
 addLogoutRoute(serverApp, serviceLayer);
 addUserLastActionRoute(serverApp, serviceLayer);
 
@@ -67,13 +81,7 @@ serverApp.use((err: any, req: any, res: any, next: any) => {
   console.error("ERROR ENDPOINT", err.stack);
   res.status(500).send("Something broke!");
 });
-const server = http.createServer(serverApp);
-const io = new Server(server, {
-  cors: {
-    //origin: `http://${CORS_CLIENT_ORIGIN}`,
-    origin: "*",
-  },
-});
+
 io.on("connection", async (socket) => {
   const accessToken = socket.handshake.query.access_token;
   console.log("a user connected", socket.id, accessToken, typeof accessToken);

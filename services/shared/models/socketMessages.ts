@@ -32,3 +32,10 @@ export interface MsgBroadcastNewPixel {
   kind: typeof MsgBroadcastNewPixelKind;
   tile: Tile;
 }
+
+
+export const MsgBroadcastRemovedPixelsKind = "MsgBroadcastRemovedPixelsKind";
+export interface MsgBroadcastRemovedPixels {
+  kind: typeof MsgBroadcastRemovedPixelsKind;
+  tiles: Tile[];
+}
