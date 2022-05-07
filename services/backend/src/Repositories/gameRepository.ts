@@ -38,7 +38,6 @@ export class GameRepository {
     const removedTiles: Tile[] = [];
     for (const [key, tile] of this.fakeTilesRepository.entries()) {
       if (currentEpochTimeMs - tile.time > maxTileLifeMs) {
-        console.log("Removing tile with coordinate: ", tile.coordinate);
         removedTiles.push({ ...tile });
         this.fakeTilesRepository.delete(key);
       }

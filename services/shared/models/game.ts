@@ -38,4 +38,5 @@ export interface AllTilesResponse {
 export interface RemoveExpiredTilesRequest {}
 export interface RemoveExpiredTilesResponse {
   status: string;
+  tilesRemovedCount: number;
 }

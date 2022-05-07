@@ -10,18 +10,17 @@ import {
   MsgUserPixel,
   MsgUserPixelKind,
   MsgUserPixelValidation,
-  MsgUserPixelValidationKind,
+  MsgUserPixelValidationKind
 } from "@shared/models/socketMessages";
+import { io, Socket } from "socket.io-client";
 import { createContext, createEffect, createSignal, JSX, on, onCleanup, onMount, useContext } from "solid-js";
 import { createStore } from "solid-js/store";
+import { TokenResponse } from "../../../shared/models/login";
 import { HttpRequest } from "../communications/httpRequest";
+import { ENV_VARIABLES } from "../generated/constants_env";
 import { CONSTS } from "../models/constants";
 import { getTokenFromUserMachine, persistTokenInUserMachine } from "../persistences/localStorage";
-import { io, Socket } from "socket.io-client";
-import { ENV_VARIABLES } from "../generated/constants_env";
-import { getCoordinateToPixelValue } from "../logics/pixel";
 import { NotificationType, useNotification } from "./NotificationContext";
-import { TokenResponse } from "../../../shared/models/login";
 
 export interface UserDataContextState {
   zoom: number;
@@ -92,6 +91,9 @@ export function UserDataProvider(props: UserDataContextProps): JSX.Element {
     }),
   );
 
+  /**
+   * Attach socket listened once the socker is ready (initialized)
+   **/
   createEffect(() => {
     if (socketReady()) {
       console.log("Trying to set Socket.io listening with on()");
@@ -106,12 +108,10 @@ export function UserDataProvider(props: UserDataContextProps): JSX.Element {
          * might have many devices connected to the server (many sockets).
          **/
         socket.on(MsgUserPixelValidationKind, (response: MsgUserPixelValidation) => {
-          console.log("From server Confirmation:", response);
           manageResponseFromMsgUserPixel(response);
         });
 
         socket.on(MsgBroadcastNewPixelKind, (newPixel: MsgBroadcastNewPixel) => {
-          console.log("From server Broadcast:", newPixel);
           actions.addTile(newPixel.tile);
         });
 
@@ -120,37 +120,10 @@ export function UserDataProvider(props: UserDataContextProps): JSX.Element {
         });
 
         socket.on("disconnect", () => {
-          console.log("UserDataContext> Socket.io disconnected");
-          notification?.setMessage({
-            message: "Refresh the page to reconnect to the server",
-            type: NotificationType.Error,
-          });
+          socketOnDisconnect();
         });
         socket.on("connect_error", () => {
-          console.log("UserDataContext> Socket.io Connect_Error");
-          setTimeout(async () => {
-            if (state.userToken !== undefined) {
-              try {
-                const refreshResponse = await http.refreshToken({
-                  id: state.userToken.id,
-                  refreshToken: state.userToken.refreshToken,
-                });
-
-                actions.setUserToken(refreshResponse);
-                setTimeout(async () => {
-                  if (socket !== undefined) {
-                    // Give some time for the new refresh token to be in the state
-                    socket.connect();
-                  }
-                }, 1000);
-              } catch (e: unknown) {
-                notification?.setMessage({
-                  message: "You need to login again",
-                  type: NotificationType.Error,
-                });
-              }
-            }
-          }, 1000); // Give some time before trying to reconnect
+          socketConnectError();
         });
       }
     }
@@ -233,10 +206,8 @@ export function UserDataProvider(props: UserDataContextProps): JSX.Element {
       }
     },
     submitSocketMessage: (message: MsgUserPixel) => {
-      console.log("SubmitSocketMessage", socket);
       if (socket !== undefined) {
         socket.emit(MsgUserPixelKind, message, (response: MsgUserPixelValidation) => {
-          console.log("From server Confirmation:", response);
           manageResponseFromMsgUserPixel(response);
         });
       }
@@ -265,6 +236,42 @@ export function UserDataProvider(props: UserDataContextProps): JSX.Element {
       {props.children}
     </UserDataContext.Provider>
   );
+
+  /**
+   * Give some time before trying to reconnect
+   **/
+  function socketConnectError(): void {
+    setTimeout(async () => {
+      if (state.userToken !== undefined) {
+        try {
+          const refreshResponse = await http.refreshToken({
+            id: state.userToken.id,
+            refreshToken: state.userToken.refreshToken,
+          });
+
+          actions.setUserToken(refreshResponse);
+          setTimeout(async () => {
+            if (socket !== undefined) {
+              // Give some time for the new refresh token to be in the state
+              socket.connect();
+            }
+          }, 1000);
+        } catch (e: unknown) {
+          notification?.setMessage({
+            message: "You need to login again",
+            type: NotificationType.Error,
+          });
+        }
+      }
+    }, 1000);
+  }
+
+  function socketOnDisconnect(): void {
+    notification?.setMessage({
+      message: "Refresh the page to reconnect to the server",
+      type: NotificationType.Error,
+    });
+  }
 
   function manageResponseFromMsgUserPixel(response: MsgUserPixelValidation): void {
     if (response.status === "ok") {

@@ -1,9 +1,11 @@
 import { createMemo, JSX } from "solid-js";
+import { getTileLife } from "@shared/logics/time";
 import { useUserData } from "../../context/UserDataContext";
 import { getAdjustedPixel } from "../../logics/pixel";
 import { createTimeCounter } from "../../reactivities/createTimeCounter";
 import styles from "./HeadOverDisplay.module.css";
 import { NextActionTimeText } from "./NextActionTimeText";
+import { CONST_RULES } from "@shared/constants/rules";
 export interface HeadOverDisplayProps {}
 export function HeadOverDisplay(props: HeadOverDisplayProps): JSX.Element {
   const userData = useUserData();
@@ -16,6 +18,21 @@ export function HeadOverDisplay(props: HeadOverDisplayProps): JSX.Element {
     }
   });
 
+  const life = createMemo(() => {
+    const c = userData?.state.selectedCoordinate;
+    if (c === undefined) {
+      return undefined;
+    } else {
+      const coord = getAdjustedPixel(c);
+      const tile = userData?.state.tiles.get(`${coord.x}-${coord.y}`);
+      if (tile === undefined) {
+        return undefined;
+      } else {
+        return getTileLife(Date.now().valueOf(), tile.time);
+      }
+    }
+  });
+
   const nextActionTime = createTimeCounter(() => userData?.state.lastActionEpochtime);
   return (
     <div class={styles.HeadOverDisplay}>
@@ -25,7 +42,7 @@ export function HeadOverDisplay(props: HeadOverDisplayProps): JSX.Element {
           <div>{userData?.state.zoom.toFixed(1)}x</div>
         </div>
         <div class={styles.HeadOverDisplayPanelContent}>
-          <div>Selection</div>
+          <div>Coordinate</div>
           <div>
             {adjustedCoordinate() === undefined ? (
               <span>No selection</span>
@@ -37,7 +54,25 @@ export function HeadOverDisplay(props: HeadOverDisplayProps): JSX.Element {
           </div>
         </div>
         <div class={styles.HeadOverDisplayPanelContent}>
-          <div>Next action in:</div>
+          <div>Life Unit</div>
+          <div>
+            {adjustedCoordinate() === undefined ? (
+              <span>No selection</span>
+            ) : (
+              <span>
+                {life() === undefined ? (
+                  <span>N/A</span>
+                ) : (
+                  <span>
+                    {life()}/{CONST_RULES.pixelInitialLifeUnit}
+                  </span>
+                )}
+              </span>
+            )}
+          </div>
+        </div>
+        <div class={styles.HeadOverDisplayPanelContent}>
+          <div>Next action:</div>
           <div>
             &nbsp;
             <NextActionTimeText seconds={nextActionTime()} />

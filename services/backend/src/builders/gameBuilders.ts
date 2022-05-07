@@ -10,8 +10,11 @@ export function buildAllTilesResponse(tiles: Tile[]): AllTilesResponse {
   };
 }
 
-export function buildRemoveExpiredTilesResponse(): RemoveExpiredTilesResponse {
+export function buildRemoveExpiredTilesResponse(
+  tiles: Tile[]
+): RemoveExpiredTilesResponse {
   return {
     status: "ok",
+    tilesRemovedCount: tiles.length,
   };
 }

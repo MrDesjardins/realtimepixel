@@ -52,10 +52,10 @@ export function HelpContainer(props: HelpContainerProps): JSX.Element {
           <h1>Rules</h1>
           <ul>
             <li>You can place 1 pixel every {CONST_RULES.userPixelDelaySeconds} seconds</li>
-            <li>Each pixel has a life of {CONST_RULES.pixelInitialLifeUnit} units</li>
+            <li>Each pixel has a life unit of {CONST_RULES.pixelInitialLifeUnit} units</li>
             <li>Pixel looses 1 unit every {CONST_RULES.decayDelaySeconds} seconds</li>
             <li>
-              You can draw over an existing pixel if the pixel life is{" "}
+              You can draw over an existing pixel if the pixel life unit is{" "}
               {CONST_RULES.pixelMaximumUnitToOverride} units or less
             </li>
           </ul>

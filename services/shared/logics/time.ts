@@ -17,3 +17,33 @@ export function isNextActionReadyForUser(
   }
   return secondsUntilNextAction(lastEpochtime) <= 0;
 }
+
+export function getTileLife(
+  currentEpochTimeMs: EpochTimeStamp,
+  titleEpochTimeMs: EpochTimeStamp
+): number {
+  const life =
+    CONST_RULES.pixelInitialLifeUnit -
+    Math.floor(
+      (currentEpochTimeMs - titleEpochTimeMs) /
+        1000 /
+        CONST_RULES.decayDelaySeconds
+    );
+
+  return life < 0 ? 0 : life;
+}
+
+export function getAlphaValue(
+  currentEpochTimeMs: EpochTimeStamp,
+  titleEpochTimeMs: EpochTimeStamp
+): number {
+  const MIN_ALPHA = 0.1;
+  const life = getTileLife(currentEpochTimeMs, titleEpochTimeMs);
+  if (life >= CONST_RULES.pixelMaximumUnitToOverride) {
+    return 1; // Full opacity when life is above the threshold to override
+  }
+  const alpha =
+    MIN_ALPHA + life / (CONST_RULES.pixelInitialLifeUnit - MIN_ALPHA);
+
+  return alpha;
+}

@@ -84,7 +84,7 @@ serverApp.use((err: any, req: any, res: any, next: any) => {
 
 io.on("connection", async (socket) => {
   const accessToken = socket.handshake.query.access_token;
-  console.log("a user connected", socket.id, accessToken, typeof accessToken);
+  console.log("User connected", socket.id);
   let userData: RequestUserFromJwt | undefined;
   let userId: string | undefined;
   if (typeof accessToken === "string") {
@@ -100,7 +100,7 @@ io.on("connection", async (socket) => {
     socket.use(authorizationMiddleware(serviceLayer, socket));
     //
     socket.on("disconnect", () => {
-      console.log("socket.disconnected", socket.id);
+      console.log("User disconnected", socket.id);
       onUserDisconnect(userId, socket);
     });
 
@@ -185,7 +185,6 @@ async function onReceivePixel(
 
 function onUserDisconnect(userId: string | undefined, socket: Socket) {
   if (userId !== undefined) {
-    console.log("onUserDisconnect", socket.id);
     serviceLayer.user.removeUserSocket(userId, socket.id);
   }
 }

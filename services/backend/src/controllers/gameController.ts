@@ -71,7 +71,7 @@ export function addRemoveExpiredTiles(
           tiles: removedTiles,
         };
         io.emit(MsgBroadcastRemovedPixelsKind, broadcastPayload);
-        return res.json(buildRemoveExpiredTilesResponse());
+        return res.json(buildRemoveExpiredTilesResponse(removedTiles));
       } catch (e) {
         return res
           .status(HTTP_STATUS.bad_request)

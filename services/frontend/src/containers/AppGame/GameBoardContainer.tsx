@@ -1,9 +1,10 @@
-import { createEffect, JSX, on, onCleanup, onMount } from "solid-js";
-import { CONSTS } from "../../models/constants";
 import { COLORS } from "@shared/constants/colors";
-import styles from "./GameBoardContainer.module.css";
+import { getAlphaValue } from "@shared/logics/time";
+import { createEffect, JSX, on, onCleanup, onMount } from "solid-js";
 import { useUserData } from "../../context/UserDataContext";
 import { getCoordinateToPixelValue } from "../../logics/pixel";
+import { CONSTS } from "../../models/constants";
+import styles from "./GameBoardContainer.module.css";
 export interface GameBoardContainerProps {}
 export function GameBoardContainer(props: GameBoardContainerProps): JSX.Element {
   let canvasRef: HTMLCanvasElement | undefined = undefined;
@@ -56,9 +57,11 @@ export function GameBoardContainer(props: GameBoardContainerProps): JSX.Element 
   function clearAndSetPixelOnCanvas(ctx: CanvasRenderingContext2D) {
     ctx.clearRect(0, 0, CONSTS.gameBoard.boardWidthPx, CONSTS.gameBoard.boardHeightPx);
     if (userData) {
+      const currentEpochTime = Date.now().valueOf();
       for (const [key, t] of userData.state.tiles.entries()) {
         const color = COLORS[t.color];
-        ctx.fillStyle = `rgba(${color.r}, ${color.g}, ${color.b}, 1)`;
+        const alpha = getAlphaValue(currentEpochTime, t.time);
+        ctx.fillStyle = `rgba(${color.r}, ${color.g}, ${color.b}, ${alpha})`;
         const coordinatePixel = getCoordinateToPixelValue(t.coordinate);
         ctx.fillRect(
           coordinatePixel.x,
