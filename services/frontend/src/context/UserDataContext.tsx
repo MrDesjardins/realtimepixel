@@ -50,6 +50,7 @@ export interface UserDataContextActions {
   setUserToken: (token: TokenResponse | undefined) => void;
   submitSocketMessage: (message: MsgUserPixel) => void;
   addTile: (tile: Tile) => void;
+  removeTiles: (tiles: Tile[]) => void;
 }
 
 export interface UserDataContextProps {
@@ -111,15 +112,11 @@ export function UserDataProvider(props: UserDataContextProps): JSX.Element {
 
         socket.on(MsgBroadcastNewPixelKind, (newPixel: MsgBroadcastNewPixel) => {
           console.log("From server Broadcast:", newPixel);
-          newPixel.tile.coordinate = getCoordinateToPixelValue(newPixel.tile.coordinate); // Convert from coordinate to pixel
           actions.addTile(newPixel.tile);
         });
 
         socket.on(MsgBroadcastRemovedPixelsKind, (removedTiles: MsgBroadcastRemovedPixels) => {
-          console.log("From server Broadcast:", removedTiles);
-          for (const tile of removedTiles.tiles) {
-            state.tiles.delete(getTileKey(tile));
-          }
+          actions.removeTiles(removedTiles.tiles);
         });
 
         socket.on("disconnect", () => {
@@ -166,10 +163,8 @@ export function UserDataProvider(props: UserDataContextProps): JSX.Element {
     }
 
     // Fetch all existing tiles from the server
-
     const tiles = await http.getAllTiles();
     const tiles2 = tiles.tiles.map((i) => {
-      i.coordinate = getCoordinateToPixelValue(i.coordinate);
       return [getTileKey(i), i];
     });
     setState({
@@ -251,6 +246,13 @@ export function UserDataProvider(props: UserDataContextProps): JSX.Element {
       newMap.set(getTileKey(tile), tile);
       setState({ tiles: newMap });
     },
+    removeTiles: (tiles: Tile[]) => {
+      const newMap = new Map(state.tiles);
+      for (const tile of tiles) {
+        newMap.delete(getTileKey(tile));
+      }
+      setState({ tiles: newMap });
+    },
   };
 
   return (
@@ -268,7 +270,7 @@ export function UserDataProvider(props: UserDataContextProps): JSX.Element {
     if (response.status === "ok") {
       const newTile: Tile = {
         color: response.colorBeforeRequest,
-        coordinate: getCoordinateToPixelValue(response.coordinate),
+        coordinate: response.coordinate,
         time: response.last ?? Date.now().valueOf(),
         userId: response.userId,
       };

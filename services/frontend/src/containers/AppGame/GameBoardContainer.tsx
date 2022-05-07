@@ -3,6 +3,7 @@ import { CONSTS } from "../../models/constants";
 import { COLORS } from "@shared/constants/colors";
 import styles from "./GameBoardContainer.module.css";
 import { useUserData } from "../../context/UserDataContext";
+import { getCoordinateToPixelValue } from "../../logics/pixel";
 export interface GameBoardContainerProps {}
 export function GameBoardContainer(props: GameBoardContainerProps): JSX.Element {
   let canvasRef: HTMLCanvasElement | undefined = undefined;
@@ -58,9 +59,10 @@ export function GameBoardContainer(props: GameBoardContainerProps): JSX.Element 
       for (const [key, t] of userData.state.tiles.entries()) {
         const color = COLORS[t.color];
         ctx.fillStyle = `rgba(${color.r}, ${color.g}, ${color.b}, 1)`;
+        const coordinatePixel = getCoordinateToPixelValue(t.coordinate);
         ctx.fillRect(
-          t.coordinate.x,
-          t.coordinate.y,
+          coordinatePixel.x,
+          coordinatePixel.y,
           CONSTS.gameBoard.pixelSizePx,
           CONSTS.gameBoard.pixelSizePx,
         );

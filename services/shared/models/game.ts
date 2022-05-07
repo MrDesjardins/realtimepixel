@@ -20,7 +20,7 @@ export interface Coordinate {
  * Each tile is 25 bytes
  */
 export interface Tile {
-  coordinate: Coordinate;
+  coordinate: Coordinate; // This is NOT pixel but coordinate
   time: EpochTimeStamp;
   userId: Id;
   color: Color;
