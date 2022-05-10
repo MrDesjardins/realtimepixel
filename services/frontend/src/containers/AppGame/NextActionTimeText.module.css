@@ -5,10 +5,10 @@
 
 .NextActionTimeTextSpan {
   padding: 4px;
-  top: 55px;
+  top: 0px;
 
-  position: absolute;
-  display: block;
+  position: relative;
+  display: inline-block;
 }
 
 .NextActionTimeTextCompleted,

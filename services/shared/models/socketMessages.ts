@@ -15,7 +15,6 @@ export const MsgUserPixelValidationKind = "MsgUserPixelValidationKind";
 export interface MsgUserPixelValidation {
   kind: typeof MsgUserPixelValidationKind;
   userId: Id;
-  status: "ok";
   last: EpochTimeStamp | undefined;
   coordinate: Coordinate;
   colorBeforeRequest: Color;

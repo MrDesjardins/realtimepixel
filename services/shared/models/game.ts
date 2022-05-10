@@ -27,7 +27,10 @@ export interface Tile {
 }
 
 export function getTileKey(tile: Tile): string {
-  return `${tile.coordinate.x}-${tile.coordinate.y}`;
+  return getTileByCoordinateKey(tile.coordinate);
+}
+export function getTileByCoordinateKey(coordinate: Coordinate): string {
+  return `${coordinate.x}-${coordinate.y}`;
 }
 
 export interface AllTilesRequest {}

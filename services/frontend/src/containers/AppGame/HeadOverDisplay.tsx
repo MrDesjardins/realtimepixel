@@ -74,7 +74,6 @@ export function HeadOverDisplay(props: HeadOverDisplayProps): JSX.Element {
         <div class={styles.HeadOverDisplayPanelContent}>
           <div>Next action:</div>
           <div>
-            &nbsp;
             <NextActionTimeText seconds={nextActionTime()} />
           </div>
         </div>

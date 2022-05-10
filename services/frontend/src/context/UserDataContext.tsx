@@ -10,7 +10,7 @@ import {
   MsgUserPixel,
   MsgUserPixelKind,
   MsgUserPixelValidation,
-  MsgUserPixelValidationKind
+  MsgUserPixelValidationKind,
 } from "@shared/models/socketMessages";
 import { io, Socket } from "socket.io-client";
 import { createContext, createEffect, createSignal, JSX, on, onCleanup, onMount, useContext } from "solid-js";
@@ -273,8 +273,8 @@ export function UserDataProvider(props: UserDataContextProps): JSX.Element {
     });
   }
 
-  function manageResponseFromMsgUserPixel(response: MsgUserPixelValidation): void {
-    if (response.status === "ok") {
+  function manageResponseFromMsgUserPixel(response: MsgUserPixelValidation | MsgError): void {
+    if (response.kind === MsgUserPixelValidationKind) {
       const newTile: Tile = {
         color: response.colorBeforeRequest,
         coordinate: response.coordinate,
@@ -290,7 +290,7 @@ export function UserDataProvider(props: UserDataContextProps): JSX.Element {
       // 1) Set back the pixel to the original color
       // - Nothing to do, haven't change it
       // 2) Popup message error
-      notification?.setMessage({ message: "Pixel submission failed" });
+      notification?.setMessage({ message: "Pixel submission failed. " + response.errorMessage });
       // 3) Reset the time for last action
       // - Nothing to do, the last action has not been changed
     }

@@ -46,6 +46,7 @@
 
 button.AppControlsColorButton:disabled {
   background-color: var(--button-bgcolor);
+  opacity: 0.5;
   cursor: no-drop;
 }
 

@@ -1,4 +1,4 @@
-import { getTileKey, Tile } from "@shared/models/game";
+import { Coordinate, getTileByCoordinateKey, getTileKey, Tile } from "@shared/models/game";
 import { CONST_RULES } from "@shared/constants/rules";
 import fs from "fs";
 export class GameRepository {
@@ -13,6 +13,11 @@ export class GameRepository {
     this.fakeTilesRepository.set(getTileKey(tile), tile);
 
     return this.persistOnDisk();
+  }
+  public async getTile(coordinate: Coordinate): Promise<Tile | undefined> {
+    return Promise.resolve(
+      this.fakeTilesRepository.get(getTileByCoordinateKey(coordinate))
+    );
   }
 
   public async getAllTiles(): Promise<Tile[]> {

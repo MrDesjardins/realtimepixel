@@ -1,11 +1,14 @@
-import { createEffect, createSignal, JSX, on } from "solid-js";
-import { useUserData } from "../../context/UserDataContext";
+import { createEffect, createMemo, createSignal, JSX, on } from "solid-js";
+import { UserDataContextState, useUserData } from "../../context/UserDataContext";
 import { COLORS } from "@shared/constants/colors";
 import styles from "./AppControls.module.css";
 import { ColorPicker } from "./ColorPicker";
 import { LoginOrCreate } from "./LoginOrCreate";
-import { MsgUserPixel, MsgUserPixelKind } from "../../../../shared/models/socketMessages";
+import { MsgUserPixel, MsgUserPixelKind } from "@shared/models/socketMessages";
 import { getAdjustedPixel } from "../../logics/pixel";
+import { isPixelAvailableForNewAction } from "@shared/logics/time";
+import { getTileByCoordinateKey } from "@shared/models/game";
+import { CONST_RULES } from "@shared/constants/rules";
 const AppControlHeight = 200;
 export interface AppControlsProps {}
 export function AppControls(props: AppControlsProps): JSX.Element {
@@ -35,6 +38,10 @@ export function AppControls(props: AppControlsProps): JSX.Element {
     }
   };
 
+  const disabledText = createMemo(() => {
+    return generateDisabledText(userData?.state);
+  });
+
   return (
     <div
       class={styles.AppControls}
@@ -53,16 +60,8 @@ export function AppControls(props: AppControlsProps): JSX.Element {
           </div>
           <div class={styles.AppControlsColorButtons}>
             <button
-              disabled={
-                !userData.state.isReadyForAction ||
-                userData.state.selectedColor === undefined ||
-                userData.state.selectedCoordinate === undefined
-              }
-              title={
-                userData.state.isReadyForAction
-                  ? "Click to apply the color"
-                  : "Cannot click because your next action is not ready yet"
-              }
+              disabled={disabledText() !== undefined}
+              title={disabledText()}
               class={styles.AppControlsColorButton}
               onClick={() => {
                 if (
@@ -90,4 +89,24 @@ export function AppControls(props: AppControlsProps): JSX.Element {
       )}
     </div>
   );
+}
+
+function generateDisabledText(userData: UserDataContextState | undefined): string | undefined {
+  if (userData === undefined) {
+    return "System not ready";
+  }
+  console.log("User Data Context", userData.tiles.values());
+  if (!userData.isReadyForAction) {
+    return "Cannot click because your next action is not ready yet";
+  } else if (userData.selectedColor === undefined || userData.selectedCoordinate === undefined) {
+    return "Need to select a color and a pixel";
+  } else {
+    const tile = userData.tiles.get(getTileByCoordinateKey(getAdjustedPixel(userData.selectedCoordinate)));
+    console.log("tile found", tile, userData.selectedCoordinate);
+    const isPixelAvailable = isPixelAvailableForNewAction(tile, new Date().valueOf());
+    if (!isPixelAvailable) {
+      return `This pixel life must be under or equal to ${CONST_RULES.pixelMaximumUnitToOverride}`;
+    }
+  }
+  return undefined;
 }

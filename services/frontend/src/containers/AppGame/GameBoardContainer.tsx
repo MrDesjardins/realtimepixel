@@ -32,7 +32,7 @@ export function GameBoardContainer(props: GameBoardContainerProps): JSX.Element 
   const draw = (time: number) => {
     const ctx = canvasRef?.getContext("2d") ?? null;
     if (ctx) {
-      console.log("Draw time", time, userData?.state.tiles.entries());
+      console.log("Draw time", time, userData?.state?.tiles.values());
       if (time > lastTime + 1000 / CONSTS.gameBoard.fps) {
         clearAndSetPixelOnCanvas(ctx);
         lastTime = time;
@@ -71,6 +71,6 @@ export function GameBoardContainer(props: GameBoardContainerProps): JSX.Element 
         );
       }
     }
-    console.log("draw");
+    console.log("clearAndSetPixelOnCanvas done");
   }
 }

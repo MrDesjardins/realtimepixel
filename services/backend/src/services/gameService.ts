@@ -1,5 +1,5 @@
 import { ServiceEnvironment } from "@shared/constants/backend";
-import { Tile } from "@shared/models/game";
+import { Coordinate, Tile } from "@shared/models/game";
 import { GameRepository } from "../Repositories/gameRepository";
 import { BaseService } from "./baseService";
 export class GameService extends BaseService {
@@ -11,6 +11,10 @@ export class GameService extends BaseService {
 
   public async setTile(tile: Tile): Promise<void> {
     this.gameRepository.setTile(tile);
+  }
+
+  public async getTile(coordinate: Coordinate): Promise<Tile | undefined> {
+    return this.gameRepository.getTile(coordinate);
   }
 
   public async getAllTiles(): Promise<Tile[]> {

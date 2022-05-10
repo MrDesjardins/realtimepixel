@@ -1,19 +1,9 @@
-import { HTTP_STATUS, ServiceEnvironment } from "@shared/constants/backend";
-import bodyParser from "body-parser";
-import cors from "cors";
-import dotenv from "dotenv";
-import express from "express";
+import { ServiceEnvironment } from "@shared/constants/backend";
 import {
-  addCreateAccountRoute,
-  addLoginRoute,
-  addLogoutRoute,
-  addRefreshTokensRoute,
-} from "./controllers/loginController";
-import { addUserLastActionRoute } from "./controllers/userController";
-import { ServiceLayer } from "./services/serviceLayer";
-import http from "http";
-import { Server, Socket } from "socket.io";
-import { secureEndpointMiddleware } from "./middlewares/secureEndpoints";
+  isNextActionReadyForUser,
+  isPixelAvailableForNewAction,
+} from "@shared/logics/time";
+import { Tile } from "@shared/models/game";
 import {
   MsgBroadcastNewPixel,
   MsgBroadcastNewPixelKind,
@@ -24,17 +14,29 @@ import {
   MsgUserPixelValidation,
   MsgUserPixelValidationKind,
 } from "@shared/models/socketMessages";
+import bodyParser from "body-parser";
+import cors from "cors";
+import dotenv from "dotenv";
+import express from "express";
+import http from "http";
+import { Server, Socket } from "socket.io";
 import { buildLastActionResponse } from "./builders/userBuilders";
-import { isNextActionReadyForUser } from "@shared/logics/time";
-import { Tile } from "@shared/models/game";
 import {
   addAllTilesRoute,
   addRemoveExpiredTiles,
 } from "./controllers/gameController";
-import { RequestUserFromJwt } from "./webServer/expressType";
+import {
+  addCreateAccountRoute,
+  addLoginRoute,
+  addLogoutRoute,
+  addRefreshTokensRoute,
+} from "./controllers/loginController";
+import { addUserLastActionRoute } from "./controllers/userController";
+import { secureEndpointMiddleware } from "./middlewares/secureEndpoints";
 import { UserTableSchema } from "./Repositories/userRepository";
+import { ServiceLayer } from "./services/serviceLayer";
 import { authorizationMiddleware } from "./socket/authorizationMiddleware";
-import { buildBaseJsonResponse } from "./builders/errorBuilders";
+import { RequestUserFromJwt } from "./webServer/expressType";
 dotenv.config();
 
 const SERVER_IP = process.env.SERVER_IP;
@@ -124,54 +126,76 @@ server.listen(SERVER_PORT, () =>
 );
 async function onReceivePixel(
   msg: MsgUserPixel,
-  callback: (arg: MsgUserPixelValidation) => void,
+  callback: (arg: MsgUserPixelValidation | MsgError) => void,
   socket: Socket
 ): Promise<void> {
   console.log("MsgUserPixelKind");
   try {
+    const currentTime = new Date().valueOf();
     const user = socket.data.user as UserTableSchema | undefined; // From the middleware
     const lastUserAction = user?.lastUserAction;
-    if (user && isNextActionReadyForUser(lastUserAction)) {
-      const newTile: Tile = {
-        time: new Date().valueOf(),
-        userId: user.id,
-        coordinate: msg.coordinate,
-        color: msg.color,
-      };
-      // Persist the new tile and the last action of the user
-      await Promise.all([
-        serviceLayer.game.setTile(newTile),
-        serviceLayer.user.setLastUserAction(user.id, newTile.time),
-      ]);
+    if (user) {
+      if (isNextActionReadyForUser(lastUserAction)) {
+        const existingTile = await serviceLayer.game.getTile(msg.coordinate);
+        if (isPixelAvailableForNewAction(existingTile, currentTime)) {
+          const newTile: Tile = {
+            time: currentTime,
+            userId: user.id,
+            coordinate: msg.coordinate,
+            color: msg.color,
+          };
+          // Persist the new tile and the last action of the user
+          await Promise.all([
+            serviceLayer.game.setTile(newTile),
+            serviceLayer.user.setLastUserAction(user.id, newTile.time),
+          ]);
 
-      // Send confirmation to the user who submitted
-      const confirmation: MsgUserPixelValidation = {
-        kind: MsgUserPixelValidationKind,
-        userId: newTile.userId,
-        status: "ok",
-        ...buildLastActionResponse(newTile.time),
-        coordinate: msg.coordinate,
-        colorBeforeRequest: msg.color,
-      };
+          // Send confirmation to the user who submitted
+          const confirmation: MsgUserPixelValidation = {
+            kind: MsgUserPixelValidationKind,
+            userId: newTile.userId,
+            ...buildLastActionResponse(newTile.time),
+            coordinate: msg.coordinate,
+            colorBeforeRequest: msg.color,
+          };
 
-      // If the user who submitted has more than one socket, we need to send to all of them
-      // to ensure the **lastAction time** is updated on all the user device
-      if (user.socketIds.length > 1) {
-        for (let userSocket of user.socketIds) {
-          console.log("Submitting to socket#", userSocket);
-          io.to(userSocket).emit(MsgUserPixelValidationKind, confirmation);
+          // If the user who submitted has more than one socket, we need to send to all of them
+          // to ensure the **lastAction time** is updated on all the user device
+          if (user.socketIds.length > 1) {
+            for (let userSocket of user.socketIds) {
+              console.log("Submitting to socket#", userSocket);
+              io.to(userSocket).emit(MsgUserPixelValidationKind, confirmation);
+            }
+          }
+
+          // Broadcast the pixel to the other users (and the user who submitted)
+          const broadcastPayload: MsgBroadcastNewPixel = {
+            kind: MsgBroadcastNewPixelKind,
+            tile: newTile,
+          };
+          io.emit(MsgBroadcastNewPixelKind, broadcastPayload);
+          callback(confirmation);
+        } else {
+          const error: MsgError = {
+            kind: MsgErrorKind,
+            errorMessage: "Life of the tile is not over",
+          };
+          callback(error); // No need to broadcast, just the sender
         }
+      } else {
+        const error: MsgError = {
+          kind: MsgErrorKind,
+          errorMessage:
+            "The user did not wait the full time before submitting a new pixel",
+        };
+        callback(error); // No need to broadcast, just the sender
       }
-
-      // Broadcast the pixel to the other users (and the user who submitted)
-      const broadcastPayload: MsgBroadcastNewPixel = {
-        kind: MsgBroadcastNewPixelKind,
-        tile: newTile,
-      };
-      io.emit(MsgBroadcastNewPixelKind, broadcastPayload);
-      callback(confirmation);
     } else {
-      console.log("Send error to the user who submitted"); // Todo
+      const error: MsgError = {
+        kind: MsgErrorKind,
+        errorMessage: "Invalid user",
+      };
+      callback(error); // No need to broadcast, just the sender
     }
   } catch (e) {
     console.error("Err", e); // Todo

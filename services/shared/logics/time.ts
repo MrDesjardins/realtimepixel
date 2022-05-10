@@ -1,4 +1,5 @@
 import { CONST_RULES } from "../constants/rules";
+import { Tile } from "../models/game";
 
 export function secondsUntilNextAction(lastEpochtime: EpochTimeStamp): number {
   const now = new Date().valueOf();
@@ -46,4 +47,15 @@ export function getAlphaValue(
     MIN_ALPHA + life / (CONST_RULES.pixelInitialLifeUnit - MIN_ALPHA);
 
   return alpha;
+}
+
+export function isPixelAvailableForNewAction(
+  existingTile: Tile | undefined,
+  currentTime: EpochTimeStamp
+): boolean {
+  if (existingTile === undefined) {
+    return true;
+  }
+  const tileLife = getTileLife(currentTime, existingTile.time);
+  return tileLife <= CONST_RULES.pixelMaximumUnitToOverride;
 }
