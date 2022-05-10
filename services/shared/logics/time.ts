@@ -38,9 +38,9 @@ export function getAlphaValue(
   currentEpochTimeMs: EpochTimeStamp,
   titleEpochTimeMs: EpochTimeStamp
 ): number {
-  const MIN_ALPHA = 0.1;
+  const MIN_ALPHA = 0.2;
   const life = getTileLife(currentEpochTimeMs, titleEpochTimeMs);
-  if (life >= CONST_RULES.pixelMaximumUnitToOverride) {
+  if (life > CONST_RULES.pixelMaximumUnitToOverride) {
     return 1; // Full opacity when life is above the threshold to override
   }
   const alpha =

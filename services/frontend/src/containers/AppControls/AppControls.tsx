@@ -95,14 +95,12 @@ function generateDisabledText(userData: UserDataContextState | undefined): strin
   if (userData === undefined) {
     return "System not ready";
   }
-  console.log("User Data Context", userData.tiles.values());
   if (!userData.isReadyForAction) {
     return "Cannot click because your next action is not ready yet";
   } else if (userData.selectedColor === undefined || userData.selectedCoordinate === undefined) {
     return "Need to select a color and a pixel";
   } else {
     const tile = userData.tiles.get(getTileByCoordinateKey(getAdjustedPixel(userData.selectedCoordinate)));
-    console.log("tile found", tile, userData.selectedCoordinate);
     const isPixelAvailable = isPixelAvailableForNewAction(tile, new Date().valueOf());
     if (!isPixelAvailable) {
       return `This pixel life must be under or equal to ${CONST_RULES.pixelMaximumUnitToOverride}`;
