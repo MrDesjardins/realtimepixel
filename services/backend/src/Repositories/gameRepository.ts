@@ -1,8 +1,14 @@
-import { Coordinate, getTileByCoordinateKey, getTileKey, Tile } from "@shared/models/game";
+import {
+  Coordinate,
+  getTileByCoordinateKey,
+  getTileKey,
+  Tile,
+} from "@shared/models/game";
 import { CONST_RULES } from "@shared/constants/rules";
 import fs from "fs";
+import { getTileLife } from "@shared/logics/time";
 export class GameRepository {
-  private static SAVE_FILE = GameRepository.name + ".txt";
+  private static SAVE_FILE = GameRepository.name + ".json";
   private fakeTilesRepository: Map<string, Tile>; //Coordinate -> Tile
   public constructor() {
     this.fakeTilesRepository = new Map<string, Tile>();
@@ -35,14 +41,9 @@ export class GameRepository {
   public async removeExpiredTiles(): Promise<Tile[]> {
     await this.getAllTiles(); // Load from the persistent storage if not already in the map memory
     const currentEpochTimeMs: EpochTimeStamp = new Date().valueOf();
-    const maxTileLifeMs =
-      1000 *
-      CONST_RULES.pixelInitialLifeUnit *
-      CONST_RULES.decayDelaySeconds *
-      CONST_RULES.decayValueReduction;
     const removedTiles: Tile[] = [];
     for (const [key, tile] of this.fakeTilesRepository.entries()) {
-      if (currentEpochTimeMs - tile.time > maxTileLifeMs) {
+      if (getTileLife(currentEpochTimeMs, tile.time) === 0) {
         removedTiles.push({ ...tile });
         this.fakeTilesRepository.delete(key);
       }

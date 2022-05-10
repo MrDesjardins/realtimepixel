@@ -220,6 +220,7 @@ export function UserDataProvider(props: UserDataContextProps): JSX.Element {
     removeTiles: (tiles: Tile[]) => {
       const newMap = new Map(state.tiles);
       for (const tile of tiles) {
+        console.log("Removing tile:", tile.coordinate);
         newMap.delete(getTileKey(tile));
       }
       setState({ tiles: newMap });
