@@ -96,7 +96,9 @@ export function addRefreshTokensRoute(
       try {
         const { id, accessToken, refreshToken } =
           await serviceLayer.auth.refreshTokens(req.body);
-        res.json(buildRefreshTokensResponse(id, accessToken, refreshToken));
+        return res.json(
+          buildRefreshTokensResponse(id, accessToken, refreshToken)
+        );
       } catch (e) {
         return res
           .status(HTTP_STATUS.token_invalid)
