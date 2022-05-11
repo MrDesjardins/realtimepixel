@@ -7,10 +7,11 @@ import {
 import { CONST_RULES } from "@shared/constants/rules";
 import fs from "fs";
 import { getTileLife } from "@shared/logics/time";
+import { createClient } from "redis";
 export class GameRepository {
   private static SAVE_FILE = GameRepository.name + ".json";
   private fakeTilesRepository: Map<string, Tile>; //Coordinate -> Tile
-  public constructor() {
+  public constructor(private redisClient: ReturnType<typeof createClient>) {
     this.fakeTilesRepository = new Map<string, Tile>();
   }
 

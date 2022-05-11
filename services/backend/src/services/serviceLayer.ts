@@ -1,4 +1,5 @@
 import { ServiceEnvironment } from "@shared/constants/backend";
+import { createClient } from "redis";
 import { AuthService } from "./authService";
 import { GameService } from "./gameService";
 import { UserService } from "./userService";
@@ -10,10 +11,13 @@ export class ServiceLayer {
   private loginService: AuthService;
   private userService: UserService;
   private gameService: GameService;
-  public constructor(private environment: ServiceEnvironment) {
-    this.loginService = new AuthService(this.environment);
-    this.userService = new UserService(this.environment);
-    this.gameService = new GameService(this.environment);
+  public constructor(
+    private environment: ServiceEnvironment,
+    redisClient: ReturnType<typeof createClient>
+  ) {
+    this.loginService = new AuthService(this.environment, redisClient);
+    this.userService = new UserService(this.environment, redisClient);
+    this.gameService = new GameService(this.environment, redisClient);
   }
 
   public get auth(): AuthService {

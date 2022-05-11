@@ -1,6 +1,7 @@
 import { ServiceEnvironment } from "@shared/constants/backend";
 import { CONST_RULES } from "@shared/constants/rules";
 import { Id } from "@shared/models/primitive";
+import { createClient } from "redis";
 import {
   UserRepository,
   UserTableSchema,
@@ -8,9 +9,12 @@ import {
 import { BaseService } from "./baseService";
 export class UserService extends BaseService {
   private userRepository: UserRepository;
-  public constructor(environment: ServiceEnvironment) {
+  public constructor(
+    environment: ServiceEnvironment,
+    redisClient: ReturnType<typeof createClient>
+  ) {
     super(environment);
-    this.userRepository = new UserRepository();
+    this.userRepository = new UserRepository(redisClient);
   }
 
   public async getUser(id: Id): Promise<UserTableSchema | undefined> {

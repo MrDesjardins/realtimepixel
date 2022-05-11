@@ -1,12 +1,16 @@
 import { ServiceEnvironment } from "@shared/constants/backend";
 import { Coordinate, Tile } from "@shared/models/game";
+import { createClient } from "redis";
 import { GameRepository } from "../Repositories/gameRepository";
 import { BaseService } from "./baseService";
 export class GameService extends BaseService {
   private gameRepository: GameRepository;
-  public constructor(environment: ServiceEnvironment) {
+  public constructor(
+    environment: ServiceEnvironment,
+    redisClient: ReturnType<typeof createClient>
+  ) {
     super(environment);
-    this.gameRepository = new GameRepository();
+    this.gameRepository = new GameRepository(redisClient);
   }
 
   public async setTile(tile: Tile): Promise<void> {

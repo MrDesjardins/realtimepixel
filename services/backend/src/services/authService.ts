@@ -14,12 +14,16 @@ import { BaseService } from "./baseService";
 import { v4 as uuidv4 } from "uuid";
 import { UserRepository } from "../Repositories/userRepository";
 import { Id } from "@shared/models/primitive";
+import { createClient } from "redis";
 
 export class AuthService extends BaseService {
   private repository: UserRepository;
-  public constructor(environment: ServiceEnvironment) {
+  public constructor(
+    environment: ServiceEnvironment,
+    redisClient: ReturnType<typeof createClient>
+  ) {
     super(environment);
-    this.repository = new UserRepository();
+    this.repository = new UserRepository(redisClient);
   }
 
   /**

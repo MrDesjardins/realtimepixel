@@ -37,15 +37,33 @@ import { UserTableSchema } from "./Repositories/userRepository";
 import { ServiceLayer } from "./services/serviceLayer";
 import { authorizationMiddleware } from "./socket/authorizationMiddleware";
 import { RequestUserFromJwt } from "./webServer/expressType";
+import { createClient } from "redis";
+
 dotenv.config();
+
+const REDIS_IP = process.env.REDIS_IP;
+const REDIS_PORT = Number(process.env.REDIS_PORT);
+const REDIS_URL = `redis://${REDIS_IP}:${REDIS_PORT}`;
+const redisClient = createClient({
+  socket: {
+    port: REDIS_PORT,
+    host: REDIS_IP,
+  },
+});
+redisClient.connect().then(async () => {
+  await redisClient.set("test", "testValue");
+  const r = await redisClient.get("test");
+  console.log("Return value", r);
+});
 
 const SERVER_IP = process.env.SERVER_IP;
 const SERVER_PORT = process.env.SERVER_PORT;
 const CORS_CLIENT_ORIGIN = `${process.env.CLIENT_IP}:${process.env.DOCKER_CLIENT_PORT_FORWARD}`;
 console.log(`Server ${SERVER_IP}:${SERVER_PORT}`);
 console.log(`Socket IO Cors Allowing: ${CORS_CLIENT_ORIGIN}`);
+console.log(`Redis: ${REDIS_URL}`);
 
-const serviceLayer = new ServiceLayer(ServiceEnvironment.Test);
+const serviceLayer = new ServiceLayer(ServiceEnvironment.Test, redisClient);
 const serverApp = express();
 
 const server = http.createServer(serverApp);

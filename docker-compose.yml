@@ -11,8 +11,22 @@ x-app: &default-app
     retries: 3
 
 services:
+  redis:
+    <<: *default-app
+    build:
+      context: "./services/redis"
+      dockerfile: Dockerfile
+      target: ${NODE_ENV}
+      args:
+        - "NODE_ENV=${NODE_ENV}"
+    ports:
+      - "${DOCKER_REDIS_PORT_FORWARD}:${REDIS_PORT}"
+    volumes: 
+      - cache:/data
   backend:
     <<: *default-app
+    depends_on:
+      - "redis"
     build:
       context: "./services"
       dockerfile: backend/Dockerfile
@@ -35,7 +49,7 @@ services:
     depends_on:
       - "backend"
     build:
-      context: "."
+      context: "." # Need to be . instead of service because we need access to scripts folder
       target: ${NODE_ENV}
       dockerfile: services/frontend/Dockerfile
       args:
@@ -51,3 +65,6 @@ services:
       - "./services/frontend:/node/app:delegated" # Delegated = Performance improvement for files on MAC
       - "./services/shared:/node/shared:delegated"
       - "/node/app/node_modules" # Anonymous volume to hide our local node_modules
+volumes:
+  cache:
+    driver: local

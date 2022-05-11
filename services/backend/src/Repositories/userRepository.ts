@@ -1,4 +1,5 @@
 import { Id } from "@shared/models/primitive";
+import { createClient } from "redis";
 
 export interface UserTableSchema {
   id: Id;
@@ -14,7 +15,7 @@ export class UserRepository {
   private fakeRepository: Map<Id, UserTableSchema>; //Id -> Last time
   private indexEmailId: Map<string, Id>;
 
-  public constructor() {
+  public constructor(private redisClient: ReturnType<typeof createClient>) {
     this.fakeRepository = new Map<Id, UserTableSchema>();
     this.indexEmailId = new Map<string, Id>();
 
