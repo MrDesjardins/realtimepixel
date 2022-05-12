@@ -83,6 +83,20 @@ docker run -it realtimepixel_frontend:latest bash
 ## How to Debug the Backend?
 The backend NodeJS server listens to the VsCode default debugging port when running Docker in the development environment. Hence, the step needed is to attach the debugger using the configuration `Docker: Attach to Node` from the `launch.json` file. Then, running the code will hit any of your breakpoints. Breakpoints can be set directly to `.ts` file from the `services/backend/src/**` files. It works because we have the generation of map files in the `tsconfig.json` enabled.
 
+# Production Release
+
+The production build uses the `docker-compose.yml` configuration without the development configuration `docker-compose.override.yml` and with the `docker-compose.production.yml`.
+
+## Step 1: Environment Variables
+The `.env` file needs to be changed with production values.
+
+## Step 2: Build and Up
+
+```
+docker-compose build
+docker-compose -f docker-compose.yml -f docker-compose.production.yml up
+```
+
 # Documentations
 
 ## Docker References
@@ -91,7 +105,7 @@ The backend NodeJS server listens to the VsCode default debugging port when runn
 https://www.docker.com/blog/speed-up-your-development-flow-with-these-dockerfile-best-practices/
 
 ### Docker Web App with Multi-Stage 
-https://nickjanetakis.com/blog/best-practices-around-production-ready-web-apps-with-docker-compose
+https://nickjanetakis.com/blog/best-practices-around-production-ready-web-apps-with-docker-compose@¤
 https://github.com/nickjj/docker-node-example/blob/main/Dockerfile
 
 ### Docker with a React Example (REACT CRA start and Nginx)
@@ -103,3 +117,7 @@ https://viralganatra.com/docker-nodejs-production-secure-best-practices/
 
 ### How to debug Docker build
 https://stackoverflow.com/questions/26220957/how-can-i-inspect-the-file-system-of-a-failed-docker-build
+
+### Docker with Compose file for Development and Production Environments
+https://docs.docker.com/compose/extends/#different-environments
+https://docs.docker.com/compose/reference/

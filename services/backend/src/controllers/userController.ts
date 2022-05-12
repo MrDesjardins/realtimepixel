@@ -6,7 +6,7 @@ import {
 
 import { ServiceLayer } from "../services/serviceLayer";
 import { TypedRequestBody, TypedResponse } from "../webServer/expressType";
-import { URLS } from "../../../shared/constants/backend";
+import { HTTP_STATUS, URLS } from "@shared/constants/backend";
 import { buildLastActionResponse } from "../builders/userBuilders";
 export function addUserLastActionRoute(
   serverApp: core.Express,
@@ -16,8 +16,8 @@ export function addUserLastActionRoute(
     `/${URLS.lastUserAction}`,
     async (
       req: TypedRequestBody<LastUserActionRequest>,
-      res: TypedResponse<LastUserActionResponse>,
-      next: core.NextFunction
+      res: TypedResponse<LastUserActionResponse>
+      // next: core.NextFunction
     ) => {
       try {
         if (req.jwtPayload === undefined) {
@@ -28,7 +28,9 @@ export function addUserLastActionRoute(
         }
       } catch (e) {
         console.log("addUserLastActionRoute catch", e);
-        return res.json(buildLastActionResponse(undefined));
+        return res
+          .status(HTTP_STATUS.bad_request)
+          .json(buildLastActionResponse(undefined));
       }
     }
   );

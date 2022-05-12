@@ -1,0 +1,19 @@
+# Developer configurations
+services:
+  redis:
+    volumes: 
+      - redis_data:/data
+  backend:
+    volumes:
+      - "./services/backend:/node/app:delegated"
+      - "./services/shared:/node/shared:delegated"
+      - "/node/app/node_modules" # Anonymous volume to hide our local node_modules
+  frontend:
+    volumes:
+      - ".env:/node/.env:delegated" # Delegated = Performance improvement for files on MAC
+      - "./scripts:/node/scripts:delegated" # Delegated = Performance improvement for files on MAC
+      - "./services/frontend:/node/app:delegated" # Delegated = Performance improvement for files on MAC
+      - "./services/shared:/node/shared:delegated"
+      - "/node/app/node_modules" # Anonymous volume to hide our local node_modules
+volumes:
+  redis_data:

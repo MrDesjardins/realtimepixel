@@ -37,14 +37,14 @@ export function secureEndpointMiddleware(serviceLayer: ServiceLayer) {
       try {
         const userData = await serviceLayer.auth.verifyAccess(accessToken);
         req.jwtPayload = userData;
-        next(); //proceed to the next action in the calling function
+        return next(); //proceed to the next action in the calling function
       } catch (e) {
-        res.status(HTTP_STATUS.valid_but_not_authorization).send({
+        return res.status(HTTP_STATUS.valid_but_not_authorization).send({
           status: HTTP_STATUS.valid_but_not_authorization,
           message: "Token invalid",
         });
       }
     }
-    next();
+    return next();
   };
 }

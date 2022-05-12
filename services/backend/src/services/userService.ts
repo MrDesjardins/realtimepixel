@@ -33,23 +33,26 @@ export class UserService extends BaseService {
     if (user === undefined) {
       return Promise.reject("User not found");
     }
-    return this.userRepository.updateUser(id, {
+    await this.userRepository.updateUser({
       ...user,
       lastUserAction: time,
     });
+    return Promise.resolve();
   }
 
   public async addUserSocket(id: Id, socketId: string): Promise<void> {
     const user = await this.userRepository.getUser(id);
     if (user !== undefined) {
-      this.userRepository.addUserSocket(id, socketId);
+      await this.userRepository.addUserSocket(id, socketId);
     }
+    return Promise.resolve();
   }
 
   public async removeUserSocket(id: Id, socketId: string): Promise<void> {
     const user = await this.userRepository.getUser(id);
     if (user !== undefined) {
-      this.userRepository.removeUserSocket(id, socketId);
+      await this.userRepository.removeUserSocket(id, socketId);
     }
+    return Promise.resolve();
   }
 }

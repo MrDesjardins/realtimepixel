@@ -50,11 +50,15 @@ const redisClient = createClient({
     host: REDIS_IP,
   },
 });
-redisClient.connect().then(async () => {
-  await redisClient.set("test", "testValue");
-  const r = await redisClient.get("test");
-  console.log("Return value", r);
-});
+
+async function connectToRedis(): Promise<void> {
+  await redisClient.connect();
+  await redisClient.on("connect", () => {
+    console.log("Redis is connected");
+  });
+}
+
+connectToRedis();
 
 const SERVER_IP = process.env.SERVER_IP;
 const SERVER_PORT = process.env.SERVER_PORT;
@@ -80,7 +84,7 @@ serverApp.use(cors());
 
 serverApp.get("/health", async (req, res) => {
   console.log("Health Check");
-  res.send("ok:" + process.env.NODE_ENV);
+  return res.send("ok:" + process.env.NODE_ENV);
 });
 
 // Middlewares
@@ -99,7 +103,7 @@ addUserLastActionRoute(serverApp, serviceLayer);
 
 serverApp.use((err: any, req: any, res: any, next: any) => {
   console.error("ERROR ENDPOINT", err.stack);
-  res.status(500).send("Something broke!");
+  return res.status(500).send("Something broke!");
 });
 
 io.on("connection", async (socket) => {

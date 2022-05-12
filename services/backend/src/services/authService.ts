@@ -88,9 +88,9 @@ export class AuthService extends BaseService {
 
     throw new Error("Invalid refresh token");
   }
-  public async logout(userEmail: string): Promise<LogoutResponse> {
-    if (await this.repository.hasToken(userEmail)) {
-      this.repository.removeToken(userEmail);
+  public async logout(id: Id): Promise<LogoutResponse> {
+    if (await this.repository.hasToken(id)) {
+      this.repository.removeToken(id);
     }
 
     return {};
