@@ -129,4 +129,40 @@ export class UserRepository {
       });
     }
   }
+
+  public async removeAllUsersSocketsAndCredentials(): Promise<number> {
+    let count = 0;
+    try {
+      const existingUsers = await this.getAllUsers();
+      for (const user of existingUsers) {
+        const existingUserWithoutSocket: UserTableSchema = {
+          ...user,
+          accessToken: undefined,
+          refreshToken: undefined,
+          socketIds: [],
+        };
+        count++;
+        this.updateUser(existingUserWithoutSocket);
+      }
+      return Promise.resolve(count);
+    } catch (e) {
+      return Promise.reject(e);
+    }
+  }
+
+  public async getAllUsers(): Promise<UserTableSchema[]> {
+    let users: UserTableSchema[] = [];
+
+    for await (const key of this.redisClient.scanIterator({
+      TYPE: "string",
+      MATCH: ID_PREFIX + "*",
+      COUNT: 1000,
+    })) {
+      const user = await this.redisClient.get(key);
+      if (user !== null) {
+        users.push(JSON.parse(user) as UserTableSchema);
+      }
+    }
+    return Promise.resolve(users);
+  }
 }

@@ -5,3 +5,7 @@ export interface LastUserActionRequest {
 export interface LastUserActionResponse {
   last: EpochTimeStamp | undefined;
 }
+
+export interface RemoveExpiredTilesResponse {
+  status: "ok";
+}

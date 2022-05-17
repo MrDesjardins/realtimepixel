@@ -136,7 +136,7 @@ export function addLogoutRoute(
             );
         } else {
           await serviceLayer.auth.logout(req.jwtPayload?.id);
-
+          
           buildSuccessfulResponse;
           return res.status(HTTP_STATUS.ok).send("Logout Successful");
         }

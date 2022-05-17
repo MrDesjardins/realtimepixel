@@ -21,6 +21,7 @@ export const URLS = {
   lastUserAction: "lastUserAction",
   allTiles: "allTiles",
   removeExpiredTiles: "removeExpiredTiles",
+  clearUsersSocketsAndCredentials: "clearUsersSocketsAndCredentials",
 };
 
 export const URLS_UNSECURE = [

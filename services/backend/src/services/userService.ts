@@ -55,4 +55,8 @@ export class UserService extends BaseService {
     }
     return Promise.resolve();
   }
+
+  public async removeAllUsersSocketsAndCredentials(): Promise<number> {
+    return this.userRepository.removeAllUsersSocketsAndCredentials();
+  }
 }

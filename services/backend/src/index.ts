@@ -31,7 +31,7 @@ import {
   addLogoutRoute,
   addRefreshTokensRoute,
 } from "./controllers/loginController";
-import { addUserLastActionRoute } from "./controllers/userController";
+import { addRemoveAllUsersSocketsAndCredentialsRoute, addUserLastActionRoute } from "./controllers/userController";
 import { secureEndpointMiddleware } from "./middlewares/secureEndpoints";
 import { UserTableSchema } from "./Repositories/userRepository";
 import { ServiceLayer } from "./services/serviceLayer";
@@ -100,6 +100,7 @@ addRemoveExpiredTiles(serverApp, serviceLayer, io);
 // Route that must be secured with an access token
 addLogoutRoute(serverApp, serviceLayer);
 addUserLastActionRoute(serverApp, serviceLayer);
+addRemoveAllUsersSocketsAndCredentialsRoute(serverApp, serviceLayer);
 
 serverApp.use((err: any, req: any, res: any, next: any) => {
   console.error("ERROR ENDPOINT", err.stack);
