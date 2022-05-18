@@ -1,59 +1,54 @@
 import { ServiceEnvironment } from "@shared/constants/backend";
 import {
-  isNextActionReadyForUser,
-  isPixelAvailableForNewAction,
-} from "@shared/logics/time";
-import { Tile } from "@shared/models/game";
-import {
-  MsgBroadcastNewPixel,
-  MsgBroadcastNewPixelKind,
-  MsgError,
-  MsgErrorKind,
   MsgUserPixel,
-  MsgUserPixelKind,
-  MsgUserPixelValidation,
-  MsgUserPixelValidationKind,
+  MsgUserPixelKind
 } from "@shared/models/socketMessages";
 import bodyParser from "body-parser";
 import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";
 import http from "http";
+import { createClient } from "redis";
 import { Server, Socket } from "socket.io";
-import { buildLastActionResponse } from "./builders/userBuilders";
 import {
   addAllTilesRoute,
-  addRemoveExpiredTiles,
+  addRemoveExpiredTiles
 } from "./controllers/gameController";
 import {
   addCreateAccountRoute,
   addLoginRoute,
   addLogoutRoute,
-  addRefreshTokensRoute,
+  addRefreshTokensRoute
 } from "./controllers/loginController";
-import { addRemoveAllUsersSocketsAndCredentialsRoute, addUserLastActionRoute } from "./controllers/userController";
+import {
+  addRemoveAllUsersSocketsAndCredentialsRoute,
+  addUserLastActionRoute
+} from "./controllers/userController";
 import { secureEndpointMiddleware } from "./middlewares/secureEndpoints";
-import { UserTableSchema } from "./Repositories/userRepository";
 import { ServiceLayer } from "./services/serviceLayer";
+import { onReceivePixel } from "./socket/actions/onReceivePixel";
 import { authorizationMiddleware } from "./socket/authorizationMiddleware";
 import { RequestUserFromJwt } from "./webServer/expressType";
-import { createClient } from "redis";
+import { createAdapter } from "@socket.io/redis-adapter";
 
 dotenv.config();
 
 const REDIS_IP = process.env.REDIS_IP;
 const REDIS_PORT = Number(process.env.REDIS_PORT);
 const REDIS_URL = `redis://${REDIS_IP}:${REDIS_PORT}`;
-const redisClient = createClient({
+const pubClient = createClient({
   socket: {
     port: REDIS_PORT,
     host: REDIS_IP,
   },
 });
 
+const subClient = pubClient.duplicate();
+
 async function connectToRedis(): Promise<void> {
-  await redisClient.connect();
-  await redisClient.on("connect", () => {
+  await Promise.all([pubClient.connect(), subClient.connect()]);
+  io.adapter(createAdapter(pubClient, subClient));
+  await pubClient.on("connect", () => {
     console.log("Redis is connected");
   });
 }
@@ -67,7 +62,7 @@ console.log(`Server ${SERVER_IP}:${SERVER_PORT}`);
 console.log(`Socket IO Cors Allowing: ${CORS_CLIENT_ORIGIN}`);
 console.log(`Redis: ${REDIS_URL}`);
 
-const serviceLayer = new ServiceLayer(ServiceEnvironment.Test, redisClient);
+const serviceLayer = new ServiceLayer(ServiceEnvironment.Test, pubClient);
 const serverApp = express();
 
 const server = http.createServer(serverApp);
@@ -102,6 +97,8 @@ addLogoutRoute(serverApp, serviceLayer);
 addUserLastActionRoute(serverApp, serviceLayer);
 addRemoveAllUsersSocketsAndCredentialsRoute(serverApp, serviceLayer);
 
+const receivePixelWithServices = onReceivePixel(serviceLayer);
+
 serverApp.use((err: any, req: any, res: any, next: any) => {
   console.error("ERROR ENDPOINT", err.stack);
   return res.status(500).send("Something broke!");
@@ -118,24 +115,28 @@ io.on("connection", async (socket) => {
       userId = userData.id;
       serviceLayer.user.addUserSocket(userId, socket.id);
     } catch (e) {
-      socket.disconnect();
+      socket.disconnect(true);
     }
 
     // Middlewares
     socket.use(authorizationMiddleware(serviceLayer, socket));
     //
-    socket.on("disconnect", () => {
+    socket.on("disconnect", async () => {
       console.log("User disconnected", socket.id);
-      onUserDisconnect(userId, socket);
+      try {
+        await onUserDisconnect(userId, socket);
+      } catch (e) {
+        console.log("Error disconnecting user", e);
+      }
     });
 
     socket.on("error", (err) => {
       console.log("socket.error: ", err);
-      socket.disconnect(); // will call the socket.on(disconnect)
+      socket.disconnect(true); // will call the socket.on(disconnect)
     });
 
     socket.on(MsgUserPixelKind, async (msg: MsgUserPixel, callback) => {
-      await onReceivePixel(msg, callback, socket);
+      await receivePixelWithServices(msg, callback, socket, io);
     });
   }
 });
@@ -147,91 +148,14 @@ io.on("connect_error", function (e) {
 server.listen(SERVER_PORT, () =>
   console.log(`Web Server Listening on IP ${SERVER_IP} and PORT ${SERVER_PORT}`)
 );
-async function onReceivePixel(
-  msg: MsgUserPixel,
-  callback: (arg: MsgUserPixelValidation | MsgError) => void,
+
+async function onUserDisconnect(
+  userId: string | undefined,
   socket: Socket
 ): Promise<void> {
-  console.log("MsgUserPixelKind");
-  try {
-    const currentTime = new Date().valueOf();
-    const user = socket.data.user as UserTableSchema | undefined; // From the middleware
-    const lastUserAction = user?.lastUserAction;
-    if (user) {
-      if (isNextActionReadyForUser(lastUserAction)) {
-        const existingTile = await serviceLayer.game.getTile(msg.coordinate);
-        if (isPixelAvailableForNewAction(existingTile, currentTime)) {
-          const newTile: Tile = {
-            time: currentTime,
-            userId: user.id,
-            coordinate: msg.coordinate,
-            color: msg.color,
-          };
-          // Persist the new tile and the last action of the user
-          await Promise.all([
-            serviceLayer.game.setTile(newTile),
-            serviceLayer.user.setLastUserAction(user.id, newTile.time),
-          ]);
-
-          // Send confirmation to the user who submitted
-          const confirmation: MsgUserPixelValidation = {
-            kind: MsgUserPixelValidationKind,
-            userId: newTile.userId,
-            ...buildLastActionResponse(newTile.time),
-            coordinate: msg.coordinate,
-            colorBeforeRequest: msg.color,
-          };
-
-          // If the user who submitted has more than one socket, we need to send to all of them
-          // to ensure the **lastAction time** is updated on all the user device
-          if (user.socketIds.length > 1) {
-            for (let userSocket of user.socketIds) {
-              console.log("Submitting to socket#", userSocket);
-              io.to(userSocket).emit(MsgUserPixelValidationKind, confirmation);
-            }
-          }
-
-          // Broadcast the pixel to the other users (and the user who submitted)
-          const broadcastPayload: MsgBroadcastNewPixel = {
-            kind: MsgBroadcastNewPixelKind,
-            tile: newTile,
-          };
-          io.emit(MsgBroadcastNewPixelKind, broadcastPayload);
-          callback(confirmation);
-        } else {
-          const error: MsgError = {
-            kind: MsgErrorKind,
-            errorMessage: "Life of the tile is not over",
-          };
-          callback(error); // No need to broadcast, just the sender
-        }
-      } else {
-        const error: MsgError = {
-          kind: MsgErrorKind,
-          errorMessage:
-            "The user did not wait the full time before submitting a new pixel",
-        };
-        callback(error); // No need to broadcast, just the sender
-      }
-    } else {
-      const error: MsgError = {
-        kind: MsgErrorKind,
-        errorMessage: "Invalid user",
-      };
-      callback(error); // No need to broadcast, just the sender
-    }
-  } catch (e) {
-    console.error("Err", e); // Todo
-    const error: MsgError = {
-      kind: MsgErrorKind,
-      errorMessage: "Invalid access token",
-    };
-    socket.emit(MsgErrorKind, error);
-  }
-}
-
-function onUserDisconnect(userId: string | undefined, socket: Socket) {
   if (userId !== undefined) {
-    serviceLayer.user.removeUserSocket(userId, socket.id);
+    return serviceLayer.user.removeUserSocket(userId, socket.id);
+  } else {
+    console.error("User disconnected with no userId");
   }
 }
