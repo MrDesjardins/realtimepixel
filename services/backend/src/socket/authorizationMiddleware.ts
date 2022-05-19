@@ -12,13 +12,13 @@ export const authorizationMiddleware =
       );
       const user = await serviceLayer.user.getUser(userData.id);
       socket.data.user = user;
-      next();
+      return next();
     } catch (e) {
       socket.disconnect(true);
       if (e instanceof Error) {
-        next(e);
+        return next(e);
       } else {
-        next(new Error("Invalid access token"));
+        return next(new Error("Invalid access token"));
       }
     }
   };

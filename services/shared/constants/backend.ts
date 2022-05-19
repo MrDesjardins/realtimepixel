@@ -37,6 +37,7 @@ export const HTTP_STATUS = {
   bad_request: 400,
   token_missing: 400,
   token_invalid: 401,
+  account_not_validated: 401,
   valid_but_not_authorization: 403,
 };
 

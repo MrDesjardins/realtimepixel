@@ -99,9 +99,8 @@ export class UserRepository {
     const user = await this.getUser(id);
     return Promise.resolve(user?.accessToken !== undefined);
   }
-  public async removeToken(id: Id): Promise<void> {
-    this.updateTokens(id, undefined, undefined);
-    return Promise.resolve();
+  public async removeToken(id: Id): Promise<UserTableSchema> {
+    return this.updateTokens(id, undefined, undefined);
   }
 
   public async removeUserSocket(

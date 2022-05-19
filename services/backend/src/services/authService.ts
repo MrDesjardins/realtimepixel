@@ -88,10 +88,12 @@ export class AuthService extends BaseService {
   }
   public async logout(id: Id): Promise<LogoutResponse> {
     if (await this.repository.hasToken(id)) {
-      this.repository.removeToken(id);
+      const user = await this.repository.removeToken(id);
+      if (user.accessToken === undefined && user.refreshToken === undefined) {
+        return Promise.resolve({});
+      }
     }
-
-    return {};
+    throw new Error("No User to logout");
   }
 
   public async verifyAccess(accessToken: string): Promise<RequestUserFromJwt> {

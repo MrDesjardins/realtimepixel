@@ -10,7 +10,7 @@ import {
   MsgUserPixel,
   MsgUserPixelKind,
   MsgUserPixelValidation,
-  MsgUserPixelValidationKind
+  MsgUserPixelValidationKind,
 } from "@shared/models/socketMessages";
 import { io, Socket } from "socket.io-client";
 import { createContext, createEffect, createSignal, JSX, on, onCleanup, onMount, useContext } from "solid-js";
@@ -96,6 +96,7 @@ export function UserDataProvider(props: UserDataContextProps): JSX.Element {
         socket.on(MsgBroadcastRemovedPixelsKind, manageResponseFromRemovePixel);
         socket.on("disconnect", socketOnDisconnect);
         socket.on("connect_error", socketConnectError);
+        socket.on("error", socketError);
       }
     }
   });
@@ -236,6 +237,10 @@ export function UserDataProvider(props: UserDataContextProps): JSX.Element {
         }
       }
     }, CONSTS.frequencies.connectionRetry);
+  }
+
+  function socketError(err: any): void {
+    console.log("Socket Error", err);
   }
 
   function socketOnDisconnect(): void {

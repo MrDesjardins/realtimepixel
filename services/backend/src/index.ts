@@ -24,12 +24,14 @@ import {
   addRemoveAllUsersSocketsAndCredentialsRoute,
   addUserLastActionRoute
 } from "./controllers/userController";
-import { secureEndpointMiddleware } from "./middlewares/secureEndpoints";
+import { secureEndpointMiddleware } from "./middlewares/secureEndpointMiddleware";
 import { ServiceLayer } from "./services/serviceLayer";
 import { onReceivePixel } from "./socket/actions/onReceivePixel";
 import { authorizationMiddleware } from "./socket/authorizationMiddleware";
 import { RequestUserFromJwt } from "./webServer/expressType";
 import { createAdapter } from "@socket.io/redis-adapter";
+import { userActivatedMiddleware } from "./middlewares/userActivatedMiddleware";
+import { userActivateMiddleware } from "./socket/userActivateMiddleware";
 
 dotenv.config();
 
@@ -82,8 +84,9 @@ serverApp.get("/health", async (req, res) => {
   return res.send("ok:" + process.env.NODE_ENV);
 });
 
-// Middlewares
+// Middlewares in specific order (top to bottom)
 serverApp.use(secureEndpointMiddleware(serviceLayer));
+serverApp.use(userActivatedMiddleware(serviceLayer));
 
 // Route that does not need the access token
 addLoginRoute(serverApp, serviceLayer);
@@ -120,6 +123,8 @@ io.on("connection", async (socket) => {
 
     // Middlewares
     socket.use(authorizationMiddleware(serviceLayer, socket));
+    socket.use(userActivateMiddleware(serviceLayer, socket));
+    
     //
     socket.on("disconnect", async () => {
       console.log("User disconnected", socket.id);
@@ -132,7 +137,7 @@ io.on("connection", async (socket) => {
 
     socket.on("error", (err) => {
       console.log("socket.error: ", err);
-      socket.disconnect(true); // will call the socket.on(disconnect)
+      // socket.disconnect(true); // will call the socket.on(disconnect)
     });
 
     socket.on(MsgUserPixelKind, async (msg: MsgUserPixel, callback) => {

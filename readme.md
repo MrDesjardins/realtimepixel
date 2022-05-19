@@ -83,6 +83,16 @@ docker run -it realtimepixel_frontend:latest bash
 ## How to Debug the Backend?
 The backend NodeJS server listens to the VsCode default debugging port when running Docker in the development environment. Hence, the step needed is to attach the debugger using the configuration `Docker: Attach to Node` from the `launch.json` file. Then, running the code will hit any of your breakpoints. Breakpoints can be set directly to `.ts` file from the `services/backend/src/**` files. It works because we have the generation of map files in the `tsconfig.json` enabled.
 
+## How to Debug Redis?
+You can install and use locally:
+
+``` 
+npm install -g redis-commander
+redis-commander -p 9898
+``` 
+
+Then go to http://127.0.0.1:9898
+
 # Production Release
 
 The production build uses the `docker-compose.yml` configuration without the development configuration `docker-compose.override.yml` and with the `docker-compose.production.yml`.
