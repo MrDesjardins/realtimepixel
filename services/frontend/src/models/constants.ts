@@ -14,4 +14,9 @@ export const CONSTS = {
   notification: {
     toastNotificationDurationMs: 5000,
   },
+  frequencies: {
+    isReadyForActionUpdate: 1000,
+    connectionRetry: 1000,
+    delayAfterSet: 1000,
+  },
 };

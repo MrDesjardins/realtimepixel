@@ -1,4 +1,4 @@
-import { secondsUntilNextAction } from "@shared/logics/time";
+import { isNextActionReadyForUser } from "@shared/logics/time";
 import { Color, Coordinate, getTileKey, Tile } from "@shared/models/game";
 import {
   MsgBroadcastNewPixel,
@@ -10,12 +10,13 @@ import {
   MsgUserPixel,
   MsgUserPixelKind,
   MsgUserPixelValidation,
-  MsgUserPixelValidationKind,
+  MsgUserPixelValidationKind
 } from "@shared/models/socketMessages";
 import { io, Socket } from "socket.io-client";
 import { createContext, createEffect, createSignal, JSX, on, onCleanup, onMount, useContext } from "solid-js";
 import { createStore } from "solid-js/store";
-import { TokenResponse } from "../../../shared/models/login";
+import { RefreshTokenResponse, TokenResponse } from "../../../shared/models/login";
+import { buildMapFromList } from "../builders/tilesBuilder";
 import { HttpRequest } from "../communications/httpRequest";
 import { ENV_VARIABLES } from "../generated/constants_env";
 import { CONSTS } from "../models/constants";
@@ -75,21 +76,11 @@ export function UserDataProvider(props: UserDataContextProps): JSX.Element {
   const [socketReady, setSocketReady] = createSignal(false);
   let socket: Socket | undefined = undefined;
 
+  /**
+   * Listen to the user token, when it changes (from nothing or from a new one) we establish a new socket connection
+   **/
   const listenUserToken = () => state.userToken;
-  createEffect(
-    on(listenUserToken, (token: TokenResponse | undefined) => {
-      console.log("Trying to initialize Socket.io");
-      // Initialize only once the user has an access token
-      if (socket === undefined && token !== undefined) {
-        console.log("---> Socket.io: Done");
-        socket = io(`${ENV_VARIABLES.SERVER_IP}:${ENV_VARIABLES.DOCKER_SERVER_PORT_FORWARD}`, {
-          transports: ["websocket"],
-          query: { access_token: token.accessToken },
-        });
-        setSocketReady(true);
-      }
-    }),
-  );
+  createEffect(on(listenUserToken, initializeSocket));
 
   /**
    * Attach socket listened once the socker is ready (initialized)
@@ -99,49 +90,27 @@ export function UserDataProvider(props: UserDataContextProps): JSX.Element {
       console.log("Trying to set Socket.io listening with on()");
       if (socket !== undefined) {
         console.log("---> Socket.io listening with on(): Done");
-        socket.on(MsgErrorKind, (error: MsgError) => {
-          console.error("From server:", error);
-        });
-
-        /**
-         * Needed because we cannot solely rely on the response from the server since the user
-         * might have many devices connected to the server (many sockets).
-         **/
-        socket.on(MsgUserPixelValidationKind, (response: MsgUserPixelValidation) => {
-          manageResponseFromMsgUserPixel(response);
-        });
-
-        socket.on(MsgBroadcastNewPixelKind, (newPixel: MsgBroadcastNewPixel) => {
-          actions.addTile(newPixel.tile);
-        });
-
-        socket.on(MsgBroadcastRemovedPixelsKind, (removedTiles: MsgBroadcastRemovedPixels) => {
-          actions.removeTiles(removedTiles.tiles);
-        });
-
-        socket.on("disconnect", () => {
-          socketOnDisconnect();
-        });
-        socket.on("connect_error", () => {
-          socketConnectError();
-        });
+        socket.on(MsgErrorKind, manageErrorResponse);
+        socket.on(MsgUserPixelValidationKind, manageResponseFromMsgUserPixel);
+        socket.on(MsgBroadcastNewPixelKind, manageResponseFromNewPixel);
+        socket.on(MsgBroadcastRemovedPixelsKind, manageResponseFromRemovePixel);
+        socket.on("disconnect", socketOnDisconnect);
+        socket.on("connect_error", socketConnectError);
       }
     }
   });
 
   onMount(async () => {
+    // 1) Get access token
     const token = getTokenFromUserMachine();
     if (token !== undefined) {
       actions.setUserToken(token);
     }
 
-    // Fetch all existing tiles from the server
-    const tiles = await http.getAllTiles();
-    const tiles2 = tiles.tiles.map((i) => {
-      return [getTileKey(i), i];
-    });
+    // 2) Fetch all existing tiles from the server (Regardless of the token)
+    const responseAllTiles = await http.getAllTiles();
     setState({
-      tiles: new Map(tiles2 as any),
+      tiles: buildMapFromList(responseAllTiles.tiles),
     });
   });
 
@@ -151,23 +120,23 @@ export function UserDataProvider(props: UserDataContextProps): JSX.Element {
     }
   });
 
-  // Update every second the status "is ready for action"
+  /**
+   * Update every second the status "is ready for action".
+   * Allows to have the UI refreshed the button status, the header next action time
+   */
   setInterval(() => {
     const last = state.lastActionEpochtime;
     if (last !== undefined) {
       // Undefined means that the user has not yet retrieved its last time
-      const t = secondsUntilNextAction(last);
-      const readyForAction = t <= 0;
-      // console.log("Time==>", t, readyForAction, state.isReadyForAction);
+      const readyForAction = isNextActionReadyForUser(last);
+      // Only alter the state if there is a change (true->false or false->true)
       if (readyForAction && !state.isReadyForAction) {
-        console.log("Setting isReadyForAction to true");
         setState({ isReadyForAction: true });
       } else if (!readyForAction && state.isReadyForAction) {
-        console.log("Setting isReadyForAction to false");
         setState({ isReadyForAction: false });
       }
     }
-  }, 1000);
+  }, CONSTS.frequencies.isReadyForActionUpdate);
 
   const actions: UserDataContextActions = {
     setZoom: (zoom: number) => {
@@ -242,10 +211,12 @@ export function UserDataProvider(props: UserDataContextProps): JSX.Element {
    * Give some time before trying to reconnect
    **/
   function socketConnectError(): void {
+    // Timeout because we only want to try once in a short time.
+    // If we decide to have several retries, we should ensure to clear the timeout/interval
     setTimeout(async () => {
       if (state.userToken !== undefined) {
         try {
-          const refreshResponse = await http.refreshToken({
+          const refreshResponse: RefreshTokenResponse = await http.refreshToken({
             id: state.userToken.id,
             refreshToken: state.userToken.refreshToken,
           });
@@ -253,10 +224,10 @@ export function UserDataProvider(props: UserDataContextProps): JSX.Element {
           actions.setUserToken(refreshResponse);
           setTimeout(async () => {
             if (socket !== undefined) {
-              // Give some time for the new refresh token to be in the state
+              // Give some time for the new refresh token to be in the state from the actions.setUserToken above
               socket.connect();
             }
-          }, 1000);
+          }, CONSTS.frequencies.delayAfterSet);
         } catch (e: unknown) {
           notification?.setMessage({
             message: "You need to login again",
@@ -264,7 +235,7 @@ export function UserDataProvider(props: UserDataContextProps): JSX.Element {
           });
         }
       }
-    }, 1000);
+    }, CONSTS.frequencies.connectionRetry);
   }
 
   function socketOnDisconnect(): void {
@@ -274,6 +245,19 @@ export function UserDataProvider(props: UserDataContextProps): JSX.Element {
     });
   }
 
+  /**
+   * Handle the response from the ation of a client sending a pixel to the server
+   *
+   * If the response is validating the action, we change the last action epochtime to
+   * be in-sync with the server. We also remove the selection of color and add the title
+   * on the board
+   *
+   * If the response is not validating the action, we do nothing,
+   * the last action remains the same old time.
+   *
+   * Needed because we cannot solely rely on the response from the server since the user
+   * might have many devices connected to the server (many sockets).
+   **/
   function manageResponseFromMsgUserPixel(response: MsgUserPixelValidation | MsgError): void {
     if (response.kind === MsgUserPixelValidationKind) {
       const newTile: Tile = {
@@ -294,6 +278,31 @@ export function UserDataProvider(props: UserDataContextProps): JSX.Element {
       notification?.setMessage({ message: "Pixel submission failed. " + response.errorMessage });
       // 3) Reset the time for last action
       // - Nothing to do, the last action has not been changed
+    }
+  }
+
+  function manageResponseFromNewPixel(newPixel: MsgBroadcastNewPixel): void {
+    actions.addTile(newPixel.tile);
+  }
+
+  function manageResponseFromRemovePixel(removedTiles: MsgBroadcastRemovedPixels): void {
+    actions.removeTiles(removedTiles.tiles);
+  }
+
+  function manageErrorResponse(error: MsgError): void {
+    console.error("From server:", error);
+  }
+
+  function initializeSocket(token: TokenResponse | undefined): void {
+    console.log("Trying to initialize Socket.io");
+    // Initialize only once the user has an access token
+    if (socket === undefined && token !== undefined) {
+      console.log("---> Socket.io: Done");
+      socket = io(`${ENV_VARIABLES.SERVER_IP}:${ENV_VARIABLES.DOCKER_SERVER_PORT_FORWARD}`, {
+        transports: ["websocket"],
+        query: { access_token: token.accessToken },
+      });
+      setSocketReady(true);
     }
   }
 }

@@ -14,6 +14,7 @@ export const authorizationMiddleware =
       socket.data.user = user;
       next();
     } catch (e) {
+      socket.disconnect(true);
       if (e instanceof Error) {
         next(e);
       } else {
