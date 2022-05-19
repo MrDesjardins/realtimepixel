@@ -6,10 +6,10 @@ import styles from "./Login.module.css";
 export interface LoginProps {}
 export function Login(props: LoginProps): JSX.Element {
   const userData = useUserData();
+  const notification = useNotification();
   const [email, setEmail] = createSignal<string>("");
   const [password, setPassword] = createSignal<string>("");
   const [isAuthenticating, setIsAuthenticating] = createSignal<boolean>(false);
-  const notification = useNotification();
   return (
     <div class={styles.Login}>
       <div class={styles.Auth1}>

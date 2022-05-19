@@ -9,6 +9,7 @@ export interface UserTableSchema {
   accessToken: string | undefined;
   refreshToken: string | undefined;
   socketIds: string[];
+  emailValidated: boolean;
 }
 const ID_PREFIX = "userid:";
 const INDEX_EMAIL_ID_PREFIX = "email_userid:";
@@ -18,6 +19,7 @@ export class UserRepository {
     // Create a fake test user
     this.getUser("9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d").then((user) => {
       if (user === undefined) {
+        console.log("Creating a test user");
         this.createUser({
           id: "9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d",
           email: "test",
@@ -27,6 +29,7 @@ export class UserRepository {
           accessToken: undefined,
           refreshToken: undefined,
           socketIds: [],
+          emailValidated: true,
         });
       }
     });
@@ -52,9 +55,9 @@ export class UserRepository {
   public async getUserHashPassword(email: string): Promise<string | undefined> {
     const user = await this.getUserByEmail(email);
     if (user === undefined) {
-      return Promise.reject("Wrong email/password");
+      throw new Error("Wrong email/password");
     } else {
-      return Promise.resolve(user?.hashedPassword);
+      return user.hashedPassword;
     }
   }
 

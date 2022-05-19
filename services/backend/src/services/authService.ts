@@ -57,23 +57,21 @@ export class AuthService extends BaseService {
     const userEmail = request.email;
     const hashedPassword = await bcrypt.hash(request.password, 10);
     console.log("loginService.create", userEmail, hashedPassword);
-    try {
-      const newUserId = uuidv4();
-      const accessToken = this.generateAccessToken(newUserId, request.email);
-      const refreshToken = this.generateRefreshToken(newUserId, request.email);
-      const newUser = await this.repository.createUser({
-        id: newUserId,
-        email: userEmail,
-        hashedPassword: hashedPassword,
-        accessToken: accessToken,
-        refreshToken: refreshToken,
-        lastUserAction: undefined,
-        socketIds: [],
-      });
-      return { id: newUser.id, accessToken, refreshToken };
-    } catch (e) {
-      throw e;
-    }
+
+    const newUserId = uuidv4();
+    const accessToken = this.generateAccessToken(newUserId, request.email);
+    const refreshToken = this.generateRefreshToken(newUserId, request.email);
+    const newUser = await this.repository.createUser({
+      id: newUserId,
+      email: userEmail,
+      hashedPassword: hashedPassword,
+      accessToken: accessToken,
+      refreshToken: refreshToken,
+      lastUserAction: undefined,
+      socketIds: [],
+      emailValidated: false,
+    });
+    return { id: newUser.id, accessToken, refreshToken };
   }
   public async refreshTokens(
     request: RefreshTokenRequest

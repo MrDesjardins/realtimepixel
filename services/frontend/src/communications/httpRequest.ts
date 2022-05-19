@@ -1,6 +1,8 @@
 import { HEADERS, HTTP_STATUS, URLS } from "@shared/constants/backend";
 import { AllTilesResponse } from "@shared/models/game";
 import {
+  CreateUserRequest,
+  CreateUserResponse,
   RefreshTokenRequest,
   RefreshTokenResponse,
   UserLoginRequest,
@@ -13,6 +15,25 @@ export class HttpRequest {
   private baseUrl: string = "";
   public constructor() {
     this.baseUrl = `http://${ENV_VARIABLES.SERVER_IP}:${ENV_VARIABLES.DOCKER_SERVER_PORT_FORWARD}`;
+  }
+
+  public async createUser(createRequest: CreateUserRequest): Promise<CreateUserResponse> {
+    try {
+      const response = await fetch(`${this.baseUrl}/${URLS.create}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(createRequest),
+      });
+      if (HttpRequest.isBadResponse(response)) {
+        throw Error("Create failed");
+      }
+      return response.json();
+    } catch (e) {
+      console.error("Error Create User", e);
+      throw e;
+    }
   }
 
   public async login(loginRequest: UserLoginRequest): Promise<UserLoginResponse> {
