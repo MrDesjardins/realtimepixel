@@ -22,6 +22,8 @@ services:
         - "NODE_ENV=${NODE_ENV}"
     ports:
       - "${DOCKER_REDIS_PORT_FORWARD}:${REDIS_PORT}"
+    networks:
+      - backend_net
   backend:
     <<: *default-app
     depends_on:
@@ -38,6 +40,9 @@ services:
       - 9229:9229
     healthcheck:
       test: "${DOCKER_SERVER_HEALTHCHECK_TEST}"
+    networks:
+      - backend_net
+      - frontend_net
   frontend:
     <<: *default-app
     depends_on:
@@ -53,3 +58,11 @@ services:
       - "${DOCKER_CLIENT_PORT_FORWARD}:${CLIENT_PORT}"
     healthcheck:
       test: "${DOCKER_CLIENT_HEALTHCHECK_TEST}"
+    networks:
+          - backend_net
+          - frontend_net
+networks:
+  frontend_net:
+    driver: bridge # https://docs.docker.com/network/#network-drivers
+  backend_net:
+    driver: bridge 
