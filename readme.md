@@ -48,6 +48,10 @@ The security pattern is the same for HTTP requests (Rest API) and with WebSocket
 
 # How to Get Started
 
+For MacOS, any terminal works. However, for Windows, **Powershell** is required as the WSL has issue with the backend service failing with:
+
+> exited with code 243
+
 1. At the root of this project run:
 
 ```
@@ -70,7 +74,7 @@ Executing the command `up` starts the server depending on the environment variab
 
 ## How to Debug Docker Build?
 
-In your `/etc/host` add an entry for `sideproject`
+If you are using MacOS, change the  `/etc/host` add an entry for `sideproject`. If you are under Windows, change the `C:\Windows\System32\drivers\etc\hosts` file.
 
 ```
 127.0.0.1 sideproject
@@ -148,6 +152,8 @@ The `.env` file needs to be changed with production values.
 docker-compose build
 docker-compose -f docker-compose.yml -f docker-compose.production.yml up
 ```
+# Caveat
+Currently, there is no email service to validate the account. Hence, using the `redis-commander` is required to change the JSON object of the user and set the `emailValidated` to `true`. However, by default, there is a `test` email (not a valid email) that has the password `123123` to quickly develop the solution.
 
 # Documentations
 

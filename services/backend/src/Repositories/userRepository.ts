@@ -25,7 +25,7 @@ export class UserRepository {
           email: "test",
           lastUserAction: undefined,
           hashedPassword:
-            "$2b$10$rx9NrjdGk4WJ.f8cUUvr0eYdoFl8aHe6VCyZ6M.4RPBoJF45z2eZK",
+            "$2b$10$s3QW1sdKx0tfbAukb19WZ.k3owqEVxYYuF8cngXzP7bI0VJil5fxG", // Password: 123123
           accessToken: undefined,
           refreshToken: undefined,
           socketIds: [],

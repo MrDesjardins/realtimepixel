@@ -50,7 +50,7 @@ export function CreateAccount(props: CreateAccountProps): JSX.Element {
               const response = await http.createUser({ email: emailCreate(), password: passwordCreate() });
               userData?.actions.setUserToken(response);
               notification?.setMessage({
-                message: "You need to validatae your email",
+                message: "You need to validate your email",
                 type: NotificationType.Info,
               });
             } catch (e: unknown) {
