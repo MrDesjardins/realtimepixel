@@ -1,8 +1,5 @@
 import { ServiceEnvironment } from "@shared/constants/backend";
-import {
-  MsgUserPixel,
-  MsgUserPixelKind
-} from "@shared/models/socketMessages";
+import { MsgUserPixel, MsgUserPixelKind } from "@shared/models/socketMessages";
 import bodyParser from "body-parser";
 import cors from "cors";
 import dotenv from "dotenv";
@@ -12,17 +9,17 @@ import { createClient } from "redis";
 import { Server, Socket } from "socket.io";
 import {
   addAllTilesRoute,
-  addRemoveExpiredTiles
+  addRemoveExpiredTiles,
 } from "./controllers/gameController";
 import {
   addCreateAccountRoute,
   addLoginRoute,
   addLogoutRoute,
-  addRefreshTokensRoute
+  addRefreshTokensRoute,
 } from "./controllers/loginController";
 import {
   addRemoveAllUsersSocketsAndCredentialsRoute,
-  addUserLastActionRoute
+  addUserLastActionRoute,
 } from "./controllers/userController";
 import { secureEndpointMiddleware } from "./middlewares/secureEndpointMiddleware";
 import { ServiceLayer } from "./services/serviceLayer";
@@ -45,21 +42,29 @@ const pubClient = createClient({
   },
 });
 
-const subClient = pubClient.duplicate();
+const subClient = pubClient.duplicate(); // https://socket.io/docs/v4/redis-adapter/
 
 async function connectToRedis(): Promise<void> {
   await Promise.all([pubClient.connect(), subClient.connect()]);
   io.adapter(createAdapter(pubClient, subClient));
-  await pubClient.on("connect", () => {
-    console.log("Redis is connected");
-  });
 }
+
+pubClient.on("connect", () => {
+  console.log("Redis is connected");
+});
+pubClient.on("error", function (err: any) {
+  console.error("Redis (pubClient) error:", err);
+});
+subClient.on("error", function (err: any) {
+  console.error("Redis (subClient) error:", err);
+});
 
 connectToRedis();
 
 const SERVER_IP = process.env.SERVER_IP;
 const SERVER_PORT = process.env.SERVER_PORT;
 const CORS_CLIENT_ORIGIN = `${process.env.CLIENT_IP}:${process.env.DOCKER_CLIENT_PORT_FORWARD}`;
+console.log("Starting...");
 console.log(`Server ${SERVER_IP}:${SERVER_PORT}`);
 console.log(`Socket IO Cors Allowing: ${CORS_CLIENT_ORIGIN}`);
 console.log(`Redis: ${REDIS_URL}`);
@@ -124,7 +129,7 @@ io.on("connection", async (socket) => {
     // Middlewares
     socket.use(authorizationMiddleware(serviceLayer, socket));
     socket.use(userActivateMiddleware(serviceLayer, socket));
-    
+
     //
     socket.on("disconnect", async () => {
       console.log("User disconnected", socket.id);

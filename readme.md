@@ -82,10 +82,19 @@ If you are using MacOS, change the  `/etc/host` add an entry for `sideproject`. 
 
 Having a DNS name instead of direct IP simplify the CORS issue between the frontend and backend (mostly when using sockets).
 
-Run
+Run on MacOs:
 
 ```
 DOCKER_BUILDKIT=0 docker-compose build
+```
+or
+
+on Windows (PowerShell)
+
+```
+$env:DOCKER_BUILDKIT=0
+docker-compose build
+
 ```
 
 This will give some UUID for each step. Use the UUID for the step to debug with this command:
@@ -185,3 +194,77 @@ https://stackoverflow.com/questions/26220957/how-can-i-inspect-the-file-system-o
 
 https://docs.docker.com/compose/extends/#different-environments
 https://docs.docker.com/compose/reference/
+
+
+# Kubernetes
+
+## Fake Production Locally with Minikube
+The following steps assume the usage of Windows Powershell. 
+Only the first step is required once. All the other steps are required every time you boot your computer or if you start from scratch using `minikube delete --all`.
+
+1. Install [Minikube](https://minikube.sigs.k8s.io/docs/start/)
+1. Run Minikube
+```
+minikube start
+```
+1. Allowing access of the Docker's images locally to Minikube ([source](https://stackoverflow.com/questions/42564058/how-to-use-local-docker-images-with-minikube)). Must be run every new terminal session.
+
+MacOs:
+```
+eval $(minikube docker-env)  
+```
+or
+
+on Windows (PowerShell):
+```
+minikube docker-env | Invoke-Expression
+```
+
+1. Build all the Docker images
+
+The build step relies on the `.env` to extract the `NODE_ENV` to know which target (development or production) to use.
+```
+docker-compose build
+```
+From that point, Docker is not used outside the generated images. It means that the DockerFiles and docker-compose.yml are not used anymore.
+
+1. Verify that the Docker images are available
+```
+docker images "realtimepixel*"
+```
+
+1. Push the images to Minikube ([source](https://minikube.sigs.k8s.io/docs/handbook/pushing/#7-loading-directly-to-in-cluster-container-runtime))
+
+```
+minikube image load realtimepixel_frontend:latest
+minikube image load realtimepixel_backend:latest
+minikube image load realtimepixel_redis:latest
+```
+
+1. Verify that the Docker images are loaded into Minikube
+```
+docker image ls
+```
+
+1. Get the Kubernetes Configuration to run into Minikube.
+```
+kubectl apply -f .\kubernetes\production.yaml
+```
+
+1. Verify that the pods, services and deployment are running in the project's namespace
+```
+kubectl get pods -n realtimepixel-prod
+kubectl get services -n realtimepixel-prod
+kubectl get rs -n realtimepixel-prod
+kubectl get deployments -n realtimepixel-prod
+```
+
+1. Run the Kubernetes's Dashboard
+```
+minikube dashboard
+```
+
+1. Run a tunnel for the Load-Balancer to get an external up
+```
+minikube tunnel
+```
