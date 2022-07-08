@@ -203,7 +203,7 @@ The following steps assume the usage of Windows Powershell.
 Only the first step is required once. All the other steps are required every time you boot your computer or if you start from scratch using `minikube delete --all`.
 
 1. Install [Minikube](https://minikube.sigs.k8s.io/docs/start/)
-1. Run Minikube
+2. Run Minikube
 ```
 minikube start
 ```
@@ -220,7 +220,7 @@ on Windows (PowerShell):
 minikube docker-env | Invoke-Expression
 ```
 
-1. Build all the Docker images
+3. Build all the Docker images
 
 The build step relies on the `.env` to extract the `NODE_ENV` to know which target (development or production) to use.
 ```
@@ -228,12 +228,12 @@ docker-compose build
 ```
 From that point, Docker is not used outside the generated images. It means that the DockerFiles and docker-compose.yml are not used anymore.
 
-1. Verify that the Docker images are available
+4. Verify that the Docker images are available
 ```
 docker images "realtimepixel*"
 ```
 
-1. Push the images to Minikube ([source](https://minikube.sigs.k8s.io/docs/handbook/pushing/#7-loading-directly-to-in-cluster-container-runtime))
+5. Push the images to Minikube ([source](https://minikube.sigs.k8s.io/docs/handbook/pushing/#7-loading-directly-to-in-cluster-container-runtime))
 
 ```
 minikube image load realtimepixel_frontend:latest
@@ -241,17 +241,17 @@ minikube image load realtimepixel_backend:latest
 minikube image load realtimepixel_redis:latest
 ```
 
-1. Verify that the Docker images are loaded into Minikube
+6. Verify that the Docker images are loaded into Minikube
 ```
 docker image ls
 ```
 
-1. Get the Kubernetes Configuration to run into Minikube.
+7. Get the Kubernetes Configuration to run into Minikube.
 ```
 kubectl apply -f .\kubernetes\production.yaml
 ```
 
-1. Verify that the pods, services and deployment are running in the project's namespace
+8. Verify that the pods, services and deployment are running in the project's namespace
 ```
 kubectl get pods -n realtimepixel-prod
 kubectl get services -n realtimepixel-prod
@@ -259,12 +259,12 @@ kubectl get rs -n realtimepixel-prod
 kubectl get deployments -n realtimepixel-prod
 ```
 
-1. Run the Kubernetes's Dashboard
+9. Run the Kubernetes's Dashboard
 ```
 minikube dashboard
 ```
 
-1. Run a tunnel for the Load-Balancer to get an external up
+10. Run a tunnel for the Load-Balancer to get an external up
 ```
 minikube tunnel
 ```

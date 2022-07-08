@@ -65,15 +65,15 @@ spec:
             - containerPort: 3500
           env:
             - name: SERVER_IP
-              value: "webapi" # Service selector app
+              value: "backend-service" # Service selector app
             - name: SERVER_PORT
               value: "80"
             - name: REDIS_IP
-              value: "redis" # Service selector app
+              value: "redis-service" # Service selector app
             - name: REDIS_PORT
               value: "6379"
             - name: CLIENT_IP
-              value: "webapplication" # Service selector app
+              value: "frontend-service" # Service selector app
             - name: DOCKER_CLIENT_PORT_FORWARD
               value: "3501"
 ---
