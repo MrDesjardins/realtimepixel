@@ -29,11 +29,12 @@ import { RequestUserFromJwt } from "./webServer/expressType";
 import { createAdapter } from "@socket.io/redis-adapter";
 import { userActivatedMiddleware } from "./middlewares/userActivatedMiddleware";
 import { userActivateMiddleware } from "./socket/userActivateMiddleware";
+import { addHealthRoute } from "./controllers/systemController";
 
 dotenv.config();
 
 const REDIS_IP = process.env.REDIS_IP;
-const REDIS_PORT = Number(process.env.REDIS_PORT);
+const REDIS_PORT = Number(process.env.DOCKER_REDIS_PORT_FORWARD);
 const REDIS_URL = `redis://${REDIS_IP}:${REDIS_PORT}`;
 const pubClient = createClient({
   socket: {
@@ -83,17 +84,12 @@ const io = new Server(server, {
 serverApp.use(bodyParser.json()); // Allows to parse POST body
 serverApp.use(bodyParser.urlencoded({ extended: true }));
 serverApp.use(cors());
-
-serverApp.get("/health", async (req, res) => {
-  console.log("Health Check");
-  return res.send("ok:" + process.env.NODE_ENV);
-});
-
 // Middlewares in specific order (top to bottom)
 serverApp.use(secureEndpointMiddleware(serviceLayer));
 serverApp.use(userActivatedMiddleware(serviceLayer));
 
 // Route that does not need the access token
+addHealthRoute(serverApp, serviceLayer);
 addLoginRoute(serverApp, serviceLayer);
 addCreateAccountRoute(serverApp, serviceLayer);
 addRefreshTokensRoute(serverApp, serviceLayer);
@@ -169,3 +165,4 @@ async function onUserDisconnect(
     console.error("User disconnected with no userId");
   }
 }
+
