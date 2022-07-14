@@ -198,11 +198,25 @@ https://docs.docker.com/compose/reference/
 
 # Kubernetes
 
+## Helm Chart
+Help Chart generates a Kubernetes file to use by Kubernetes
+
+
+- To check the syntax: `helm lint`
+- Test installation: `helm install realtimepixel . --dry-run --debug`
+
+
 ## Fake Production Locally with Minikube
 The following steps assume the usage of Windows Powershell. 
 Only the first step is required once. All the other steps are required every time you boot your computer or if you start from scratch using `minikube delete --all`.
 
-1. Install [Minikube](https://minikube.sigs.k8s.io/docs/start/)
+1. Install Minikube and addons
+-  [Minikube](https://minikube.sigs.k8s.io/docs/start/)
+- Ingress addon
+```
+minikube addons enable ingress
+```
+
 2. Run Minikube
 ```
 minikube start
@@ -257,6 +271,7 @@ kubectl get pods -n realtimepixel-prod
 kubectl get services -n realtimepixel-prod
 kubectl get rs -n realtimepixel-prod
 kubectl get deployments -n realtimepixel-prod
+kubectl get ingress -n realtimepixel-prod
 ```
 
 9. Run the Kubernetes's Dashboard
@@ -268,3 +283,11 @@ minikube dashboard
 ```
 minikube tunnel
 ```
+
+11. To find the external ip to reach the front-end service
+
+```
+kubectl get service frontend-service --watch -n realtimepixel-prod
+```
+
+

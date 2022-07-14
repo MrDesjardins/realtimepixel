@@ -106,23 +106,22 @@ spec:
 #╚════██║██╔══╝  ██╔══██╗╚██╗ ██╔╝██║██║     ██╔══╝
 #███████║███████╗██║  ██║ ╚████╔╝ ██║╚██████╗███████╗
 #╚══════╝╚══════╝╚═╝  ╚═╝  ╚═══╝  ╚═╝ ╚═════╝╚══════╝
-
-# Load-Balancer for the web application
+# Load-Balancer for the Redis
 apiVersion: v1
 kind: Service
 metadata:
-  name: frontend-service
+  name: redis-service
   namespace: realtimepixel-prod
   labels:
-    app: frontend-service
+    app: redis-service
 spec:
-  type: LoadBalancer
+  type: NodePort
   selector:
-    app: webapplication
+    app: redis
   ports:
-    - nodePort: 30062
-      port: 3501
-      targetPort: 3501
+    - nodePort: 30064
+      port: 6379
+      targetPort: 6379
 ---
 # Load-Balancer for the web api
 apiVersion: v1
@@ -141,21 +140,20 @@ spec:
       port: 3500
       targetPort: 3500
 ---
-# Load-Balancer for the Redis
+# Load-Balancer for the web application
 apiVersion: v1
 kind: Service
 metadata:
-  name: redis-service
+  name: frontend-service
   namespace: realtimepixel-prod
   labels:
-    app: redis-service
+    app: frontend-service
 spec:
-  type: NodePort
+  type: LoadBalancer
   selector:
-    app: redis
+    app: webapplication
   ports:
-    - nodePort: 30064
-      port: 6379
-      targetPort: 6379
+    - nodePort: 30062
+      port: 3501
+      targetPort: 3501
 ---
-
