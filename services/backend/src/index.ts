@@ -1,8 +1,5 @@
 import { ServiceEnvironment } from "@shared/constants/backend";
-import {
-  MsgUserPixel,
-  MsgUserPixelKind
-} from "@shared/models/socketMessages";
+import { MsgUserPixel, MsgUserPixelKind } from "@shared/models/socketMessages";
 import bodyParser from "body-parser";
 import cors from "cors";
 import dotenv from "dotenv";
@@ -12,17 +9,17 @@ import { createClient } from "redis";
 import { Server, Socket } from "socket.io";
 import {
   addAllTilesRoute,
-  addRemoveExpiredTiles
+  addRemoveExpiredTiles,
 } from "./controllers/gameController";
 import {
   addCreateAccountRoute,
   addLoginRoute,
   addLogoutRoute,
-  addRefreshTokensRoute
+  addRefreshTokensRoute,
 } from "./controllers/loginController";
 import {
   addRemoveAllUsersSocketsAndCredentialsRoute,
-  addUserLastActionRoute
+  addUserLastActionRoute,
 } from "./controllers/userController";
 import { secureEndpointMiddleware } from "./middlewares/secureEndpointMiddleware";
 import { ServiceLayer } from "./services/serviceLayer";
@@ -32,11 +29,12 @@ import { RequestUserFromJwt } from "./webServer/expressType";
 import { createAdapter } from "@socket.io/redis-adapter";
 import { userActivatedMiddleware } from "./middlewares/userActivatedMiddleware";
 import { userActivateMiddleware } from "./socket/userActivateMiddleware";
+import { addHealthRoute } from "./controllers/systemController";
 
 dotenv.config();
 
 const REDIS_IP = process.env.REDIS_IP;
-const REDIS_PORT = Number(process.env.REDIS_PORT);
+const REDIS_PORT = Number(process.env.DOCKER_REDIS_PORT_FORWARD);
 const REDIS_URL = `redis://${REDIS_IP}:${REDIS_PORT}`;
 const pubClient = createClient({
   socket: {
@@ -45,21 +43,29 @@ const pubClient = createClient({
   },
 });
 
-const subClient = pubClient.duplicate();
+const subClient = pubClient.duplicate(); // https://socket.io/docs/v4/redis-adapter/
 
 async function connectToRedis(): Promise<void> {
   await Promise.all([pubClient.connect(), subClient.connect()]);
   io.adapter(createAdapter(pubClient, subClient));
-  await pubClient.on("connect", () => {
-    console.log("Redis is connected");
-  });
 }
+
+pubClient.on("connect", () => {
+  console.log("Redis is connected");
+});
+pubClient.on("error", function (err: any) {
+  console.error("Redis (pubClient) error:", err);
+});
+subClient.on("error", function (err: any) {
+  console.error("Redis (subClient) error:", err);
+});
 
 connectToRedis();
 
 const SERVER_IP = process.env.SERVER_IP;
 const SERVER_PORT = process.env.SERVER_PORT;
 const CORS_CLIENT_ORIGIN = `${process.env.CLIENT_IP}:${process.env.DOCKER_CLIENT_PORT_FORWARD}`;
+console.log("Starting...");
 console.log(`Server ${SERVER_IP}:${SERVER_PORT}`);
 console.log(`Socket IO Cors Allowing: ${CORS_CLIENT_ORIGIN}`);
 console.log(`Redis: ${REDIS_URL}`);
@@ -78,17 +84,12 @@ const io = new Server(server, {
 serverApp.use(bodyParser.json()); // Allows to parse POST body
 serverApp.use(bodyParser.urlencoded({ extended: true }));
 serverApp.use(cors());
-
-serverApp.get("/health", async (req, res) => {
-  console.log("Health Check");
-  return res.send("ok:" + process.env.NODE_ENV);
-});
-
 // Middlewares in specific order (top to bottom)
 serverApp.use(secureEndpointMiddleware(serviceLayer));
 serverApp.use(userActivatedMiddleware(serviceLayer));
 
 // Route that does not need the access token
+addHealthRoute(serverApp, serviceLayer);
 addLoginRoute(serverApp, serviceLayer);
 addCreateAccountRoute(serverApp, serviceLayer);
 addRefreshTokensRoute(serverApp, serviceLayer);
@@ -124,7 +125,7 @@ io.on("connection", async (socket) => {
     // Middlewares
     socket.use(authorizationMiddleware(serviceLayer, socket));
     socket.use(userActivateMiddleware(serviceLayer, socket));
-    
+
     //
     socket.on("disconnect", async () => {
       console.log("User disconnected", socket.id);
@@ -164,3 +165,4 @@ async function onUserDisconnect(
     console.error("User disconnected with no userId");
   }
 }
+

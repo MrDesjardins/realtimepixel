@@ -15,6 +15,7 @@ export const HEADERS = {
 
 export const URLS = {
   login: "login",
+  health: "health",
   create: "create",
   refreshtokens: "refreshtokens",
   logout: "logout",
@@ -25,6 +26,7 @@ export const URLS = {
 };
 
 export const URLS_UNSECURE = [
+  URLS.health,
   URLS.login,
   URLS.create,
   URLS.refreshtokens,

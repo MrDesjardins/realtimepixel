@@ -82,10 +82,19 @@ If you are using MacOS, change the  `/etc/host` add an entry for `sideproject`. 
 
 Having a DNS name instead of direct IP simplify the CORS issue between the frontend and backend (mostly when using sockets).
 
-Run
+Run on MacOs:
 
 ```
 DOCKER_BUILDKIT=0 docker-compose build
+```
+or
+
+on Windows (PowerShell)
+
+```
+$env:DOCKER_BUILDKIT=0
+docker-compose build
+
 ```
 
 This will give some UUID for each step. Use the UUID for the step to debug with this command:
@@ -185,3 +194,112 @@ https://stackoverflow.com/questions/26220957/how-can-i-inspect-the-file-system-o
 
 https://docs.docker.com/compose/extends/#different-environments
 https://docs.docker.com/compose/reference/
+
+
+# Kubernetes
+
+## Helm Chart
+Help Chart generates a Kubernetes file to use by Kubernetes
+
+
+- To check the syntax: `helm lint`
+- Test installation: `helm install realtimepixel . --dry-run --debug`
+
+
+## Fake Production Locally with Minikube
+The following steps assume the usage of Windows Powershell. 
+Only the first step is required once. All the other steps are required every time you boot your computer or if you start from scratch using `minikube delete --all`.
+
+1. Install Minikube and addons
+-  [Minikube](https://minikube.sigs.k8s.io/docs/start/)
+- Ingress addon
+```
+minikube addons enable ingress
+```
+
+2. Run Minikube
+```
+minikube start
+```
+1. Allowing access of the Docker's images locally to Minikube ([source](https://stackoverflow.com/questions/42564058/how-to-use-local-docker-images-with-minikube)). Must be run every new terminal session.
+
+MacOs:
+```
+eval $(minikube docker-env)  
+```
+or
+
+on Windows (PowerShell):
+```
+minikube docker-env | Invoke-Expression
+```
+
+3. Build all the Docker images
+
+The build step relies on the `.env` to extract the `NODE_ENV` to know which target (development or production) to use.
+```
+docker-compose build
+```
+From that point, Docker is not used outside the generated images. It means that the DockerFiles and docker-compose.yml are not used anymore.
+
+4. Verify that the Docker images are available
+```
+docker images "realtimepixel*"
+```
+
+5. Push the images to Minikube ([source](https://minikube.sigs.k8s.io/docs/handbook/pushing/#7-loading-directly-to-in-cluster-container-runtime))
+
+```
+minikube image load realtimepixel_frontend:latest
+minikube image load realtimepixel_backend:latest
+minikube image load realtimepixel_redis:latest
+```
+
+6. Verify that the Docker images are loaded into Minikube
+```
+docker image ls
+```
+
+7. Delete everything from the namespace:
+
+```
+kubectl delete --all services -n realtimepixel-prod
+kubectl delete --all deployments -n realtimepixel-prod
+kubectl delete --all ingresses -n realtimepixel-prod
+kubectl delete --all ingressclass  -n realtimepixel-prod
+```
+
+8. Helm Chart: Give a test (must be executed next to the Kubernetes's Helm folder):
+```
+helm install realtimepixel ./kubernetes/realtimepixel --dry-run --debug
+```
+
+9. Helm Chart: Install our infrastructure on Kubernetes
+```
+helm upgrade realtimepixel ./kubernetes/realtimepixel --install
+```
+
+10. Verify that the pods, services and deployment are running in the project's namespace
+```
+kubectl get pods -n realtimepixel-prod
+kubectl get services -n realtimepixel-prod
+kubectl get rs -n realtimepixel-prod
+kubectl get deployments -n realtimepixel-prod
+kubectl get ingress -n realtimepixel-prod
+```
+
+11. Run the Kubernetes's Dashboard
+```
+minikube dashboard
+```
+
+12. Run a tunnel for the Load-Balancer to get an external up
+```
+minikube tunnel
+```
+
+13. To find the external ip to reach the front-end service
+
+```
+kubectl get service frontend-service --watch -n realtimepixel-prod
+```

@@ -14,9 +14,10 @@ x-app: &default-app
 services:
   redis:
     <<: *default-app
+    image: realtimepixel_redis:latest
     build:
-      context: "./services/redis"
-      dockerfile: Dockerfile
+      context: "." 
+      dockerfile: services/redis/Dockerfile
       target: ${NODE_ENV}
       args:
         - "NODE_ENV=${NODE_ENV}"
@@ -28,9 +29,10 @@ services:
     <<: *default-app
     depends_on:
       - "redis"
+    image: realtimepixel_backend:latest
     build:
-      context: "./services"
-      dockerfile: backend/Dockerfile
+      context: "." 
+      dockerfile: services/backend/Dockerfile
       target: ${NODE_ENV}
       args:
         - "NODE_ENV=${NODE_ENV}"
@@ -47,6 +49,7 @@ services:
     <<: *default-app
     depends_on:
       - "backend"
+    image: realtimepixel_frontend:latest
     build:
       context: "." # Need to be . instead of service because we need access to scripts folder
       target: ${NODE_ENV}
