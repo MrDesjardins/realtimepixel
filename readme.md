@@ -260,40 +260,7 @@ minikube image load realtimepixel_redis:latest
 docker image ls
 ```
 
-7. Get the Kubernetes Configuration to run into Minikube.
-```
-kubectl apply -f .\kubernetes\production.yaml
-```
-
-8. Verify that the pods, services and deployment are running in the project's namespace
-```
-kubectl get pods -n realtimepixel-prod
-kubectl get services -n realtimepixel-prod
-kubectl get rs -n realtimepixel-prod
-kubectl get deployments -n realtimepixel-prod
-kubectl get ingress -n realtimepixel-prod
-```
-
-9. Run the Kubernetes's Dashboard
-```
-minikube dashboard
-```
-
-10. Run a tunnel for the Load-Balancer to get an external up
-```
-minikube tunnel
-```
-
-11. To find the external ip to reach the front-end service
-
-```
-kubectl get service frontend-service --watch -n realtimepixel-prod
-```
-
-
-# Helm Chart
-
-1. Delete everything from the namespace:
+7. Delete everything from the namespace:
 
 ```
 kubectl delete --all services -n realtimepixel-prod
@@ -302,12 +269,37 @@ kubectl delete --all ingresses -n realtimepixel-prod
 kubectl delete --all ingressclass  -n realtimepixel-prod
 ```
 
-2. Give a test (must be executed next to the Kubernetes's Helm folder):
+8. Helm Chart: Give a test (must be executed next to the Kubernetes's Helm folder):
 ```
 helm install realtimepixel ./kubernetes/realtimepixel --dry-run --debug
 ```
 
-3. To install
+9. Helm Chart: Install our infrastructure on Kubernetes
 ```
 helm upgrade realtimepixel ./kubernetes/realtimepixel --install
+```
+
+10. Verify that the pods, services and deployment are running in the project's namespace
+```
+kubectl get pods -n realtimepixel-prod
+kubectl get services -n realtimepixel-prod
+kubectl get rs -n realtimepixel-prod
+kubectl get deployments -n realtimepixel-prod
+kubectl get ingress -n realtimepixel-prod
+```
+
+11. Run the Kubernetes's Dashboard
+```
+minikube dashboard
+```
+
+12. Run a tunnel for the Load-Balancer to get an external up
+```
+minikube tunnel
+```
+
+13. To find the external ip to reach the front-end service
+
+```
+kubectl get service frontend-service --watch -n realtimepixel-prod
 ```
