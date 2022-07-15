@@ -11,7 +11,5 @@ spec:
     - nodePort: {{ .Values.backendService.nodePort }}
       port: {{ .Values.backendContainerPort }}
       targetPort: {{ .Values.backendContainerPort }}
-      protocol: TCP
-      name: http
   selector:
     app: {{ .Values.backendTemplateAppName }}

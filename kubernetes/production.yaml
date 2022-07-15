@@ -130,7 +130,7 @@ metadata:
   name: backend-service
   namespace: realtimepixel-prod
   labels:
-    app: backendend-service
+    app: backend-service
 spec:
   type: NodePort
   selector:

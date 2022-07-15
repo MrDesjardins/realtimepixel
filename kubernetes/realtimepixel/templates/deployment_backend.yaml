@@ -38,17 +38,17 @@ spec:
               protocol: TCP
           env:
             {{- range $name, $value := .Values.backendEnv }}
-              - name: {{ $name }}
-                value: {{ $value | quote}}
+              - name: {{ $value.name }}
+                value: {{ $value.value | quote}}
             {{- end }}
-          livenessProbe:
-            httpGet:
-              path: /
-              port: http
-          readinessProbe:
-            httpGet:
-              path: /
-              port: http
+          # livenessProbe:
+          #   httpGet:
+          #     path: /health
+          #     port: http
+          # readinessProbe:
+          #   httpGet:
+          #     path: /health
+          #     port: http
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}

@@ -291,3 +291,23 @@ kubectl get service frontend-service --watch -n realtimepixel-prod
 ```
 
 
+# Helm Chart
+
+1. Delete everything from the namespace:
+
+```
+kubectl delete --all services -n realtimepixel-prod
+kubectl delete --all deployments -n realtimepixel-prod
+kubectl delete --all ingresses -n realtimepixel-prod
+kubectl delete --all ingressclass  -n realtimepixel-prod
+```
+
+2. Give a test (must be executed next to the Kubernetes's Helm folder):
+```
+helm install realtimepixel ./kubernetes/realtimepixel --dry-run --debug
+```
+
+3. To install
+```
+helm upgrade realtimepixel ./kubernetes/realtimepixel --install
+```

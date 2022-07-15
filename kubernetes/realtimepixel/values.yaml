@@ -3,14 +3,14 @@
 # Declare variables to be passed into your templates.
 namespace: "realtimepixel-prod"
 
-redisDeploymentName: "backend-deployment"
-redisServiceName: "frontend-service"
+redisDeploymentName: "redis-deployment"
+redisServiceName: "redis-service"
 redisTemplateAppName: "redis"
 redisReplicaCount: 1
 redisContainerName: "realtimepixel-redis"
 redisContainerPort: 6379
 redisService:
-  type: LoadBalancer
+  type: NodePort
   nodePort: 30064
 
 backendDeploymentName: "backend-deployment"
@@ -44,10 +44,8 @@ frontendReplicaCount: 3
 frontendContainerName: "realtimepixel-frontend"
 frontendContainerPort: 3501
 frontendService:
-  type: NodePort
+  type: LoadBalancer
   nodePort: 30062
-
-replicaCount: 3
 
 image:
   redis:
@@ -59,7 +57,7 @@ image:
   frontend:
     repository: "realtimepixel_frontend"
     tag: "latest"
-  pullPolicy: IfNotPresent
+  pullPolicy: Never #IfNotPresent
 
 imagePullSecrets: []
 nameOverride: ""
@@ -67,7 +65,7 @@ fullnameOverride: ""
 
 serviceAccount:
   # Specifies whether a service account should be created
-  create: true
+  create: false
   # Annotations to add to the service account
   annotations: {}
   # The name of the service account to use.

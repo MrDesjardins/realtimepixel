@@ -11,7 +11,5 @@ spec:
     - nodePort:  {{ .Values.redisService.nodePort }}
       port: {{ .Values.redisContainerPort }}
       targetPort: {{ .Values.redisContainerPort }}
-      protocol: TCP
-      name: http
   selector:
-    app: {{ .Values.frontendTemplateAppName  }
+    app: {{ .Values.redisTemplateAppName  }}
