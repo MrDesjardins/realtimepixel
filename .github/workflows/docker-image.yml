@@ -20,17 +20,17 @@ jobs:
 
       - name: Build and Push Redis Image
         run: |
-          docker build -f .\services\redis\Dockerfile -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/realtimepixel_redis:${{ github.sha }} .
+          docker build -f services/redis/Dockerfile -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/realtimepixel_redis:${{ github.sha }} .
           docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/realtimepixel_redis:${{ github.sha }}
 
       - name: Build and Push Backend Image
         run: |
-          docker build -f .\services\backend\Dockerfile -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/realtimepixel_backend:${{ github.sha }} .
+          docker build -f services/backend/Dockerfile -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/realtimepixel_backend:${{ github.sha }} .
           docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/realtimepixel_backend:${{ github.sha }}
 
       - name: Build and Push Frontend Image
         run: |
-          docker build -f .\services\frontend\Dockerfile -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/realtimepixel_frontend:${{ github.sha }} .
+          docker build -f services/frontend/Dockerfile -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/realtimepixel_frontend:${{ github.sha }} .
           docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/realtimepixel_frontend:${{ github.sha }}
 
       # - name: "Deploy to Azure Container Instances: Backend"
