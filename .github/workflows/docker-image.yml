@@ -34,7 +34,7 @@ jobs:
           login-server: ${{ secrets.REGISTRY_LOGIN_SERVER }}
           username: ${{ secrets.REGISTRY_USERNAME }}
           password: ${{ secrets.REGISTRY_PASSWORD }}
-        run: |
+      - run: |
           docker build -f services/backend/Dockerfile -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/realtimepixel_backend:${{ github.sha }} .
           docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/realtimepixel_backend:${{ github.sha }}
 
@@ -44,7 +44,7 @@ jobs:
           login-server: ${{ secrets.REGISTRY_LOGIN_SERVER }}
           username: ${{ secrets.REGISTRY_USERNAME }}
           password: ${{ secrets.REGISTRY_PASSWORD }}
-        run: |
+      - run: |
           docker build -f services/frontend/Dockerfile -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/realtimepixel_frontend:${{ github.sha }} .
           docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/realtimepixel_frontend:${{ github.sha }}
 
