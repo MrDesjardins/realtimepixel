@@ -10,21 +10,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Azure Docker Login
-        uses: azure/docker-login@v1
-        with:
-          login-server: "realtimepixel.azurecr.io"
-          username: "${{ secrets.AZURE_CLIENT_ID }}"
-          password: "${{ secrets.AZURE_SECRET_ID }}"
-
-      - name: Azure CLI
-        uses: azure/CLI@v1
-        with:
-          username: "${{ secrets.AZURE_CLIENT_ID }}"
-          password: "${{ secrets.AZURE_SECRET_ID }}"
-
       - name: 'Checkout GitHub Action'
         uses: actions/checkout@main
+        
+      - name: 'Login via Azure CLI'
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Build and Push Redis Image
         run: |
