@@ -23,20 +23,20 @@ jobs:
           username: "${{ secrets.AZURE_CLIENT_ID }}"
           password: "${{ secrets.AZURE_SECRET_ID }}"
 
+      - name: 'Checkout GitHub Action'
+        uses: actions/checkout@main
+
       - name: Build and Push Redis Image
-        uses: actions/checkout@v3
         run: |
           docker build -f .\services\redis\Dockerfile -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/realtimepixel_redis:${{ github.sha }} .
           docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/realtimepixel_redis:${{ github.sha }}
 
       - name: Build and Push Backend Image
-        uses: actions/checkout@v3
         run: |
           docker build -f .\services\backend\Dockerfile -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/realtimepixel_backend:${{ github.sha }} .
           docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/realtimepixel_backend:${{ github.sha }}
 
       - name: Build and Push Frontend Image
-        uses: actions/checkout@v3
         run: |
           docker build -f .\services\frontend\Dockerfile -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/realtimepixel_frontend:${{ github.sha }} .
           docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/realtimepixel_frontend:${{ github.sha }}
