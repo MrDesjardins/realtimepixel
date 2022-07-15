@@ -6,7 +6,7 @@ FROM node:16 AS development
 WORKDIR /node
 
 # Install Node without having the whole application files (cache)
-COPY services/backend/package*.json backend/tsconfig.json ./
+COPY services/backend/package*.json services/backend/tsconfig.json ./
 
 # Default build argument is dev
 ARG NODE_ENV=development
