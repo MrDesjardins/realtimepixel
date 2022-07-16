@@ -66,7 +66,7 @@ jobs:
           --install 
           --namespace=${{ env.NAMESPACE }} 
           --set namespace=${{env.NAMESPACE}}
-          --set image.pullpolicy=Always
+          --set image.pullPolicy=Always
           --set image.redis.repository=${{env.REGISTRY_NAME}}.azurecr.io/realtimepixel_redis
           --set image.redis.tag=${{ steps.latesttagredis.outputs.tag_redis }}
           --set image.backend.repository=${{env.REGISTRY_NAME}}.azurecr.io/realtimepixel_backend
