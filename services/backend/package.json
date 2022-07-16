@@ -2,7 +2,7 @@
   "scripts": {
     "build": "tsc",
     "start:development": "npx tsc -v && npx tsc && concurrently \"npx tsc -w --preserveWatchOutput\" \"npx nodemon --inspect=0.0.0.0:9229 --delay 1500ms --watch ./build -r ts-node/register/transpile-only -r tsconfig-paths/register ./build/app/src/index.js\"",
-    "start:production": "node -r ts-node/register/transpile-only -r tsconfig-paths/register build/backend/src/index.js"
+    "start:production": "node -r ts-node/register/transpile-only -r tsconfig-paths/register build/node/src/index.js"
   },
   "dependencies": {
     "@node-redis/json": "^1.0.2",
