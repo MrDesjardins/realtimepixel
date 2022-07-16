@@ -25,7 +25,7 @@ jobs:
           username: ${{ secrets.REGISTRY_USERNAME }}
           password: ${{ secrets.REGISTRY_PASSWORD }}
       - run: |
-          docker build -f services/redis/Dockerfile -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/realtimepixel_redis:${{ github.sha }} .
+          docker build -f services/redis/Dockerfile -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/realtimepixel_redis:${{ github.sha }} --target production .
           docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/realtimepixel_redis:${{ github.sha }}
 
       - name: "Build and Push Backend Image"
@@ -35,7 +35,7 @@ jobs:
           username: ${{ secrets.REGISTRY_USERNAME }}
           password: ${{ secrets.REGISTRY_PASSWORD }}
       - run: |
-          docker build -f services/backend/Dockerfile -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/realtimepixel_backend:${{ github.sha }} .
+          docker build -f services/backend/Dockerfile -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/realtimepixel_backend:${{ github.sha }} --target production .
           docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/realtimepixel_backend:${{ github.sha }}
 
       - name: "Build and Push Frontend Image"
@@ -45,7 +45,7 @@ jobs:
           username: ${{ secrets.REGISTRY_USERNAME }}
           password: ${{ secrets.REGISTRY_PASSWORD }}
       - run: |
-          docker build -f services/frontend/Dockerfile -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/realtimepixel_frontend:${{ github.sha }} .
+          docker build -f services/frontend/Dockerfile -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/realtimepixel_frontend:${{ github.sha }} --target production .
           docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/realtimepixel_frontend:${{ github.sha }}
 
       # - name: "Deploy to Azure Container Instances: Backend"
