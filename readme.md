@@ -46,7 +46,9 @@ The system relies on the JWT token. An access token and a refresh token are gene
 
 The security pattern is the same for HTTP requests (Rest API) and with WebSocket (Socket.io). In both cases, the routes (or operations) leverage _middlewares_. If one of the middleware finds a problem, it returns a response with a message indicating the authentication reason for the failure to proceed on the desired request.
 
-# How to Get Started
+# How to Get Started to Develop Locally
+
+The project relies on Docker-Compose to develop locally. The Compose file contains the configuration to have the three container up and running with the proper network bridges between the container.
 
 For MacOS, any terminal works. However, for Windows, **Powershell** is required as the WSL has issue with the backend service failing with:
 
@@ -70,7 +72,7 @@ Executing the command `up` starts the server depending on the environment variab
 
 3. Modify the source code. Look at the `.env` file to know which port is open.
 
-# Debug
+# Debug Locally
 
 ## How to Debug Docker Build?
 
@@ -110,7 +112,7 @@ docker run -it realtimepixel_backend:latest bash
 docker run -it realtimepixel_frontend:latest bash
 ```
 
-## How to Debug the Backend?
+## How to Debug Locally the Backend?
 
 The backend NodeJS server listens to the VsCode default debugging port when running Docker in the development environment. Hence, the step needed is to attach the debugger using the configuration `Docker: Attach to Node` from the `launch.json` file. Then, running the code will hit any of your breakpoints. Breakpoints can be set directly to `.ts` file from the `services/backend/src/**` files. It works because we have the generation of map files in the `tsconfig.json` enabled.
 
@@ -136,7 +138,7 @@ docker network inspect realtimepixel_backend_net
 
 See the official [Docker's Networking Tutorial](https://docs.docker.com/network/network-tutorial-standalone/) for more information.
 
-## How to Debug Redis?
+## How to Debug Locally Redis?
 
 You can install and use locally:
 
@@ -149,11 +151,11 @@ Then go to http://127.0.0.1:9898
 
 # Production Release
 
-The production build uses the `docker-compose.yml` configuration without the development configuration `docker-compose.override.yml` and with the `docker-compose.production.yml`.
+The production build uses the `docker-compose.yml` configuration without the development configuration `docker-compose.override.yml` and with the `docker-compose.production.yml`. In a nutshell, production leverage the multi-stage and when there is the `NODE_ENV=production` environment variable will not use local mounting and will host file the static files on Nginx instead of the SolidJS Node server.
 
 ## Step 1: Environment Variables
 
-The `.env` file needs to be changed with production values.
+The `.env` file needs to be changed with a `production` value.
 
 ## Step 2: Build and Up
 
@@ -197,14 +199,13 @@ https://docs.docker.com/compose/reference/
 
 
 # Kubernetes
+Kubernetes with Helm Chart is used to configure the infrastructure of the project. Kubernetes will use the `production` version of the images and host them on Microsoft Azure.
 
 ## Helm Chart
-Help Chart generates a Kubernetes file to use by Kubernetes
-
+The Help Chart was generated after using Kubernetes directly. The initial production.yaml file does not exist anymore in favor of the project Heml Chart. If a change is needed, the following commands are useful:
 
 - To check the syntax: `helm lint`
 - Test installation: `helm install realtimepixel . --dry-run --debug`
-
 
 ## Fake Production Locally with Minikube
 The following steps assume the usage of Windows Powershell. 
@@ -303,3 +304,5 @@ minikube tunnel
 ```
 kubectl get service frontend-service --watch -n realtimepixel-prod
 ```
+
+az acr repository show-tags --name realtimepixel --repository realtimepixel_backend --top 1 --orderby time_desc
