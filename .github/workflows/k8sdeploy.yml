@@ -36,7 +36,7 @@ jobs:
       - name: Get Latest Tag Redis
         id: latesttagredis
         run: |
-          tag_backend=$(az acr repository show-tags --name ${{env.REGISTRY_NAME}} --repository realtimepixel_redis --top 1 --orderby time_desc -o tsv)
+          tag_redis=$(az acr repository show-tags --name ${{env.REGISTRY_NAME}} --repository realtimepixel_redis --top 1 --orderby time_desc -o tsv)
           echo "::set-output name=tag_redis::$tag_redis"
       
       - name: Tag Redis
@@ -54,7 +54,7 @@ jobs:
       - name: Get Latest Tag Frontend
         id: latesttagfrontend
         run: |
-          tag_backend=$(az acr repository show-tags --name ${{env.REGISTRY_NAME}} --repository realtimepixel_frontend --top 1 --orderby time_desc -o tsv)
+          tag_frontend=$(az acr repository show-tags --name ${{env.REGISTRY_NAME}} --repository realtimepixel_frontend --top 1 --orderby time_desc -o tsv)
           echo "::set-output name=tag_frontend::$tag_frontend"
 
       - name: Tag Frontend
