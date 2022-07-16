@@ -305,4 +305,10 @@ minikube tunnel
 kubectl get service frontend-service --watch -n realtimepixel-prod
 ```
 
-az acr repository show-tags --name realtimepixel --repository realtimepixel_backend --top 1 --orderby time_desc
+## Debug Helm Chart Parameters Substitution
+
+Use the `template` and export the output
+
+```
+helm template realtimepixel ./kubernetes/realtimepixel --set namespace=realtimepixel-prod --set image.pullPolicy=Always --set image.redis.repository=realtimepixel.azurecr.io/realtimepixel_redis --set image.redis.tag=123123 --set image.backend.repository=realtimepixel.azurecr.io/realtimepixel_backend --set image.backend.tag=123123 --set image.frontend.repository=realtimepixel.azurecr.io/realtimepixel_frontend --set image.frontend.tag=123123 > temp.yaml
+```

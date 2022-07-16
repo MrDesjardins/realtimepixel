@@ -1,4 +1,3 @@
-import * as core from "express-serve-static-core";
 import {
   LastUserActionRequest,
   LastUserActionResponse,
@@ -12,16 +11,17 @@ import {
   buildRemoveUsersSocketsResponse,
 } from "../builders/userBuilders";
 import { buildBaseJsonResponse } from "../builders/errorBuilders";
+import { Express, NextFunction } from "express";
 export function addUserLastActionRoute(
-  serverApp: core.Express,
+  serverApp: Express,
   serviceLayer: ServiceLayer
 ): void {
   serverApp.get(
     `/${URLS.lastUserAction}`,
     async (
       req: TypedRequestBody<LastUserActionRequest>,
-      res: TypedResponse<LastUserActionResponse>
-      // next: core.NextFunction
+      res: TypedResponse<LastUserActionResponse>,
+      next: NextFunction
     ) => {
       try {
         if (req.jwtPayload === undefined) {
@@ -41,15 +41,15 @@ export function addUserLastActionRoute(
 }
 
 export function addRemoveAllUsersSocketsAndCredentialsRoute(
-  serverApp: core.Express,
+  serverApp: Express,
   serviceLayer: ServiceLayer
 ): void {
   serverApp.delete(
     `/${URLS.clearUsersSocketsAndCredentials}`,
     async (
       req: TypedRequestBody<LastUserActionRequest>,
-      res: TypedResponse<LastUserActionResponse>
-      // next: core.NextFunction
+      res: TypedResponse<LastUserActionResponse>,
+      next: NextFunction
     ) => {
       try {
         if (req.jwtPayload === undefined) {

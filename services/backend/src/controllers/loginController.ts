@@ -1,4 +1,3 @@
-import * as core from "express-serve-static-core";
 import {
   LogoutRequest,
   LogoutResponse,
@@ -18,8 +17,9 @@ import { HTTP_STATUS, URLS } from "@shared/constants/backend";
 
 import { TypedRequestBody, TypedResponse } from "../webServer/expressType";
 import { buildBaseJsonResponse } from "../builders/errorBuilders";
+import { Express, NextFunction } from "express";
 export function addLoginRoute(
-  serverApp: core.Express,
+  serverApp: Express,
   serviceLayer: ServiceLayer
 ): void {
   serverApp.post(
@@ -27,7 +27,7 @@ export function addLoginRoute(
     async (
       req: TypedRequestBody<UserLoginRequest>,
       res: TypedResponse<UserLoginResponse>,
-      next: core.NextFunction
+      next: NextFunction
     ) => {
       try {
         const { id, accessToken, refreshToken } =
@@ -51,7 +51,7 @@ export function addLoginRoute(
 }
 
 export function addCreateAccountRoute(
-  serverApp: core.Express,
+  serverApp: Express,
   serviceLayer: ServiceLayer
 ): void {
   serverApp.post(
@@ -59,7 +59,7 @@ export function addCreateAccountRoute(
     async (
       req: TypedRequestBody<UserLoginRequest>,
       res: TypedResponse<UserLoginResponse>,
-      next: core.NextFunction
+      next: NextFunction
     ) => {
       try {
         const { id, accessToken, refreshToken } =
@@ -83,7 +83,7 @@ export function addCreateAccountRoute(
 }
 
 export function addRefreshTokensRoute(
-  serverApp: core.Express,
+  serverApp: Express,
   serviceLayer: ServiceLayer
 ): void {
   serverApp.post(
@@ -91,7 +91,7 @@ export function addRefreshTokensRoute(
     async (
       req: TypedRequestBody<RefreshTokenRequest>,
       res: TypedResponse<RefreshTokenResponse>,
-      next: core.NextFunction
+      next: NextFunction
     ) => {
       try {
         const { id, accessToken, refreshToken } =
@@ -114,7 +114,7 @@ export function addRefreshTokensRoute(
 }
 
 export function addLogoutRoute(
-  serverApp: core.Express,
+  serverApp: Express,
   serviceLayer: ServiceLayer
 ): void {
   serverApp.get(
@@ -122,7 +122,7 @@ export function addLogoutRoute(
     async (
       req: TypedRequestBody<LogoutRequest>,
       res: TypedResponse<LogoutResponse>,
-      next: core.NextFunction
+      next: NextFunction
     ) => {
       try {
         if (req.jwtPayload?.email === undefined) {

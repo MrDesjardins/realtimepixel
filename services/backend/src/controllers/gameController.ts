@@ -5,7 +5,6 @@ import {
   RemoveExpiredTilesRequest,
   RemoveExpiredTilesResponse,
 } from "@shared/models/game";
-import * as core from "express-serve-static-core";
 import { buildBaseJsonResponse } from "../builders/errorBuilders";
 import {
   buildAllTilesResponse,
@@ -18,9 +17,9 @@ import {
   MsgBroadcastRemovedPixels,
   MsgBroadcastRemovedPixelsKind,
 } from "@shared/models/socketMessages";
-
+import { Express, NextFunction } from "express";
 export function addAllTilesRoute(
-  serverApp: core.Express,
+  serverApp: Express,
   serviceLayer: ServiceLayer
 ): void {
   serverApp.get(
@@ -28,7 +27,7 @@ export function addAllTilesRoute(
     async (
       req: TypedRequestBody<AllTilesRequest>,
       res: TypedResponse<AllTilesResponse>,
-      next: core.NextFunction
+      next: NextFunction
     ) => {
       try {
         const tiles = await serviceLayer.game.getAllTiles();
@@ -49,7 +48,7 @@ export function addAllTilesRoute(
 }
 
 export function addRemoveExpiredTiles(
-  serverApp: core.Express,
+  serverApp: Express,
   serviceLayer: ServiceLayer,
   io: Server
 ): void {
@@ -58,7 +57,7 @@ export function addRemoveExpiredTiles(
     async (
       req: TypedRequestBody<RemoveExpiredTilesRequest>,
       res: TypedResponse<RemoveExpiredTilesResponse>,
-      next: core.NextFunction
+      next: NextFunction
     ) => {
       try {
         const removedTiles = await serviceLayer.game.removeExpiredTiles();
