@@ -5,7 +5,7 @@ metadata:
   namespace: {{.Values.namespace}}
 spec:
   {{- if not .Values.autoscaling.enabled }}
-  replicas: {{ .Values.redisReplicaCount }}
+  replicas: {{ .Values.backendReplicaCount }}
   {{- end }}
   selector:
     matchLabels:
@@ -27,7 +27,7 @@ spec:
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
-        - name: {{ .Values.redisContainerName }}
+        - name: {{ .Values.backendContainerName }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.backend.repository }}:{{ .Values.image.backend.tag | default .Chart.AppVersion }}"
