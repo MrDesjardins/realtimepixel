@@ -4,7 +4,7 @@ on:
 # Environment variables available to all jobs and steps in this workflow
 env:
   REGISTRY_NAME: realtimepixel
-  CLUSTER_NAME: realpixelask
+  CLUSTER_NAME: realpixelask2
   CLUSTER_RESOURCE_GROUP: realtimepixel_resourcegroup
   NAMESPACE: realtimepixel-prod
 
