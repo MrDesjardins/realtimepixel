@@ -57,7 +57,7 @@ image:
   frontend:
     repository: "realtimepixel_frontend"
     tag: "latest"
-  pullPolicy: Never #IfNotPresent
+  pullPolicy: Never
 
 imagePullSecrets: []
 nameOverride: ""
