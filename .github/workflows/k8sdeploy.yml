@@ -17,7 +17,7 @@ jobs:
       # Set the target Azure Kubernetes Service (AKS) cluster.
       - uses: azure/aks-set-context@v1
         with:
-          creds: "${{ secrets.AZURE_CREDENTIALS }}"
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
           cluster-name: ${{ env.CLUSTER_NAME }}
           resource-group: ${{ env.CLUSTER_RESOURCE_GROUP }}
 
@@ -33,15 +33,34 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
+      - name: Get Latest Tag Redis
+        id: latesttagredis
+        run: |
+          tag_backend=$(az acr repository show-tags --name ${{env.REGISTRY_NAME}} --repository realtimepixel_redis --top 1 --orderby time_desc)
+          echo "::set-output name=tag_redis::$tag_redis"
+      
+      - name: Get Latest Tag Backend
+        id: latesttagbackend
+        run: |
+          tag_backend=$(az acr repository show-tags --name ${{env.REGISTRY_NAME}} --repository realtimepixel_backend --top 1 --orderby time_desc)
+          echo "::set-output name=tag_backend::$tag_backend"
+      
+      - name: Get Latest Tag Frontend
+        id: latesttagfrontend
+        run: |
+          tag_backend=$(az acr repository show-tags --name ${{env.REGISTRY_NAME}} --repository realtimepixel_frontend --top 1 --orderby time_desc)
+          echo "::set-output name=tag_frontend::$tag_frontend"
+
       - name: Deploy
         run: >
           helm upgrade realtimepixel ./kubernetes/realtimepixel 
           --install 
           --namespace=${{ env.NAMESPACE }} 
+          --set namespace=${{env.NAMESPACE}}
           --set image.pullpolicy=IfNotPresent
           --set image.redis.repository=${{env.REGISTRY_NAME}}.azurecr.io/realtimepixel_redis
-          --set image.redis.tag=${{ github.sha }}
+          --set image.redis.tag=${{ steps.latesttagredis.outputs.tag_redis }}
           --set image.backend.repository=${{env.REGISTRY_NAME}}.azurecr.io/realtimepixel_backend
-          --set image.backend.tag=${{ github.sha }} 
+          --set image.backend.tag=${{ steps.latesttagbackend.outputs.tag_backend }}
           --set image.frontend.repository=${{env.REGISTRY_NAME}}.azurecr.io/realtimepixel_frontend
-          --set image.frontend.tag=${{ github.sha }}
+          --set image.frontend.tag=${{ steps.latesttagfrontend.outputs.tag_frontend }}
