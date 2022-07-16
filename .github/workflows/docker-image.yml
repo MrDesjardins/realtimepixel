@@ -22,33 +22,25 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: "Build and Push Redis Image"
+      - name: "Docker Auhentication"
         uses: azure/docker-login@v1
         with:
           login-server: ${{ secrets.REGISTRY_LOGIN_SERVER }}
           username: ${{ secrets.REGISTRY_USERNAME }}
           password: ${{ secrets.REGISTRY_PASSWORD }}
-      - run: |
+
+      - name: "Build and Push Redis Image"  
+        run: |
           docker build -f services/redis/Dockerfile -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/realtimepixel_redis:${{ github.sha }} --target ${{env.ENVIRONMENT}} --build-arg NODE_ENV=${{env.ENVIRONMENT}} .
           docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/realtimepixel_redis:${{ github.sha }}
 
       - name: "Build and Push Backend Image"
-        uses: azure/docker-login@v1
-        with:
-          login-server: ${{ secrets.REGISTRY_LOGIN_SERVER }}
-          username: ${{ secrets.REGISTRY_USERNAME }}
-          password: ${{ secrets.REGISTRY_PASSWORD }}
-      - run: |
+        run: |
           docker build -f services/backend/Dockerfile -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/realtimepixel_backend:${{ github.sha }} --target ${{env.ENVIRONMENT}} --build-arg NODE_ENV=${{env.ENVIRONMENT}} .
           docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/realtimepixel_backend:${{ github.sha }}
 
       - name: "Build and Push Frontend Image"
-        uses: azure/docker-login@v1
-        with:
-          login-server: ${{ secrets.REGISTRY_LOGIN_SERVER }}
-          username: ${{ secrets.REGISTRY_USERNAME }}
-          password: ${{ secrets.REGISTRY_PASSWORD }}
-      - run: |
+        run: |
           docker build -f services/frontend/Dockerfile -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/realtimepixel_frontend:${{ github.sha }} --target ${{env.ENVIRONMENT}} --build-arg NODE_ENV=${{env.ENVIRONMENT}} .
           docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/realtimepixel_frontend:${{ github.sha }}
 
