@@ -35,8 +35,8 @@ jobs:
 
       - name: Deploy
         run: >
-          helm upgrade 
-          --install realtimepixel
+          helm upgrade realtimepixel ./kubernetes/realtimepixel 
+          --install 
           --namespace=${{ env.NAMESPACE }} 
           --set image.pullpolicy=IfNotPresent
           --set image.redis.repository=${{env.REGISTRY_NAME}}.azurecr.io/realtimepixel_redis
