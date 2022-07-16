@@ -37,7 +37,7 @@ WORKDIR /node
 COPY services/backend/package*.json services/backend/tsconfig.json ./
 
 # Default build argument is dev
-ARG NODE_ENV=development
+ARG NODE_ENV=production
 ENV NODE_ENV=${NODE_ENV}
 ARG SERVER_PORT
 ENV SERVER_PORT=${SERVER_PORT}

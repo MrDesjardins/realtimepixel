@@ -1,3 +1,4 @@
+name: Kubernetes Prod Deployment
 on:
   workflow_dispatch:
 
