@@ -8,8 +8,7 @@ metadata:
 spec:
   type: {{ .Values.redisService.type }}
   ports:
-    - nodePort:  {{ .Values.redisService.nodePort }}
-      port: {{ .Values.redisContainerPort }}
+    - port: {{ .Values.redisContainerPort }}
       targetPort: {{ .Values.redisContainerPort }}
   selector:
-    app: {{ .Values.redisTemplateAppName  }}
+    app: {{ .Values.redisServiceName  }}

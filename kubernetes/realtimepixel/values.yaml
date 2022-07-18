@@ -5,7 +5,6 @@ namespace: "realtimepixel-prod"
 
 redisDeploymentName: "redis-deployment"
 redisServiceName: "redis-service"
-redisTemplateAppName: "redis"
 redisReplicaCount: 1
 redisContainerName: "realtimepixel-redis"
 redisContainerPort: 6379
@@ -15,7 +14,6 @@ redisService:
 
 backendDeploymentName: "backend-deployment"
 backendServiceName: "backend-service"
-backendTemplateAppName: "webapi"
 backendReplicaCount: 3
 backendContainerName: "realtimepixel-backend"
 backendContainerPort: 3500
@@ -39,7 +37,6 @@ backendService:
 
 frontendDeploymentName: "frontend-deployment"
 frontendServiceName: "frontend-service"
-frontendTemplateAppName: "webapplication"
 frontendReplicaCount: 3
 frontendContainerName: "realtimepixel-frontend"
 frontendContainerPort: 80
