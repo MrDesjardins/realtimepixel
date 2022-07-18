@@ -8,8 +8,7 @@ metadata:
 spec:
   type: {{ .Values.frontendService.type }}
   ports:
-    - nodePort: {{ .Values.frontendService.nodePort }}
-      port: {{ .Values.frontendContainerPort }}
+    - port: {{ .Values.frontendContainerPort }}
       targetPort: {{ .Values.frontendContainerPort }}
   selector:
-    app: {{ .Values.frontendTemplateAppName }}
+    app: {{ .Values.frontendServiceName }}

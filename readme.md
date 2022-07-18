@@ -312,3 +312,47 @@ Use the `template` and export the output
 ```
 helm template realtimepixel ./kubernetes/realtimepixel --set namespace=realtimepixel-prod --set image.pullPolicy=Always --set image.redis.repository=realtimepixel.azurecr.io/realtimepixel_redis --set image.redis.tag=123123 --set image.backend.repository=realtimepixel.azurecr.io/realtimepixel_backend --set image.backend.tag=123123 --set image.frontend.repository=realtimepixel.azurecr.io/realtimepixel_frontend --set image.frontend.tag=123123 > temp.yaml
 ```
+
+# Kubectl Context
+This project can run on Minikube and on Azure Kubernetes. The tooling needs to switch between the two context.
+
+
+To know the current active context:
+```
+kubectl config current-context
+```
+
+To see all configured contexts:
+
+```
+kubectl config get-clusters
+```
+
+For this project the two should be:
+
+|Cluster Name|AUTHINFO|
+|---|---|
+|minikube|minikube|
+|realpixelask2|clusterUser_realtimepixel_resourcegroup_realpixelask2|
+
+You can get the Azure detail with:
+
+```
+az login
+az aks list -o table
+```
+
+If you cannot connect to Kubernetes on Azure use:
+
+```
+az aks get-credentials -g realtimepixel_resourcegroup -n realpixelask2
+```
+The command connect and fetch the credential. It also automatically switches to the name `-n` provided.
+
+You can swtich between using the cluster name:
+
+```
+kubectl config use-context minikube
+or 
+kubectl config use-context realpixelask2
+```

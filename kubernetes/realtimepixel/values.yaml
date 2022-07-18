@@ -31,7 +31,7 @@ backendEnv:
   - name: CLIENT_IP
     value: "frontend-service" # Service selector app
   - name: DOCKER_CLIENT_PORT_FORWARD
-    value: "3501"
+    value: "80"
 backendService:
   type: NodePort
   nodePort: 30063
@@ -42,7 +42,7 @@ frontendServiceName: "frontend-service"
 frontendTemplateAppName: "webapplication"
 frontendReplicaCount: 3
 frontendContainerName: "realtimepixel-frontend"
-frontendContainerPort: 3501
+frontendContainerPort: 80
 frontendService:
   type: LoadBalancer
   nodePort: 30062
