@@ -33,8 +33,7 @@ spec:
           image: "{{ .Values.image.redis.repository }}:{{ .Values.image.redis.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
-            - name: http
-              containerPort: {{.Values.redisContainerPort}}
+            - containerPort: {{.Values.redisContainerPort}}
               protocol: TCP
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
