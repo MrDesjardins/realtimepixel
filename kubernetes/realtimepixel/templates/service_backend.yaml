@@ -8,7 +8,7 @@ metadata:
 spec:
   type: {{ .Values.backendService.type }}
   ports:
-    - port: {{ .Values.backendContainerPort }}
+    - port: {{ .Values.backendService.port }}
       targetPort: {{ .Values.backendContainerPort }}
   selector:
-    app: {{ .Values.backendDeploymentName }}
+    app: {{ .Values.backendContainerName }}

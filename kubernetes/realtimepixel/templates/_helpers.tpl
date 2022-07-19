@@ -46,14 +46,14 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 Selector labels
 */}}
 {{- define "realtimepixel.redis.selectorLabels" -}}
-app: {{ .Values.redisDeploymentName | quote  }}
+app: {{ .Values.redisContainerName | quote  }}
 {{- end }}
 
 {{/*
 Selector labels
 */}}
 {{- define "realtimepixel.backend.selectorLabels" -}}
-app: {{ .Values.backendDeploymentName | quote  }}
+app: {{ .Values.backendContainerName | quote  }}
 {{- end }}
 
 {{/*

@@ -6,16 +6,17 @@ namespace: "realtimepixel-prod"
 redisDeploymentName: "redis-deployment"
 redisServiceName: "redis-service"
 redisReplicaCount: 1
-redisContainerName: "realtimepixel-redis"
+redisContainerName: "redis-pod"
 redisContainerPort: 6379
 redisService:
   type: NodePort
   nodePort: 30064
+  port: 6379
 
 backendDeploymentName: "backend-deployment"
 backendServiceName: "backend-service"
 backendReplicaCount: 3
-backendContainerName: "realtimepixel-backend"
+backendContainerName: "backend-pod"
 backendContainerPort: 3500
 backendEnv:
   - name: SERVER_IP
@@ -33,16 +34,18 @@ backendEnv:
 backendService:
   type: NodePort
   nodePort: 30063
+  port: 3500
 
 
 frontendDeploymentName: "frontend-deployment"
 frontendServiceName: "frontend-service"
 frontendReplicaCount: 3
-frontendContainerName: "realtimepixel-frontend"
-frontendContainerPort: 80
+frontendContainerName: "frontend-pod"
+frontendContainerPort: 3501
 frontendService:
   type: LoadBalancer
   nodePort: 30062
+  port: 80
 
 image:
   redis:
