@@ -15,7 +15,7 @@ redisService:
 
 backendDeploymentName: "backend-deployment"
 backendServiceName: "backend-service"
-backendReplicaCount: 3
+backendReplicaCount: 1
 backendContainerName: "backend-pod"
 backendContainerPort: 3500
 backendEnv:
@@ -39,7 +39,7 @@ backendService:
 
 frontendDeploymentName: "frontend-deployment"
 frontendServiceName: "frontend-service"
-frontendReplicaCount: 3
+frontendReplicaCount: 1
 frontendContainerName: "frontend-pod"
 frontendContainerPort: 3501
 frontendService:
