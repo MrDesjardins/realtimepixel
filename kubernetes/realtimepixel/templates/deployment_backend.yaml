@@ -34,7 +34,6 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - containerPort: {{.Values.backendContainerPort}}
-              protocol: TCP
           env:
             {{- range $name, $value := .Values.backendEnv }}
               - name: {{ $value.name }}
