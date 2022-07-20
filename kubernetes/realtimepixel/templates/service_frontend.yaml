@@ -11,4 +11,4 @@ spec:
     - port: {{ .Values.frontendService.port }}
       targetPort: {{ .Values.frontendContainerPort }}
   selector:
-    app: {{ .Values.frontendContainerName }}
+    app: {{ .Values.frontendDeploymentName }}

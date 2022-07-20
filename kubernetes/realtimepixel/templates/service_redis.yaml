@@ -11,4 +11,4 @@ spec:
     - port: {{ .Values.redisService.port }}
       targetPort: {{ .Values.redisContainerPort }}
   selector:
-    app: {{ .Values.redisContainerName  }}
+    app: {{ .Values.redisDeploymentName  }}
