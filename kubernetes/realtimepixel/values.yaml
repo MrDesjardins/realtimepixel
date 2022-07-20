@@ -112,7 +112,7 @@ ingress:
               name: "frontend-service"
               port:
                 number: 80
-        - path:
+        - path: /
           pathType: Prefix
           backend: 
             service:
