@@ -11,8 +11,8 @@ COPY services/backend/package*.json services/backend/tsconfig.json ./
 # Default build argument is dev
 ARG NODE_ENV=development
 ENV NODE_ENV=${NODE_ENV}
-ARG SERVER_PORT
-ENV SERVER_PORT=${SERVER_PORT}
+ARG INNER_PORT_BACKEND
+ENV INNER_PORT_BACKEND=${INNER_PORT_BACKEND}
 
 RUN npm install
 
@@ -23,7 +23,7 @@ WORKDIR /node/app
 # to mount the dev machine to the container. It will allows the development to change the
 # code without restarting the container.
 
-EXPOSE ${SERVER_PORT}
+EXPOSE ${INNER_PORT_BACKEND}
 CMD ["npm", "run", "start:development"]
 
 # ---------------------------------------
@@ -36,11 +36,11 @@ WORKDIR /node
 # Install Node without having the whole application files (cache)
 COPY services/backend/package*.json services/backend/tsconfig.json ./
 
-# Default build argument is dev
+# Default build argument is production
 ARG NODE_ENV=production
 ENV NODE_ENV=${NODE_ENV}
-ARG SERVER_PORT
-ENV SERVER_PORT=${SERVER_PORT}
+ARG INNER_PORT_BACKEND
+ENV INNER_PORT_BACKEND=${INNER_PORT_BACKEND}
 
 RUN npm install
 
@@ -51,7 +51,7 @@ COPY services/shared /shared
 WORKDIR /node
 RUN npm run build
 
-EXPOSE ${SERVER_PORT}
+EXPOSE ${INNER_PORT_BACKEND}
 
 # Containers run nginx with global directives and daemon off
 CMD ["npm", "run", "start:production"]

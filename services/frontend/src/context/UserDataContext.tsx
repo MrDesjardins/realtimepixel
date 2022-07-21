@@ -303,7 +303,7 @@ export function UserDataProvider(props: UserDataContextProps): JSX.Element {
     // Initialize only once the user has an access token
     if (socket === undefined && token !== undefined) {
       console.log("---> Socket.io: Done");
-      socket = io(`${ENV_VARIABLES.SERVER_IP}:${ENV_VARIABLES.DOCKER_SERVER_PORT_FORWARD}`, {
+      socket = io(`${ENV_VARIABLES.IP_BACKEND}:${ENV_VARIABLES.OUTER_PORT_BACKEND}`, {
         transports: ["websocket"],
         query: { access_token: token.accessToken },
       });

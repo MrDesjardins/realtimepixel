@@ -22,7 +22,7 @@ services:
       args:
         - "NODE_ENV=${NODE_ENV}"
     ports:
-      - "${DOCKER_REDIS_PORT_FORWARD}:${REDIS_PORT}"
+      - "${OUTER_PORT_REDIS}:${INNER_PORT_REDIS}"
     networks:
       - backend_net
   backend:
@@ -36,10 +36,10 @@ services:
       target: ${NODE_ENV}
       args:
         - "NODE_ENV=${NODE_ENV}"
-        - "SERVER_PORT=${SERVER_PORT}"
+        - "SERVER_PORT=${INNER_PORT_BACKEND}"
     ports:
-      - "${DOCKER_SERVER_PORT_FORWARD}:${SERVER_PORT}"
-      - 9229:9229
+      - "${OUTER_PORT_BACKEND}:${INNER_PORT_BACKEND}"
+      - 9229:9229 # Debug VS Code
     healthcheck:
       test: "${DOCKER_SERVER_HEALTHCHECK_TEST}"
     networks:
@@ -56,9 +56,9 @@ services:
       dockerfile: services/frontend/Dockerfile
       args:
         - "NODE_ENV=${NODE_ENV}"
-        - "CLIENT_PORT=${CLIENT_PORT}"
+        - "INNER_PORT_FRONTEND=${INNER_PORT_FRONTEND}"
     ports:
-      - "${DOCKER_CLIENT_PORT_FORWARD}:${CLIENT_PORT}"
+      - "${OUTER_PORT_FRONTEND}:${INNER_PORT_FRONTEND}"
     healthcheck:
       test: "${DOCKER_CLIENT_HEALTHCHECK_TEST}"
     networks:

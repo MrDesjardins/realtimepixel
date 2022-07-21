@@ -10,8 +10,8 @@ COPY services/frontend/package*.json services/frontend/tsconfig.json ./
 # Default build argument is dev
 ARG NODE_ENV=development
 ENV NODE_ENV=${NODE_ENV}
-ARG CLIENT_PORT
-ENV CLIENT_PORT=${CLIENT_PORT}
+ARG INNER_PORT_FRONTEND
+ENV INNER_PORT_FRONTEND=${INNER_PORT_FRONTEND}
 
 RUN npm install
 
@@ -22,7 +22,7 @@ WORKDIR /node/app
 # to mount the dev machine to the container. It will allows the development to change the
 # code without restarting the container.
 
-EXPOSE ${CLIENT_PORT}
+EXPOSE ${INNER_PORT_FRONTEND}
 CMD ["npm", "run", "start:development"]
 
 # ---------------------------------------
@@ -33,13 +33,13 @@ FROM nginx:1.21.6 AS production
 # Default build argument is prod
 ARG NODE_ENV=production
 ENV NODE_ENV=${NODE_ENV}
-ARG CLIENT_PORT
-ENV CLIENT_PORT=${CLIENT_PORT}
+ARG INNER_PORT_FRONTEND
+ENV INNER_PORT_FRONTEND=${INNER_PORT_FRONTEND}
 
 # Install Python and NPM
 RUN apt-get update && apt-get install -y \
     software-properties-common \
-    python \
+    python3 \
     npm
 
 # Install Node Version 16
@@ -56,12 +56,10 @@ RUN npm install --include=dev
 COPY services/frontend /node
 COPY services/shared /shared
 COPY scripts /scripts
-COPY .env /scripts/.env
+COPY .env.production /.env.production
 
-WORKDIR /scripts
-RUN python envToConsts.py
+RUN python3 /scripts/envToConsts.py .env.production
 
-WORKDIR /node
 RUN npm run build
 
 # Remove default nginx static resources
@@ -73,7 +71,7 @@ RUN mv dist/* /usr/share/nginx/html
 # Add your nginx.conf
 COPY services/frontend/nginx.conf /etc/nginx/conf.d/default.conf
 
-EXPOSE ${CLIENT_PORT}
+EXPOSE ${INNER_PORT_FRONTEND}
 
 # Containers run nginx with global directives and daemon off
 ENTRYPOINT ["nginx", "-g", "daemon off;"]

@@ -19,17 +19,17 @@ backendReplicaCount: 1
 backendContainerName: "backend-pod"
 backendContainerPort: 3500
 backendEnv:
-  - name: SERVER_IP
+  - name: IP_BACKEND
     value: "backend-service" # Service selector app
-  - name: SERVER_PORT
+  - name: OUTER_PORT_BACKEND
     value: "80"
-  - name: REDIS_IP
+  - name: IP_REDIS
     value: "redis-service" # Service selector app
-  - name: REDIS_PORT
+  - name: OUTER_PORT_REDIS
     value: "6379"
-  - name: CLIENT_IP
+  - name: IP_FRONTEND
     value: "frontend-service" # Service selector app
-  - name: DOCKER_CLIENT_PORT_FORWARD
+  - name: OUTER_PORT_FRONTEND
     value: "80"
 backendService:
   type: NodePort
@@ -41,7 +41,11 @@ frontendDeploymentName: "frontend-deployment"
 frontendServiceName: "frontend-service"
 frontendReplicaCount: 1
 frontendContainerName: "frontend-pod"
-frontendContainerPort: 3501
+frontendContainerPort: 3500 
+frontendEnv: 
+  - name: IP_BACKEND
+    value: "backend-service" # Service selector app
+
 frontendService:
   type: LoadBalancer
   nodePort: 30062

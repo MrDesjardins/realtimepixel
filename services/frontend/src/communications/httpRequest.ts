@@ -14,7 +14,7 @@ import { ENV_VARIABLES } from "../generated/constants_env";
 export class HttpRequest {
   private baseUrl: string = "";
   public constructor() {
-    this.baseUrl = `http://${ENV_VARIABLES.SERVER_IP}:${ENV_VARIABLES.DOCKER_SERVER_PORT_FORWARD}`;
+    this.baseUrl = `http://${ENV_VARIABLES.IP_BACKEND}:${ENV_VARIABLES.OUTER_PORT_BACKEND}`;
   }
 
   public async createUser(createRequest: CreateUserRequest): Promise<CreateUserResponse> {

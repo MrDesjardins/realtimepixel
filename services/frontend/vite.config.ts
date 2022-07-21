@@ -1,7 +1,7 @@
 import path from "path";
 import { defineConfig, loadEnv } from "vite";
 import solidPlugin from "vite-plugin-solid";
-
+import { ENV_VARIABLES } from "./src/generated/constants_env";
 export default (conf: any) => {
   process.env = { ...process.env, ...loadEnv(conf.mode, process.cwd(), "") };
   console.log(process.env);
@@ -17,9 +17,9 @@ export default (conf: any) => {
     server: {
       host: "0.0.0.0",
       hmr: {
-        clientPort: 3501, //Number(process.env.DOCKER_CLIENT_PORT_FORWARD)
+        clientPort: ENV_VARIABLES.OUTER_PORT_FRONTEND, // 3501, //Number(process.env.OUTER_PORT_FRONTEND)
       },
-      port: 3000, //Number(process.env.CLIENT_PORT),
+      port: ENV_VARIABLES.INNER_PORT_FRONTEND, //Number(process.env.INNER_PORT_FRONTEND),
     },
   });
 };

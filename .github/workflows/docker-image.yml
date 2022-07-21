@@ -8,7 +8,11 @@ on:
 # Environment variables available to all jobs and steps in this workflow
 env:
   ENVIRONMENT: production
-
+  IP_BACKEND: "backend-service" # values.yaml>backendServiceName
+  SERVER_PORT: 3500 # values.yaml>backendContainerPort
+  IP_FRONTEND: "frontend-service" # values.yaml>backendContainerPort
+  INNER_PORT_FRONTEND: 80
+  
 jobs:
   build:
     runs-on: ubuntu-latest

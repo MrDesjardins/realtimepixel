@@ -216,6 +216,8 @@ Only the first step is required once. All the other steps are required every tim
 - Ingress addon
 ```
 minikube addons enable ingress
+minikube addons enable ingress-dns
+Add-DnsClientNrptRule -Namespace ".test" -NameServers "$(minikube ip)"
 ```
 
 2. Run Minikube
@@ -307,7 +309,7 @@ kubectl get service frontend-service --watch -n realtimepixel-prod
 
 ## Debug Helm Chart Parameters Substitution
 
-Use the `template` and export the output
+Use the `template` and export the output into a single yaml file.
 
 ```
 helm template realtimepixel ./kubernetes/realtimepixel --set namespace=realtimepixel-prod --set image.pullPolicy=Always --set image.redis.repository=realtimepixel.azurecr.io/realtimepixel_redis --set image.redis.tag=123123 --set image.backend.repository=realtimepixel.azurecr.io/realtimepixel_backend --set image.backend.tag=123123 --set image.frontend.repository=realtimepixel.azurecr.io/realtimepixel_frontend --set image.frontend.tag=123123 > temp.yaml
@@ -355,4 +357,24 @@ You can swtich between using the cluster name:
 kubectl config use-context minikube
 or 
 kubectl config use-context realpixelask2
+```
+
+# Kubectl Debug Commands
+
+Follow this thread: https://discuss.kubernetes.io/t/cannot-access-the-service/20688
+
+## Connect to a pod directly
+```
+kubectl get pods -l app=frontend-pod -n realtimepixel-prod
+kubectl exec --stdin --tty frontend-deployment-5954559b5b-sktl2 -n realtimepixel-prod -- bash
+```
+### Get Process
+```
+apt-get update && apt-get install procps
+ps -aux
+```
+### Get IP/PORT
+```
+apt install iproute2
+ss -tulpn`
 ```

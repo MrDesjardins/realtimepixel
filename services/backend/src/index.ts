@@ -33,8 +33,8 @@ import { addHealthRoute } from "./controllers/systemController";
 
 dotenv.config();
 
-const REDIS_IP = process.env.REDIS_IP;
-const REDIS_PORT = Number(process.env.DOCKER_REDIS_PORT_FORWARD);
+const REDIS_IP = process.env.IP_REDIS;
+const REDIS_PORT = Number(process.env.OUTER_PORT_REDIS);
 const REDIS_URL = `redis://${REDIS_IP}:${REDIS_PORT}`;
 const pubClient = createClient({
   socket: {
@@ -62,13 +62,11 @@ subClient.on("error", function (err: any) {
 
 connectToRedis();
 
-const SERVER_IP = process.env.SERVER_IP;
-const SERVER_PORT = process.env.SERVER_PORT;
-const CORS_CLIENT_ORIGIN = `${process.env.CLIENT_IP}:${process.env.DOCKER_CLIENT_PORT_FORWARD}`;
+const SERVER_IP = process.env.IP_BACKEND;
+const SERVER_PORT = process.env.INNER_PORT_BACKEND;
 console.log("Starting...");
-console.log(`Server ${SERVER_IP}:${SERVER_PORT}`);
-console.log(`Socket IO Cors Allowing: ${CORS_CLIENT_ORIGIN}`);
-console.log(`Redis: ${REDIS_URL}`);
+console.log(`Inner backend Server ${SERVER_IP}:${SERVER_PORT}`);
+console.log(`Outer Redis: ${REDIS_URL}`);
 
 const serviceLayer = new ServiceLayer(ServiceEnvironment.Test, pubClient);
 const serverApp = express();
