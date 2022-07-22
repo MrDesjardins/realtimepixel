@@ -17,7 +17,7 @@ backendDeploymentName: "backend-deployment"
 backendServiceName: "backend-service"
 backendReplicaCount: 1
 backendContainerName: "backend-pod"
-backendContainerPort: 3500
+backendContainerPort: 80
 backendEnv:
   - name: IP_BACKEND
     value: "backend-service" # Service selector app
@@ -34,14 +34,14 @@ backendEnv:
 backendService:
   type: NodePort
   nodePort: 30063
-  port: 3500
+  port: 80
 
 
 frontendDeploymentName: "frontend-deployment"
 frontendServiceName: "frontend-service"
 frontendReplicaCount: 1
 frontendContainerName: "frontend-pod"
-frontendContainerPort: 3500 
+frontendContainerPort: 80 
 frontendEnv: 
   - name: IP_BACKEND
     value: "backend-service" # Service selector app
@@ -94,7 +94,7 @@ service:
   port: 80
 
 ingress:
-  enabled: true
+  enabled: false
   className: ""
   annotations: {}
     # kubernetes.io/ingress.class: nginx
@@ -108,7 +108,7 @@ ingress:
             service:
               name: "backend-service"
               port:
-                number: 3500
+                number: 80
         - path: /(.*)
           pathType: Prefix
           backend: 
