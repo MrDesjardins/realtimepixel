@@ -13,6 +13,11 @@ export const HEADERS = {
   authorization: "authorization",
 };
 
+// Required since the frontend will call a reverse proxy to the backend
+export const URLS_PROXY = {
+  api: "api",
+};
+
 export const URLS = {
   login: "login",
   health: "health",

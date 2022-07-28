@@ -53,10 +53,11 @@ tsFile += "}"
 
 # Write the file on disk
 if envFile == ".env":
-    f = open(os.path.join(__location__,
-         '../services/frontend/src/generated/constants_env.ts'), "w")
+    outputFilePath = os.path.join(__location__, '../services/frontend/src/generated/constants_env.ts')
 else:
-    f = open(os.path.join(__location__,
-         '../node/src/generated/constants_env.ts'), "w")
+    outputFilePath = os.path.join(__location__, '../node/src/generated/constants_env.ts')
+
+print("Output file: " + outputFilePath)
+f = open(outputFilePath, "w")
 f.write(tsFile)
 f.close()

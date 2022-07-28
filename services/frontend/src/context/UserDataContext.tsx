@@ -302,11 +302,13 @@ export function UserDataProvider(props: UserDataContextProps): JSX.Element {
     console.log("Trying to initialize Socket.io");
     // Initialize only once the user has an access token
     if (socket === undefined && token !== undefined) {
-      console.log("---> Socket.io: Done");
-      socket = io(`${ENV_VARIABLES.IP_BACKEND}:${ENV_VARIABLES.OUTER_PORT_BACKEND}`, {
+      console.log("---> Socket.io: Initializing...123123");
+      socket = io(`${ENV_VARIABLES.IP_FRONTEND}:${ENV_VARIABLES.OUTER_PORT_FRONTEND}`, {
         transports: ["websocket"],
+        path: "/ws",
         query: { access_token: token.accessToken },
       });
+      console.log("---> Socket.io: Done");
       setSocketReady(true);
     }
   }

@@ -1,4 +1,4 @@
-import { HEADERS, HTTP_STATUS, URLS_UNSECURE } from "@shared/constants/backend";
+import { HTTP_STATUS, URLS_UNSECURE } from "@shared/constants/backend";
 import {
   RequestUserFromJwt,
   TypedRequestBody,

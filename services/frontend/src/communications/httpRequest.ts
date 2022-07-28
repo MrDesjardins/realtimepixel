@@ -14,7 +14,8 @@ import { ENV_VARIABLES } from "../generated/constants_env";
 export class HttpRequest {
   private baseUrl: string = "";
   public constructor() {
-    this.baseUrl = `http://${ENV_VARIABLES.IP_BACKEND}:${ENV_VARIABLES.OUTER_PORT_BACKEND}`;
+    // Reverse proxy
+    this.baseUrl = `http://${ENV_VARIABLES.IP_FRONTEND}:${ENV_VARIABLES.OUTER_PORT_FRONTEND}/api`;
   }
 
   public async createUser(createRequest: CreateUserRequest): Promise<CreateUserResponse> {

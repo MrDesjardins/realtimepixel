@@ -1,7 +1,21 @@
 # ---------------------------------------
 # Development stage
 # ---------------------------------------
-FROM node:16 AS development
+FROM nginx:1.21.6 AS development
+
+# Install Python and NPM
+RUN apt-get update && apt-get install -y \
+    software-properties-common \
+    python3 \
+    npm
+
+# Install Node Version 16
+RUN npm install npm@latest -g && \
+    npm install n -g && \
+    n 16
+
+# Set the dev nginx.conf
+COPY services/frontend/nginx.development.conf /etc/nginx/conf.d/default.conf
 
 WORKDIR /node
 # Install Node without having the whole application files (cache)
@@ -23,7 +37,9 @@ WORKDIR /node/app
 # code without restarting the container.
 
 EXPOSE ${INNER_PORT_FRONTEND}
-CMD ["npm", "run", "start:development"]
+
+CMD npm run start:development & nginx -g "daemon off;"
+
 
 # ---------------------------------------
 # Production stage
@@ -69,7 +85,7 @@ RUN rm -rf /usr/share/nginx/html/*
 RUN mv dist/* /usr/share/nginx/html
 
 # Add your nginx.conf
-COPY services/frontend/nginx.conf /etc/nginx/conf.d/default.conf
+COPY services/frontend/nginx.production.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE ${INNER_PORT_FRONTEND}
 

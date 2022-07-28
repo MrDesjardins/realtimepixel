@@ -73,6 +73,7 @@ const serverApp = express();
 
 const server = http.createServer(serverApp);
 const io = new Server(server, {
+  path: "/ws",
   cors: {
     //origin: `http://${CORS_CLIENT_ORIGIN}`,
     origin: "*",
@@ -163,4 +164,3 @@ async function onUserDisconnect(
     console.error("User disconnected with no userId");
   }
 }
-
