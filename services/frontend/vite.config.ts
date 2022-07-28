@@ -20,6 +20,9 @@ export default (conf: any) => {
         clientPort: ENV_VARIABLES.OUTER_PORT_FRONTEND, // 3501, //Number(process.env.OUTER_PORT_FRONTEND)
       },
       port: ENV_VARIABLES.INNER_PORT_FRONTEND_DEV, //Number(process.env.INNER_PORT_FRONTEND_DEV),
+      watch: {
+        usePolling: true,
+      },
     },
   });
 };

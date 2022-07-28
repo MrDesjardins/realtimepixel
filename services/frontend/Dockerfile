@@ -3,10 +3,11 @@
 # ---------------------------------------
 FROM nginx:1.21.6 AS development
 
-# Install Python and NPM
+# Install Python, NPM, ps command (procps)
 RUN apt-get update && apt-get install -y \
     software-properties-common \
     python3 \
+    procps \
     npm
 
 # Install Node Version 16

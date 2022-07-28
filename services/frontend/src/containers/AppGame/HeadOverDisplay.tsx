@@ -54,7 +54,7 @@ export function HeadOverDisplay(props: HeadOverDisplayProps): JSX.Element {
           </div>
         </div>
         <div class={styles.HeadOverDisplayPanelContent}>
-          <div>Life Unit</div>
+          <div>Pixel Life</div>
           <div>
             {adjustedCoordinate() === undefined ? (
               <span>No selection</span>
@@ -72,7 +72,7 @@ export function HeadOverDisplay(props: HeadOverDisplayProps): JSX.Element {
           </div>
         </div>
         <div class={styles.HeadOverDisplayPanelContent}>
-          <div>Next action:</div>
+          <div>Next action</div>
           <div>
             <NextActionTimeText seconds={nextActionTime()} />
           </div>
