@@ -18,7 +18,6 @@ import { createStore } from "solid-js/store";
 import { RefreshTokenResponse, TokenResponse } from "../../../shared/models/login";
 import { buildMapFromList } from "../builders/tilesBuilder";
 import { HttpRequest } from "../communications/httpRequest";
-import { ENV_VARIABLES } from "../generated/constants_env";
 import { CONSTS } from "../models/constants";
 import { getTokenFromUserMachine, persistTokenInUserMachine } from "../persistences/localStorage";
 import { NotificationType, useNotification } from "./NotificationContext";
@@ -98,6 +97,8 @@ export function UserDataProvider(props: UserDataContextProps): JSX.Element {
         socket.on("connect_error", socketConnectError);
         socket.on("error", socketError);
       }
+    } else {
+      console.log("Socket not ready");
     }
   });
 
@@ -302,14 +303,16 @@ export function UserDataProvider(props: UserDataContextProps): JSX.Element {
     console.log("Trying to initialize Socket.io");
     // Initialize only once the user has an access token
     if (socket === undefined && token !== undefined) {
-      console.log("---> Socket.io: Initializing...123123");
-      socket = io(`${ENV_VARIABLES.IP_FRONTEND}:${ENV_VARIABLES.OUTER_PORT_FRONTEND}`, {
+      console.log("---> Socket.io: Initializing...");
+      socket = io(`${location.host}`, {
         transports: ["websocket"],
         path: "/ws",
         query: { access_token: token.accessToken },
       });
       console.log("---> Socket.io: Done");
       setSocketReady(true);
+    } else {
+      console.log(`Cannot initialize socket, already initialized (${socket}) or no token (${token})`);
     }
   }
 }

@@ -9,13 +9,14 @@ import {
   UserLoginResponse,
 } from "@shared/models/login";
 import { LastUserActionRequest, LastUserActionResponse } from "@shared/models/user";
-import { ENV_VARIABLES } from "../generated/constants_env";
 
 export class HttpRequest {
   private baseUrl: string = "";
   public constructor() {
-    // Reverse proxy
-    this.baseUrl = `http://${ENV_VARIABLES.IP_FRONTEND}:${ENV_VARIABLES.OUTER_PORT_FRONTEND}/api`;
+    // protocol has the colon
+    // host => dns + port
+    // /api => Reverse proxy
+    this.baseUrl = `${location.protocol}//${location.host}/api`;
   }
 
   public async createUser(createRequest: CreateUserRequest): Promise<CreateUserResponse> {
