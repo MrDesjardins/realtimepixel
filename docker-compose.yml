@@ -36,7 +36,7 @@ services:
       target: ${NODE_ENV}
       args:
         - "NODE_ENV=${NODE_ENV}"
-        - "SERVER_PORT=${INNER_PORT_BACKEND}"
+        - "INNER_PORT_BACKEND=${INNER_PORT_BACKEND}"
     ports:
       - "${OUTER_PORT_BACKEND}:${INNER_PORT_BACKEND}"
       - 9229:9229 # Debug VS Code

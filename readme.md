@@ -351,12 +351,18 @@ az aks get-credentials -g realtimepixel_resourcegroup -n realpixelask2
 ```
 The command connect and fetch the credential. It also automatically switches to the name `-n` provided.
 
-You can swtich between using the cluster name:
+You can switch between using the cluster name:
 
 ```
 kubectl config use-context minikube
 or 
 kubectl config use-context realpixelask2
+```
+
+If you are using WSL, you need to copy the configuration file that has the context information into WSL:
+
+```
+mkdir ~/.kube \ && cp /mnt/c/Users/[USERNAME]/.kube/config ~/.kube
 ```
 
 # Kubectl Debug Commands
@@ -377,4 +383,10 @@ ps -aux
 ```
 apt install iproute2
 ss -tulpn`
+```
+
+### Get Pods and Get Latest Logs
+```
+kubectl get pods -n realtimepixel-prod
+kubectl logs <FromPreviousCommand> -n realtimepixel-prod
 ```
