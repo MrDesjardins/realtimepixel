@@ -36,9 +36,11 @@ dotenv.config();
 const REDIS_IP = process.env.IP_REDIS;
 const REDIS_PORT = Number(process.env.OUTER_PORT_REDIS);
 const REDIS_URL = `redis://${REDIS_IP}:${REDIS_PORT}`;
+console.log("Redis IP", REDIS_IP);
+console.log("Redis Port", REDIS_PORT);
 const pubClient = createClient({
   socket: {
-    port: REDIS_PORT,
+    port: REDIS_PORT ?? 6379,
     host: REDIS_IP,
   },
 });
