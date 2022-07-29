@@ -36,11 +36,9 @@ dotenv.config();
 const REDIS_IP = process.env.IP_REDIS;
 const REDIS_PORT = Number(process.env.OUTER_PORT_REDIS);
 const REDIS_URL = `redis://${REDIS_IP}:${REDIS_PORT}`;
-console.log("Redis IP", REDIS_IP);
-console.log("Redis Port", REDIS_PORT);
 const pubClient = createClient({
   socket: {
-    port: REDIS_PORT ?? 6379,
+    port: REDIS_PORT,
     host: REDIS_IP,
   },
 });
@@ -67,7 +65,9 @@ connectToRedis();
 const SERVER_IP = process.env.IP_BACKEND;
 const SERVER_PORT = process.env.INNER_PORT_BACKEND;
 console.log("Starting...");
-console.log(`Inner backend Server ${SERVER_IP}:${SERVER_PORT}`);
+console.log(
+  `Inner backend Server IP is [${SERVER_IP}] and port [${SERVER_PORT}]`
+);
 console.log(`Outer Redis: ${REDIS_URL}`);
 
 const serviceLayer = new ServiceLayer(ServiceEnvironment.Test, pubClient);

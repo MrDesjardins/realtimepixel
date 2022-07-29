@@ -23,6 +23,8 @@ backendEnv:
     value: "backend-service" # Service selector app
   - name: OUTER_PORT_BACKEND
     value: "80"
+  - name: INNER_PORT_BACKEND
+    value: "80"
   - name: IP_REDIS
     value: "redis-service" # Service selector app
   - name: OUTER_PORT_REDIS
