@@ -104,7 +104,7 @@ service:
 ingress:
   name: "realtimepixel-ingress"
   enabled: true
-  className: ""
+  className: "nginx"
   loadBalancerIP: "52.255.155.119"
   annotations: {
       # "service.beta.kubernetes.io/azure-load-balancer-resource-group": "MC_realtimepixel_resourcegroup_realpixelask2_eastus",
