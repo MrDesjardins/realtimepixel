@@ -311,8 +311,17 @@ kubectl get service frontend-service --watch -n realtimepixel-prod
 
 Use the `template` and export the output into a single yaml file.
 
-```
-helm template realtimepixel ./kubernetes/realtimepixel --set namespace=realtimepixel-prod --set image.pullPolicy=Always --set image.redis.repository=realtimepixel.azurecr.io/realtimepixel_redis --set image.redis.tag=123123 --set image.backend.repository=realtimepixel.azurecr.io/realtimepixel_backend --set image.backend.tag=123123 --set image.frontend.repository=realtimepixel.azurecr.io/realtimepixel_frontend --set image.frontend.tag=123123 > temp.yaml
+```sh
+helm template realtimepixel ./kubernetes/realtimepixel \
+--set namespace=realtimepixel-prod \
+--set image.pullPolicy=Always \
+--set image.redis.repository=realtimepixel.azurecr.io/realtimepixel_redis \
+--set image.redis.tag=123123 \
+--set image.backend.repository=realtimepixel.azurecr.io/realtimepixel_backend \
+--set image.backend.tag=123123 \
+--set image.frontend.repository=realtimepixel.azurecr.io/realtimepixel_frontend \
+--set image.frontend.tag=123123 \
+> temp.yaml
 ```
 
 # Kubectl Context
