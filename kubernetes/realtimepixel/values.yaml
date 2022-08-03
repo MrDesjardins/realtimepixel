@@ -103,7 +103,7 @@ service:
 
 ingress:
   name: "realtimepixel"
-  enabled: true
+  enabled: false
   className: "nginx"
   loadBalancerIP: "52.255.155.119"
   annotations: {
