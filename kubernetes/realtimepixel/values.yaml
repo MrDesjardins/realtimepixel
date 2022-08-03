@@ -102,13 +102,13 @@ service:
   port: 80
 
 ingress:
-  name: "realtimepixel"
+  name: "nginx-ingres"
   enabled: false
   className: "nginx"
   loadBalancerIP: "52.255.155.119"
   annotations: {
       # "service.beta.kubernetes.io/azure-load-balancer-resource-group": "MC_realtimepixel_resourcegroup_realpixelask2_eastus",
-      "service.beta.kubernetes.io/azure-dns-label-name": "realtimepixel",
+      # "service.beta.kubernetes.io/azure-dns-label-name": "realtimepixel-ingress",
     }
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
