@@ -15,7 +15,7 @@ apiVersion: extensions/v1beta1
 {{- end }}
 kind: Ingress
 metadata:
-  name: "realtimepixel-ingress"
+  name:  {{ .Values.ingress.name }}
   namespace: {{ .Values.namespace }}
   labels:
     {{- include "realtimepixel.labels" . | nindent 4 }}

@@ -103,9 +103,10 @@ service:
   port: 80
 
 ingress:
-  enabled: false
+  name: "realtimepixel-ingress"
+  enabled: true
   className: ""
-  loadBalancerIP: "20.121.6.121"
+  loadBalancerIP: "52.255.155.119"
   annotations: {
     "service.beta.kubernetes.io/azure-load-balancer-resource-group": "MC_realtimepixel_resourcegroup_realpixelask2_eastus",
     "service.beta.kubernetes.io/azure-dns-label-name": "realtimepixel-ingress-dns"
@@ -115,13 +116,6 @@ ingress:
   hosts:
     - host: realtimepixel.io
       paths:
-        - path: /(.*)
-          pathType: Prefix
-          backend: 
-            service:
-              name: "frontend-service"
-              port:
-                number: 80
         - path: /
           pathType: Prefix
           backend: 
