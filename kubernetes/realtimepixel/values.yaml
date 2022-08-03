@@ -113,8 +113,7 @@ ingress:
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
   hosts:
-    - host: realtimepixel.io
-      paths:
+    - paths:
         - path: /
           pathType: Prefix
           backend:
