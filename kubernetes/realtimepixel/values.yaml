@@ -108,12 +108,13 @@ ingress:
   loadBalancerIP: "52.255.155.119"
   annotations: {
       # "service.beta.kubernetes.io/azure-load-balancer-resource-group": "MC_realtimepixel_resourcegroup_realpixelask2_eastus",
-      "service.beta.kubernetes.io/azure-dns-label-name": "realtimepixel-ingress",
+      "service.beta.kubernetes.io/azure-dns-label-name": "realtimepixel",
     }
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
   hosts:
-    - paths:
+    - host: realtimepixel.eastus.cloudapp.azure.com
+      paths:
         - path: /
           pathType: Prefix
           backend:
