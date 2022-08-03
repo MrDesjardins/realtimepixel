@@ -102,8 +102,8 @@ service:
   port: 80
 
 ingress:
-  name: "nginx-ingress"
-  enabled: false
+  name: "realtimepixel"
+  enabled: true
   className: "nginx"
   loadBalancerIP: "52.255.155.119"
   annotations: {
