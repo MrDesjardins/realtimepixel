@@ -123,10 +123,10 @@ ingress:
               name: "frontend-service"
               port:
                 number: 80
-  tls:
-   - secretName: realtimepixel-tls
-     hosts:
-       - realtimepixel.eastus.cloudapp.azure.com
+  tls: []
+  #  - secretName: realtimepixel-tls
+  #    hosts:
+  #      - realtimepixel.eastus.cloudapp.azure.com
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
