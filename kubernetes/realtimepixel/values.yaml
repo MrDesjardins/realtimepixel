@@ -103,7 +103,7 @@ service:
 
 ingress:
   name: "nginx-ingress"
-  enabled: false
+  enabled: true
   className: "nginx"
   loadBalancerIP: "52.255.155.119"
   annotations: {
@@ -123,10 +123,10 @@ ingress:
               name: "frontend-service"
               port:
                 number: 80
-  tls: []
-  #  - secretName: chart-example-tls
-  #    hosts:
-  #      - chart-example.local
+  tls:
+   - secretName: realtimepixel-tls
+     hosts:
+       - realtimepixel.eastus.cloudapp.azure.com
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
