@@ -102,11 +102,12 @@ service:
   port: 80
 
 ingress:
-  name: "nginx-ingres"
+  name: "nginx-ingress"
   enabled: false
   className: "nginx"
   loadBalancerIP: "52.255.155.119"
   annotations: {
+      nginx.ingress.kubernetes.io/rewrite-target: "/"
       # "service.beta.kubernetes.io/azure-load-balancer-resource-group": "MC_realtimepixel_resourcegroup_realpixelask2_eastus",
       # "service.beta.kubernetes.io/azure-dns-label-name": "realtimepixel-ingress",
     }
