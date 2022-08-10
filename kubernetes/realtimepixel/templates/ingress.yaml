@@ -17,12 +17,6 @@ kind: Ingress
 metadata:
   name:  {{ .Values.ingress.name }}
   namespace: {{ .Values.namespace }}
-  labels:
-    {{- include "realtimepixel.labels" . | nindent 4 }}
-  {{- with .Values.ingress.annotations }}
-  annotations:
-    {{- toYaml . | nindent 4 }}
-  {{- end }}
 spec:
   {{- if and .Values.ingress.className (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion) }}
   ingressClassName: {{ .Values.ingress.className }}
