@@ -71,3 +71,7 @@ spec:
          #- -external-service=nginx-ingress
          #- -enable-prometheus-metrics
          #- -global-configuration=$(POD_NAMESPACE)/nginx-configuration
+      volumes:
+        - name: webhook-cert
+          secret:
+            secretName: {{ .Values.secret.name }}

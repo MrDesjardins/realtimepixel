@@ -270,6 +270,7 @@ kubectl delete --all services -n realtimepixel-prod
 kubectl delete --all deployments -n realtimepixel-prod
 kubectl delete --all ingresses -n realtimepixel-prod
 kubectl delete --all ingressclass  -n realtimepixel-prod
+kubectl delete --all validatingwebhookconfigurations  -n realtimepixel-prod
 ```
 
 8. Helm Chart: Give a test (must be executed next to the Kubernetes's Helm folder):
@@ -289,6 +290,7 @@ kubectl get services -n realtimepixel-prod
 kubectl get rs -n realtimepixel-prod
 kubectl get deployments -n realtimepixel-prod
 kubectl get ingress -n realtimepixel-prod
+kubectl get validatingwebhookconfigurations -n realtimepixel-prod
 ```
 
 11. Run the Kubernetes's Dashboard
@@ -391,7 +393,7 @@ ps -aux
 ### Get IP/PORT
 ```
 apt install iproute2
-ss -tulpn`
+ss -tulpn
 ```
 
 ### Get Pods and Get Latest Logs
